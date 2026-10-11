@@ -1,0 +1,9 @@
+{
+  "command_prepare": ".\\.venv\\Scripts\\python.exe -B scripts/development_eligibility_audit.py --prepare",
+  "command_run": ".\\.venv\\Scripts\\python.exe -B scripts/development_eligibility_audit.py --run artifacts/development_eligibility_audit_20261011T053002Z_963a0a93",
+  "source_input_hash_count": 106,
+  "guard_total_seconds": 60.405058199999985,
+  "prior_pilot_hashes_verified": true,
+  "once_only_unperturbed_calls_verified": 30,
+  "no_additional_evaluator_calls_in_verification": true
+}

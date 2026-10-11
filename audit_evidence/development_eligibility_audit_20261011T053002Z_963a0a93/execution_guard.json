@@ -1,0 +1,8 @@
+{
+  "command": ".\\.venv\\Scripts\\python.exe -B scripts/development_eligibility_audit.py --run artifacts/development_eligibility_audit_20261011T053002Z_963a0a93",
+  "hard_process_tree_timeout_seconds": 895,
+  "total_budget_seconds": 900,
+  "timeout_action": "Kill only this spawned audit PID and descendants; no retries",
+  "returncode": 0,
+  "elapsed_wall_seconds": 60.405058199999985
+}

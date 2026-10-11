@@ -1,0 +1,94 @@
+{
+  "purpose": "Versioned evidence copies; original artifacts preserved unchanged. Original and publication hashes are distinct fields. No copied artifact required sanitization.",
+  "files": {
+    "eligibility_table.csv": {
+      "original_path": "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/eligibility_table.csv",
+      "original_sha256": "90cfbe643b0914594ed69a98c7be4e2e36d60c9a569d9b8730146a5362dd2b68",
+      "original_size_bytes": 5148,
+      "publication_sha256": "90cfbe643b0914594ed69a98c7be4e2e36d60c9a569d9b8730146a5362dd2b68",
+      "publication_size_bytes": 5148,
+      "byte_identical_to_original": true
+    },
+    "eligible_candidates.json": {
+      "original_path": "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/eligible_candidates.json",
+      "original_sha256": "fb0f7233cff89284fb4da8b83e81814d4daae06603d1b14bfca982be4048331a",
+      "original_size_bytes": 277,
+      "publication_sha256": "fb0f7233cff89284fb4da8b83e81814d4daae06603d1b14bfca982be4048331a",
+      "publication_size_bytes": 277,
+      "byte_identical_to_original": true
+    },
+    "execution_guard.json": {
+      "original_path": "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/execution_guard.json",
+      "original_sha256": "909f8812038ef36ba4a67e549ecbd0ee5d34b8b60b7ccf0160d06e9a8e07c5c5",
+      "original_size_bytes": 397,
+      "publication_sha256": "909f8812038ef36ba4a67e549ecbd0ee5d34b8b60b7ccf0160d06e9a8e07c5c5",
+      "publication_size_bytes": 397,
+      "byte_identical_to_original": true
+    },
+    "output_hashes.json": {
+      "original_path": "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/output_hashes.json",
+      "original_sha256": "f962efb345b91c49557cc8280d931353832672e0ac800f9291fcf4b182a0dc4d",
+      "original_size_bytes": 1347,
+      "publication_sha256": "f962efb345b91c49557cc8280d931353832672e0ac800f9291fcf4b182a0dc4d",
+      "publication_size_bytes": 1347,
+      "byte_identical_to_original": true
+    },
+    "plan.json": {
+      "original_path": "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/plan.json",
+      "original_sha256": "ae1545b69c6b697280769c1ed19fb85dafb684cdead96144f5f5b62c60d12799",
+      "original_size_bytes": 26948,
+      "publication_sha256": "ae1545b69c6b697280769c1ed19fb85dafb684cdead96144f5f5b62c60d12799",
+      "publication_size_bytes": 26948,
+      "byte_identical_to_original": true
+    },
+    "previous_pilot_review.json": {
+      "original_path": "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/previous_pilot_review.json",
+      "original_sha256": "00b89d7dea88aff92996ec681200e089226b03ca3d1923452091e651b09d4553",
+      "original_size_bytes": 2472,
+      "publication_sha256": "00b89d7dea88aff92996ec681200e089226b03ca3d1923452091e651b09d4553",
+      "publication_size_bytes": 2472,
+      "byte_identical_to_original": true
+    },
+    "REPORT.md": {
+      "original_path": "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/REPORT.md",
+      "original_sha256": "b84e796b733aadabe35310aaedfd1aebafece3e6aa0636b6ae6ea24bf1663a6a",
+      "original_size_bytes": 7001,
+      "publication_sha256": "b84e796b733aadabe35310aaedfd1aebafece3e6aa0636b6ae6ea24bf1663a6a",
+      "publication_size_bytes": 7001,
+      "byte_identical_to_original": true
+    },
+    "results.jsonl": {
+      "original_path": "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/results.jsonl",
+      "original_sha256": "56d85181c19de95ecfa54834cc530a90d4d64ba6955ec39ed98ed873d7e10bd8",
+      "original_size_bytes": 42794,
+      "publication_sha256": "56d85181c19de95ecfa54834cc530a90d4d64ba6955ec39ed98ed873d7e10bd8",
+      "publication_size_bytes": 42794,
+      "byte_identical_to_original": true
+    },
+    "selected_manifest.json": {
+      "original_path": "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/selected_manifest.json",
+      "original_sha256": "d8e6cd18a736f5faccca12822cf3a20f4a9c781abb51a173dd534e384db483f0",
+      "original_size_bytes": 5326,
+      "publication_sha256": "d8e6cd18a736f5faccca12822cf3a20f4a9c781abb51a173dd534e384db483f0",
+      "publication_size_bytes": 5326,
+      "byte_identical_to_original": true
+    },
+    "summary.json": {
+      "original_path": "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/summary.json",
+      "original_sha256": "8888528d5400f62f351162c2dad1ba2086f2e8085e66aebb46a7ca04d2ebba97",
+      "original_size_bytes": 1486,
+      "publication_sha256": "8888528d5400f62f351162c2dad1ba2086f2e8085e66aebb46a7ca04d2ebba97",
+      "publication_size_bytes": 1486,
+      "byte_identical_to_original": true
+    },
+    "verification.json": {
+      "original_path": "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/verification.json",
+      "original_sha256": "33ef0107f290456576e24d1f937d119897448daa58141352ee45b52babe4a5de",
+      "original_size_bytes": 507,
+      "publication_sha256": "33ef0107f290456576e24d1f937d119897448daa58141352ee45b52babe4a5de",
+      "publication_size_bytes": 507,
+      "byte_identical_to_original": true
+    }
+  },
+  "excluded_original_files": []
+}

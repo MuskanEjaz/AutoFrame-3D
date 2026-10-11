@@ -1,0 +1,2489 @@
+{
+  "prepared_at_utc": "2026-10-11T05:18:07.970132+00:00",
+  "case_ids": [
+    "tless-s000001-i000001-g00-o02",
+    "tless-s000002-i000003-g00-o05",
+    "tless-s000002-i000003-g01-o06",
+    "tless-s000002-i000003-g02-o07",
+    "tless-s000003-i000005-g01-o08"
+  ],
+  "cases": [
+    {
+      "case_id": "tless-s000001-i000001-g00-o02",
+      "scene_id": 1,
+      "image_id": 1,
+      "gt_index": 0,
+      "object_id": 2
+    },
+    {
+      "case_id": "tless-s000002-i000003-g00-o05",
+      "scene_id": 2,
+      "image_id": 3,
+      "gt_index": 0,
+      "object_id": 5
+    },
+    {
+      "case_id": "tless-s000002-i000003-g01-o06",
+      "scene_id": 2,
+      "image_id": 3,
+      "gt_index": 1,
+      "object_id": 6
+    },
+    {
+      "case_id": "tless-s000002-i000003-g02-o07",
+      "scene_id": 2,
+      "image_id": 3,
+      "gt_index": 2,
+      "object_id": 7
+    },
+    {
+      "case_id": "tless-s000003-i000005-g01-o08",
+      "scene_id": 3,
+      "image_id": 5,
+      "gt_index": 1,
+      "object_id": 8
+    }
+  ],
+  "seeds": [
+    101,
+    202,
+    303
+  ],
+  "evaluations_per_case_seed_method": 4,
+  "planned_candidate_slots": 120,
+  "shared_baseline_calls": 5,
+  "extra_replay_calls_max": 1,
+  "export_calls_max": 1,
+  "total_wall_budget_seconds": 900.0,
+  "outer_per_call_seconds": 30.0,
+  "evaluator_timeout_seconds": 30.0,
+  "initialization_and_scoring": {
+    "protocol": "custom_internal_tless_test_primesense_bop19",
+    "label": "Custom internal evaluation on the public BOP test subset; not an official BOP score",
+    "instance_masks": "GT-provided mask_visib; registration evaluation with ground-truth instance masks",
+    "minimum_visible_fraction_for_manifest": 0.1,
+    "geometric_acceptance": {
+      "minimum_fitness": 0.7,
+      "maximum_inlier_rmse_m": 0.01,
+      "maximum_correspondence_distance_m": 0.015
+    },
+    "pose_correctness": {
+      "metric": "BOP MSSD / object diameter",
+      "maximum_normalized_mssd": 0.1,
+      "continuous_symmetry_max_vertex_travel_over_diameter": 0.01
+    },
+    "registration": {
+      "initializer": "6 geometry-ranked starts from 24 proper PCA signed-axis/permutation alignments, max-geodesic diversity ordered",
+      "max_registration_evaluations": 6,
+      "max_iterations_per_start": 8,
+      "model_registration_points_max": 3000,
+      "random_seed": 20260928
+    },
+    "execution": {
+      "timeout_seconds": 30,
+      "default_workers": 1,
+      "max_workers": 4
+    },
+    "perturbed_group": {
+      "noise_std_m": 0.002,
+      "point_dropout_fraction": 0.1,
+      "seed_offset": 700000
+    }
+  },
+  "budget_accounting": "Every scheduled proposal consumes one slot, including invalids, timeouts and processing failures; no retries, no early-stop on success. Interleaved round order is fixed before outcomes.",
+  "reserve_seconds_for_export_replay_report": 65.0,
+  "policy_feedback": "Local deterministic and random proposals are fixed before evaluation and consume no feedback. Optional live policy is not invoked; its existing feedback excludes GT. GT poses used only for offline evaluator labels and retrospective representative selection.",
+  "severity": "No existing validated scalar severity measure. Report supplied noise_std_m (also mm) and point_dropout_fraction separately; do not rank mixtures by an invented scalar.",
+  "proposals": {
+    "deterministic": {
+      "101": [
+        {
+          "noise_std_m": 0.0,
+          "point_dropout_fraction": 0.0,
+          "seed": 101
+        },
+        {
+          "noise_std_m": 0.001,
+          "point_dropout_fraction": 0.05,
+          "seed": 102
+        },
+        {
+          "noise_std_m": 0.003,
+          "point_dropout_fraction": 0.1,
+          "seed": 103
+        },
+        {
+          "noise_std_m": 0.005,
+          "point_dropout_fraction": 0.2,
+          "seed": 104
+        }
+      ],
+      "202": [
+        {
+          "noise_std_m": 0.0,
+          "point_dropout_fraction": 0.0,
+          "seed": 202
+        },
+        {
+          "noise_std_m": 0.001,
+          "point_dropout_fraction": 0.05,
+          "seed": 203
+        },
+        {
+          "noise_std_m": 0.003,
+          "point_dropout_fraction": 0.1,
+          "seed": 204
+        },
+        {
+          "noise_std_m": 0.005,
+          "point_dropout_fraction": 0.2,
+          "seed": 205
+        }
+      ],
+      "303": [
+        {
+          "noise_std_m": 0.0,
+          "point_dropout_fraction": 0.0,
+          "seed": 303
+        },
+        {
+          "noise_std_m": 0.001,
+          "point_dropout_fraction": 0.05,
+          "seed": 304
+        },
+        {
+          "noise_std_m": 0.003,
+          "point_dropout_fraction": 0.1,
+          "seed": 305
+        },
+        {
+          "noise_std_m": 0.005,
+          "point_dropout_fraction": 0.2,
+          "seed": 306
+        }
+      ]
+    },
+    "seeded_random": {
+      "101": [
+        {
+          "noise_std_m": 0.0029057606625228233,
+          "point_dropout_fraction": 0.03895089910682734,
+          "seed": 1130841
+        },
+        {
+          "noise_std_m": 0.004619882008383972,
+          "point_dropout_fraction": 0.0934277356393948,
+          "seed": 1391398
+        },
+        {
+          "noise_std_m": 0.0025176017811344175,
+          "point_dropout_fraction": 0.12040856662645377,
+          "seed": 1924206
+        },
+        {
+          "noise_std_m": 0.001442612166906281,
+          "point_dropout_fraction": 0.1384845491990635,
+          "seed": 445386
+        }
+      ],
+      "202": [
+        {
+          "noise_std_m": 0.0038194078723169773,
+          "point_dropout_fraction": 0.12895615021726128,
+          "seed": 858653
+        },
+        {
+          "noise_std_m": 0.004365331910479346,
+          "point_dropout_fraction": 0.03919522267088343,
+          "seed": 834672
+        },
+        {
+          "noise_std_m": 0.004846429081863376,
+          "point_dropout_fraction": 0.0855494177977184,
+          "seed": 1784413
+        },
+        {
+          "noise_std_m": 0.0022564585147827228,
+          "point_dropout_fraction": 0.1798269443627984,
+          "seed": 683655
+        }
+      ],
+      "303": [
+        {
+          "noise_std_m": 0.00015828737021173544,
+          "point_dropout_fraction": 0.19376075229117276,
+          "seed": 408746
+        },
+        {
+          "noise_std_m": 0.00045940343269724294,
+          "point_dropout_fraction": 0.11323980830124554,
+          "seed": 1306798
+        },
+        {
+          "noise_std_m": 0.001293380914879214,
+          "point_dropout_fraction": 0.1032532855665447,
+          "seed": 835252
+        },
+        {
+          "noise_std_m": 0.0007885001752417209,
+          "point_dropout_fraction": 0.09457095532072522,
+          "seed": 1222039
+        }
+      ]
+    }
+  },
+  "schedule": [
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 101
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0029057606625228233,
+        "point_dropout_fraction": 0.03895089910682734,
+        "seed": 1130841
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.004619882008383972,
+        "point_dropout_fraction": 0.0934277356393948,
+        "seed": 1391398
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 102
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 103
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.0025176017811344175,
+        "point_dropout_fraction": 0.12040856662645377,
+        "seed": 1924206
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.001442612166906281,
+        "point_dropout_fraction": 0.1384845491990635,
+        "seed": 445386
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 104
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0038194078723169773,
+        "point_dropout_fraction": 0.12895615021726128,
+        "seed": 858653
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 202
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 203
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.004365331910479346,
+        "point_dropout_fraction": 0.03919522267088343,
+        "seed": 834672
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.004846429081863376,
+        "point_dropout_fraction": 0.0855494177977184,
+        "seed": 1784413
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 204
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 205
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.0022564585147827228,
+        "point_dropout_fraction": 0.1798269443627984,
+        "seed": 683655
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 303
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.00015828737021173544,
+        "point_dropout_fraction": 0.19376075229117276,
+        "seed": 408746
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.00045940343269724294,
+        "point_dropout_fraction": 0.11323980830124554,
+        "seed": 1306798
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 304
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 305
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.001293380914879214,
+        "point_dropout_fraction": 0.1032532855665447,
+        "seed": 835252
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.0007885001752417209,
+        "point_dropout_fraction": 0.09457095532072522,
+        "seed": 1222039
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 306
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 101
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0029057606625228233,
+        "point_dropout_fraction": 0.03895089910682734,
+        "seed": 1130841
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.004619882008383972,
+        "point_dropout_fraction": 0.0934277356393948,
+        "seed": 1391398
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 102
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 103
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.0025176017811344175,
+        "point_dropout_fraction": 0.12040856662645377,
+        "seed": 1924206
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.001442612166906281,
+        "point_dropout_fraction": 0.1384845491990635,
+        "seed": 445386
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 104
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0038194078723169773,
+        "point_dropout_fraction": 0.12895615021726128,
+        "seed": 858653
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 202
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 203
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.004365331910479346,
+        "point_dropout_fraction": 0.03919522267088343,
+        "seed": 834672
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.004846429081863376,
+        "point_dropout_fraction": 0.0855494177977184,
+        "seed": 1784413
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 204
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 205
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.0022564585147827228,
+        "point_dropout_fraction": 0.1798269443627984,
+        "seed": 683655
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 303
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.00015828737021173544,
+        "point_dropout_fraction": 0.19376075229117276,
+        "seed": 408746
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.00045940343269724294,
+        "point_dropout_fraction": 0.11323980830124554,
+        "seed": 1306798
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 304
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 305
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.001293380914879214,
+        "point_dropout_fraction": 0.1032532855665447,
+        "seed": 835252
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.0007885001752417209,
+        "point_dropout_fraction": 0.09457095532072522,
+        "seed": 1222039
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 306
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 101
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0029057606625228233,
+        "point_dropout_fraction": 0.03895089910682734,
+        "seed": 1130841
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.004619882008383972,
+        "point_dropout_fraction": 0.0934277356393948,
+        "seed": 1391398
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 102
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 103
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.0025176017811344175,
+        "point_dropout_fraction": 0.12040856662645377,
+        "seed": 1924206
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.001442612166906281,
+        "point_dropout_fraction": 0.1384845491990635,
+        "seed": 445386
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 104
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0038194078723169773,
+        "point_dropout_fraction": 0.12895615021726128,
+        "seed": 858653
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 202
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 203
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.004365331910479346,
+        "point_dropout_fraction": 0.03919522267088343,
+        "seed": 834672
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.004846429081863376,
+        "point_dropout_fraction": 0.0855494177977184,
+        "seed": 1784413
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 204
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 205
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.0022564585147827228,
+        "point_dropout_fraction": 0.1798269443627984,
+        "seed": 683655
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 303
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.00015828737021173544,
+        "point_dropout_fraction": 0.19376075229117276,
+        "seed": 408746
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.00045940343269724294,
+        "point_dropout_fraction": 0.11323980830124554,
+        "seed": 1306798
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 304
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 305
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.001293380914879214,
+        "point_dropout_fraction": 0.1032532855665447,
+        "seed": 835252
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.0007885001752417209,
+        "point_dropout_fraction": 0.09457095532072522,
+        "seed": 1222039
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 306
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 101
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0029057606625228233,
+        "point_dropout_fraction": 0.03895089910682734,
+        "seed": 1130841
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.004619882008383972,
+        "point_dropout_fraction": 0.0934277356393948,
+        "seed": 1391398
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 102
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 103
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.0025176017811344175,
+        "point_dropout_fraction": 0.12040856662645377,
+        "seed": 1924206
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.001442612166906281,
+        "point_dropout_fraction": 0.1384845491990635,
+        "seed": 445386
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 104
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0038194078723169773,
+        "point_dropout_fraction": 0.12895615021726128,
+        "seed": 858653
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 202
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 203
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.004365331910479346,
+        "point_dropout_fraction": 0.03919522267088343,
+        "seed": 834672
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.004846429081863376,
+        "point_dropout_fraction": 0.0855494177977184,
+        "seed": 1784413
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 204
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 205
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.0022564585147827228,
+        "point_dropout_fraction": 0.1798269443627984,
+        "seed": 683655
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 303
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.00015828737021173544,
+        "point_dropout_fraction": 0.19376075229117276,
+        "seed": 408746
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.00045940343269724294,
+        "point_dropout_fraction": 0.11323980830124554,
+        "seed": 1306798
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 304
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 305
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.001293380914879214,
+        "point_dropout_fraction": 0.1032532855665447,
+        "seed": 835252
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.0007885001752417209,
+        "point_dropout_fraction": 0.09457095532072522,
+        "seed": 1222039
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g02-o07",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 306
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 101
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0029057606625228233,
+        "point_dropout_fraction": 0.03895089910682734,
+        "seed": 1130841
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.004619882008383972,
+        "point_dropout_fraction": 0.0934277356393948,
+        "seed": 1391398
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 102
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 103
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.0025176017811344175,
+        "point_dropout_fraction": 0.12040856662645377,
+        "seed": 1924206
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "seeded_random",
+      "search_seed": 101,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.001442612166906281,
+        "point_dropout_fraction": 0.1384845491990635,
+        "seed": 445386
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "deterministic",
+      "search_seed": 101,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 104
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0038194078723169773,
+        "point_dropout_fraction": 0.12895615021726128,
+        "seed": 858653
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 202
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 203
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.004365331910479346,
+        "point_dropout_fraction": 0.03919522267088343,
+        "seed": 834672
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.004846429081863376,
+        "point_dropout_fraction": 0.0855494177977184,
+        "seed": 1784413
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 204
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "deterministic",
+      "search_seed": 202,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 205
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "seeded_random",
+      "search_seed": 202,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.0022564585147827228,
+        "point_dropout_fraction": 0.1798269443627984,
+        "seed": 683655
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.0,
+        "point_dropout_fraction": 0.0,
+        "seed": 303
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 1,
+      "proposal": {
+        "noise_std_m": 0.00015828737021173544,
+        "point_dropout_fraction": 0.19376075229117276,
+        "seed": 408746
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.00045940343269724294,
+        "point_dropout_fraction": 0.11323980830124554,
+        "seed": 1306798
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 2,
+      "proposal": {
+        "noise_std_m": 0.001,
+        "point_dropout_fraction": 0.05,
+        "seed": 304
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.003,
+        "point_dropout_fraction": 0.1,
+        "seed": 305
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 3,
+      "proposal": {
+        "noise_std_m": 0.001293380914879214,
+        "point_dropout_fraction": 0.1032532855665447,
+        "seed": 835252
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "seeded_random",
+      "search_seed": 303,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.0007885001752417209,
+        "point_dropout_fraction": 0.09457095532072522,
+        "seed": 1222039
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000003-i000005-g01-o08",
+        "scene_id": 3,
+        "image_id": 5,
+        "gt_index": 1,
+        "object_id": 8
+      },
+      "method": "deterministic",
+      "search_seed": 303,
+      "evaluation_index": 4,
+      "proposal": {
+        "noise_std_m": 0.005,
+        "point_dropout_fraction": 0.2,
+        "seed": 306
+      }
+    }
+  ],
+  "file_inventory": {
+    "autoframe3d/__init__.py": {
+      "sha256": "3117a0d022fe0bcf5ca6a6cb048da157fb9fdd6317182d47b0dc580eab4d149b",
+      "bytes": 59
+    },
+    "autoframe3d/agent.py": {
+      "sha256": "24a66e745bdfd4856064de1339398ec7b2644e250d860b05289c9434ca736762",
+      "bytes": 4382
+    },
+    "autoframe3d/api.py": {
+      "sha256": "7b78beda549d4a8b49f951880946d0ad2e2eda159723dd903588975d7e0c6393",
+      "bytes": 16275
+    },
+    "autoframe3d/campaign.py": {
+      "sha256": "d5ff31c3dfc59aa38a71ebad86bb6247bb83604efc5b8ab68dc6d2f5f9db8042",
+      "bytes": 5014
+    },
+    "autoframe3d/cases.py": {
+      "sha256": "33fe5373be88c5eecc2fe48ae18c757a99f9795d94d3c77dd77f250058dd0e6f",
+      "bytes": 5292
+    },
+    "autoframe3d/cli.py": {
+      "sha256": "9df5d2de4a034448719519f445c5793d6d3feac887729909a1c00b9cd941f32a",
+      "bytes": 4006
+    },
+    "autoframe3d/experiment.py": {
+      "sha256": "1b7640dc98bc6418e8a1fb53c2ce3793c94847da010b7ebe3de9f77a8b60830b",
+      "bytes": 9033
+    },
+    "autoframe3d/geometry.py": {
+      "sha256": "16f43ec402ab6ef9f01785cb32618ff3155dd8bbb1bea3ae09de7265de9c3fdf",
+      "bytes": 7276
+    },
+    "autoframe3d/provenance.py": {
+      "sha256": "fb873c3f7c308dcbf589eac05af38119f7ed420ff97bba6b0d08daba22cf557a",
+      "bytes": 3994
+    },
+    "autoframe3d/simplify.py": {
+      "sha256": "9e0edf277751cb9e8cf9f4323121f288e67b280ef05eb3650ad4296e6a15a1b3",
+      "bytes": 2182
+    },
+    "autoframe3d/tless_adapter.py": {
+      "sha256": "116132f4c77c6783b0f31406fb04736e31d1bd74a7aeebdaf3df78c47c781e6b",
+      "bytes": 17250
+    },
+    "autoframe3d/tless_benchmark.py": {
+      "sha256": "d4146c21bf0323a0c1f0179420ebc8d738171ed09b70aea94c71bfba2ae45cda",
+      "bytes": 18407
+    },
+    "autoframe3d/tless_cases.py": {
+      "sha256": "cc50ef3ead9ec61b8cf0aa9fe0eda4c406f30835a5d267b84ed41cd6fd1602db",
+      "bytes": 6904
+    },
+    "autoframe3d/tless_metrics.py": {
+      "sha256": "b8f833c7c8051854521bc26fbeae4a38d51534f54a525b3d2b605a7cd280743c",
+      "bytes": 3496
+    },
+    "autoframe3d/tless_search.py": {
+      "sha256": "e90fb58b73307ea28dc106b2a8fefc8611f8a1e135fed97c08b43578d3062afa",
+      "bytes": 12209
+    },
+    "configs/tless_frozen.json": {
+      "sha256": "ca60a2fe5c667bce40c85c75f11fc0e65d0f8db36281945f94b6dd422155577a",
+      "bytes": 1181
+    },
+    "data/tless/bop/models_cad/models_info.json": {
+      "sha256": "48a13b6e4532c20954dbe014a082439b05984d12ff13da1da62635a8dee59925",
+      "bytes": 7047
+    },
+    "data/tless/bop/models_cad/obj_000002.ply": {
+      "sha256": "354d8969694176aa65d4d470badd304532bead5aa8e96bdecaa0ae41620f81b2",
+      "bytes": 3563656
+    },
+    "data/tless/bop/models_cad/obj_000005.ply": {
+      "sha256": "cbe7ccaa74c74ba40fe64bfac62808a391f6e389a93e8c4f5d8b00157b9930ab",
+      "bytes": 1075517
+    },
+    "data/tless/bop/models_cad/obj_000006.ply": {
+      "sha256": "f1227fe15e046bc18c1686bd5fb3b849a9996c2de2ca3fc16d34b9ec348f94df",
+      "bytes": 229687
+    },
+    "data/tless/bop/models_cad/obj_000007.ply": {
+      "sha256": "da526fe974d4184986022ad353c559019cb4bd98a0b20b3219d59b9e8b2935c7",
+      "bytes": 704309
+    },
+    "data/tless/bop/models_cad/obj_000008.ply": {
+      "sha256": "bc08c26acebb0cf6623c54444cf5c2bcbd93d81444dcdbe502769e9e149a8943",
+      "bytes": 948576
+    },
+    "data/tless/bop/models_eval/obj_000002.ply": {
+      "sha256": "f09eeb95cf1e3231485e0f89f69671331cbb40ed30f2e87f4507722660dd8441",
+      "bytes": 771455
+    },
+    "data/tless/bop/models_eval/obj_000005.ply": {
+      "sha256": "c1ca79f0e2eee0e5f23ae69156fcfa4d7195df210c315b960fbe53226c8af39f",
+      "bytes": 421139
+    },
+    "data/tless/bop/models_eval/obj_000006.ply": {
+      "sha256": "4e606c54f0f0b81844bdefd77097f6d88fdb22755e91d0669d89f98b61dddbd9",
+      "bytes": 254343
+    },
+    "data/tless/bop/models_eval/obj_000007.ply": {
+      "sha256": "fdac88ebf5334d552d343652dceacb2bec4ec28400e9a8202f1e0f73bd3c2c27",
+      "bytes": 502318
+    },
+    "data/tless/bop/models_eval/obj_000008.ply": {
+      "sha256": "0da512f33c790363c60bac33a61a1c2034a01d1ab27f722dcf3414cceee8b3b8",
+      "bytes": 563302
+    },
+    "data/tless/bop/test_primesense/000001/depth/000001.png": {
+      "sha256": "9d32acb46ad00d08ee2cb28c27c0042e29e13585daccec768ba735c541199535",
+      "bytes": 55437
+    },
+    "data/tless/bop/test_primesense/000001/mask_visib/000001_000000.png": {
+      "sha256": "ad94caf3cbe67179d3ca8d5ce7b1ac6ac88b71528fc4a44a03395e3d4dd1cd21",
+      "bytes": 684
+    },
+    "data/tless/bop/test_primesense/000001/scene_camera.json": {
+      "sha256": "0f4e972b56ef220fe2d4efbbd4767f77ca0e54fe76093d46f952d515700f1ce1",
+      "bytes": 15113
+    },
+    "data/tless/bop/test_primesense/000001/scene_gt.json": {
+      "sha256": "742c77860d984760a67b352159007b04dd260b8a27b7029574be7d845fcda1b2",
+      "bytes": 39820
+    },
+    "data/tless/bop/test_primesense/000002/depth/000003.png": {
+      "sha256": "9540ddfbc5eb52c705b0599743602f401d9490ad1334c59d34364c674712f275",
+      "bytes": 59509
+    },
+    "data/tless/bop/test_primesense/000002/mask_visib/000003_000000.png": {
+      "sha256": "c689b39d8ac08ffb815f4364034e0a0a7539768422bf34443169efedf5ef5b45",
+      "bytes": 1202
+    },
+    "data/tless/bop/test_primesense/000002/mask_visib/000003_000001.png": {
+      "sha256": "b51f83d1d8bf99dd0493cefa1006d23d60cc5dfe0f1f5228b435e6b98e72b005",
+      "bytes": 1229
+    },
+    "data/tless/bop/test_primesense/000002/mask_visib/000003_000002.png": {
+      "sha256": "04ab3a26b58753aef2c5dbc4454aef9637747552281c31532869ae9ce944cbe2",
+      "bytes": 1606
+    },
+    "data/tless/bop/test_primesense/000002/scene_camera.json": {
+      "sha256": "84d4a7b2106ed19c59d11da0fa406a763bd408c8585a77b8f44e5d3d7b300d9b",
+      "bytes": 15101
+    },
+    "data/tless/bop/test_primesense/000002/scene_gt.json": {
+      "sha256": "a04b5aabc88dab06280670270b4954e5e353e490f5e661a92b42aa730726316f",
+      "bytes": 29501
+    },
+    "data/tless/bop/test_primesense/000003/depth/000005.png": {
+      "sha256": "484725ba5d526f604fadd612bbc6958e3facae5cc4d3e72221d689ca52c6d5d8",
+      "bytes": 62887
+    },
+    "data/tless/bop/test_primesense/000003/mask_visib/000005_000001.png": {
+      "sha256": "720d1e842072de77ee164bb28d0ff93bd27b4a9bafb29a05a7344fc1395f868f",
+      "bytes": 1864
+    },
+    "data/tless/bop/test_primesense/000003/scene_camera.json": {
+      "sha256": "e16f55fb52bb03e45c933e781e29d06ce23ea876b34475d24f31be189b540d22",
+      "bytes": 15118
+    },
+    "data/tless/bop/test_primesense/000003/scene_gt.json": {
+      "sha256": "a0975e3a1cc508c4c0cfc13a67cf62ae9309bf8adadd40624ac68a8196ca7be3",
+      "bytes": 49894
+    },
+    "data/tless/manifests/development.json": {
+      "sha256": "6be39a523af0a4d886326711af62ae2e10ea7c6099c8fe7dc7326fb9c1b87948",
+      "bytes": 120534
+    },
+    "data/tless/manifests/heldout200.json": {
+      "sha256": "9818f50d647afb63fcfddfd2c283c201784dd7405972317211572c68cee5f6a1",
+      "bytes": 31636
+    },
+    "data/tless/provenance.json": {
+      "sha256": "a194a11398f94ffc137b331ac2fbf228226bbe9cf57521c8a58f821c57b6b763",
+      "bytes": 1254
+    },
+    "pyproject.toml": {
+      "sha256": "453becd6ddf4a623f9f40e5ac034fcef0b6b4020b59291af8671aa1dc13f15cd",
+      "bytes": 613
+    },
+    "scripts/development_search_pilot.py": {
+      "sha256": "f9b560a0f9b5292c583ce1cfa4dbe1e3980c038ef6a6ddd8e9a3cb4be8b9571d",
+      "bytes": 20689
+    },
+    "tests/test_tless_replay_parameters.py": {
+      "sha256": "b0a307f7373dafa41fae5abe7b01a1c0a362afd22089e95a478c2bc3c7e37380",
+      "bytes": 2315
+    },
+    "selected_manifest.json": {
+      "sha256": "8feb6c8814f5e72428472a12fb4db29fef8c8e7f90c6296cc46cca4ce2b1a0f3",
+      "bytes": 956
+    }
+  },
+  "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "dependency_versions": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "Pillow": "12.3.0",
+    "pydantic": "2.13.5"
+  },
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "base_commit": "549eb21dda31557ce0e83d304c586d65d9e27ae6",
+  "original_historical_source_identity": "Not established by this new pilot provenance.",
+  "commands": [
+    ".\\.venv\\Scripts\\python.exe -B scripts/development_search_pilot.py --prepare",
+    ".\\.venv\\Scripts\\python.exe -B scripts/development_search_pilot.py --run artifacts/development_search_pilot_20261011T051807Z_289be02e"
+  ]
+}

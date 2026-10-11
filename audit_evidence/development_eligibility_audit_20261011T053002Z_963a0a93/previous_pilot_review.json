@@ -1,0 +1,51 @@
+{
+  "declared_budget_per_case_seed_method": 4,
+  "allowed_maximum": 10,
+  "explanation": "At most ten was a ceiling, not a requirement. Existing policy supplied four proposals, fixed in plan before outcomes. 5 cases x 3 seeds x 4 = 60 per method; all slots ran; no discovery-based stopping or time truncation.",
+  "arms": {
+    "deterministic": {
+      "candidate_calls": 60,
+      "zero_perturbation_candidates": 15,
+      "nonzero_perturbation_candidates": 45
+    },
+    "seeded_random": {
+      "candidate_calls": 60,
+      "zero_perturbation_candidates": 0,
+      "nonzero_perturbation_candidates": 60
+    }
+  },
+  "fairness_defect": "Equal calls but asymmetric no-op coverage: deterministic had 15 zero-perturbation baseline repetitions, random had zero. Nonzero perturbation counts were 45 versus 60. Deterministic first-discovery index one was guaranteed by already-wrong baselines; it is not evidence of search value or a perturbation-induced failure. Previous pilot remains unchanged.",
+  "prior_pilot_baseline_compatibility": {
+    "compatible": true,
+    "artifact_hashes_match": true,
+    "source_config_manifest_input_hashes_match": true,
+    "python_dependencies_match": true,
+    "thread_policy": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    },
+    "compatible_records": 5,
+    "reuse_decision": "Freshly evaluate all selected cases once; do not include prior baseline outcomes in new counts."
+  },
+  "historical_baseline_files": [
+    {
+      "path": "data/tless/results/original/development_tuning20.jsonl",
+      "records": 20,
+      "records_with_source_provenance": 0,
+      "classification": "Historical only; source/config/input identity for current execution not established. Not reused or mixed with fresh eligibility counts."
+    },
+    {
+      "path": "data/tless/results/original/smoke20.jsonl",
+      "records": 20,
+      "records_with_source_provenance": 0,
+      "classification": "Historical only; source/config/input identity for current execution not established. Not reused or mixed with fresh eligibility counts."
+    },
+    {
+      "path": "data/tless/results/original/smoke20_frozen.jsonl",
+      "records": 20,
+      "records_with_source_provenance": 0,
+      "classification": "Historical only; source/config/input identity for current execution not established. Not reused or mixed with fresh eligibility counts."
+    }
+  ]
+}

@@ -70,7 +70,10 @@ def geometry_payload(record: dict[str, Any]) -> dict[str, Any]:
 def replay_record(record: dict[str, Any]) -> dict[str, Any]:
     """Reload the dataset case and recompute registration and MSSD."""
     case = {key: record[key] for key in ("case_id", "scene_id", "image_id", "gt_index", "object_id")}
-    actual = evaluate_case(case, group=record["group"], timeout_seconds=30.0)
+    actual = evaluate_case(
+        case, group=record["group"], timeout_seconds=30.0,
+        perturbation_override=record.get("perturbation") if record["group"] == "perturbed" else None,
+    )
     if actual["status"] != "valid" or record["status"] != "valid":
         return {"passed": False, "expected_status": record["status"], "actual": actual, "tolerances": REPLAY_TOLERANCES}
     actual_metrics = actual["alignment_quality_metrics"]
@@ -100,6 +103,8 @@ def export_case_bundle(record: dict[str, Any], output_path: Path) -> Path:
     """Bundle geometry, metrics, transforms, and CC-BY-4.0 dataset attribution."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     inputs = load_registration_inputs(record)
+    if record.get("group") == "perturbed" and record.get("perturbation"):
+        inputs = replace(inputs, scan_points_camera_m=_perturb_scan(inputs, record["perturbation"]))
     provenance = json.loads((ROOT / "data" / "tless" / "provenance.json").read_text(encoding="utf-8"))
     provenance = {
         key: value for key, value in provenance.items()
@@ -120,7 +125,8 @@ def export_case_bundle(record: dict[str, Any], output_path: Path) -> Path:
         "# Reproduce this T-LESS case\n\n"
         f"This is {record['case_id']} from {provenance['repository']} at revision {provenance['revision']} "
         f"({provenance['license']}). Restore the three bounded dataset archives using `python scripts/tless_data.py download` "
-        "and `python scripts/tless_data.py extract`, then rerun the recorded manifest/group with `python scripts/tless_benchmark.py evaluate <manifest> --group <group>`. "
+        "and `python scripts/tless_data.py extract`. To reproduce the exact saved seed and perturbation parameters, "
+        "load `case.json` and pass its `case_result` to `autoframe3d.tless_cases.replay_record`. "
         "Replay recomputes registration and symmetry-aware MSSD from the source depth/mask files; saved metric values are not used as replay outputs.\n",
         encoding="utf-8",
     )

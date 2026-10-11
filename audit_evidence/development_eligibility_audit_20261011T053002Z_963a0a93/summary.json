@@ -1,0 +1,31 @@
+{
+  "completed_calls": 30,
+  "planned_cases": 30,
+  "unfinished_cases": [],
+  "category_counts": {
+    "accepted_and_correct": 1,
+    "accepted_but_wrong": 29,
+    "rejected_and_correct": 0,
+    "rejected_and_wrong": 0
+  },
+  "status_counts": {
+    "valid": 30,
+    "timeout": 0,
+    "processing_failure": 0
+  },
+  "eligible_case_ids": [
+    "tless-s000002-i000024-g02-o07"
+  ],
+  "eligible_count": 1,
+  "five_case_pilot_decision": "NO-GO: verified current eligible pool has fewer than five cases",
+  "scope_limit": "Only the fixed 30-case sample was freshly evaluated, not all 768 development cases. This cannot establish absence of eligible cases elsewhere in the split.",
+  "conditional_interpretation": "Selecting accepted-and-correct starts by baseline correctness is intentional. Future results estimate robustness conditional on initial success, not unconditional failure rate or generalization performance.",
+  "next_step_if_insufficient": "Predeclare one further balanced batch of at most 30 previously unaudited development IDs, keeping registration and thresholds fixed; do not preferentially pick historically successful IDs.",
+  "elapsed_execute_seconds": 60.1769220999995,
+  "source_config_inputs_and_previous_pilot_unchanged": true,
+  "model_calls": 0,
+  "perturbed_evaluations": 0,
+  "heldout_registration_calls": 0,
+  "plan_sha256": "ae1545b69c6b697280769c1ed19fb85dafb684cdead96144f5f5b62c60d12799",
+  "reused_saved_baseline_count": 0
+}

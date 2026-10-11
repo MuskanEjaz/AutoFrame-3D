@@ -1,0 +1,41 @@
+{
+  "selection": "First five distinct object IDs in existing development manifest order; no result files or outcomes consulted.",
+  "cases": [
+    {
+      "case_id": "tless-s000001-i000001-g00-o02",
+      "scene_id": 1,
+      "image_id": 1,
+      "gt_index": 0,
+      "object_id": 2
+    },
+    {
+      "case_id": "tless-s000002-i000003-g00-o05",
+      "scene_id": 2,
+      "image_id": 3,
+      "gt_index": 0,
+      "object_id": 5
+    },
+    {
+      "case_id": "tless-s000002-i000003-g01-o06",
+      "scene_id": 2,
+      "image_id": 3,
+      "gt_index": 1,
+      "object_id": 6
+    },
+    {
+      "case_id": "tless-s000002-i000003-g02-o07",
+      "scene_id": 2,
+      "image_id": 3,
+      "gt_index": 2,
+      "object_id": 7
+    },
+    {
+      "case_id": "tless-s000003-i000005-g01-o08",
+      "scene_id": 3,
+      "image_id": 5,
+      "gt_index": 1,
+      "object_id": 8
+    }
+  ],
+  "heldout200_case_overlap": 0
+}

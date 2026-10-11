@@ -1,0 +1,112 @@
+{
+  "purpose": "Versioned evidence copies; original artifacts preserved unchanged. Original and publication hashes are distinct fields. No copied artifact required sanitization.",
+  "files": {
+    "case_seed_results.csv": {
+      "original_path": "artifacts/development_search_pilot_20261011T051807Z_289be02e/case_seed_results.csv",
+      "original_sha256": "609c9a562accbea5f01954972e8d0a7d5a3b4df07b3bfe47543c04b3bb94a9d7",
+      "original_size_bytes": 4137,
+      "publication_sha256": "609c9a562accbea5f01954972e8d0a7d5a3b4df07b3bfe47543c04b3bb94a9d7",
+      "publication_size_bytes": 4137,
+      "byte_identical_to_original": true
+    },
+    "execution_guard.json": {
+      "original_path": "artifacts/development_search_pilot_20261011T051807Z_289be02e/execution_guard.json",
+      "original_sha256": "905233f08a640a42bda5c2fe769dc0869b14648e22e100a312f9fbfc9b0ad5f5",
+      "original_size_bytes": 624,
+      "publication_sha256": "905233f08a640a42bda5c2fe769dc0869b14648e22e100a312f9fbfc9b0ad5f5",
+      "publication_size_bytes": 624,
+      "byte_identical_to_original": true
+    },
+    "export_result.json": {
+      "original_path": "artifacts/development_search_pilot_20261011T051807Z_289be02e/export_result.json",
+      "original_sha256": "475ef573503835deb41570a81395dc32dc5e252638f4f6582516d95da06ffa01",
+      "original_size_bytes": 152,
+      "publication_sha256": "475ef573503835deb41570a81395dc32dc5e252638f4f6582516d95da06ffa01",
+      "publication_size_bytes": 152,
+      "byte_identical_to_original": true
+    },
+    "interpretation.json": {
+      "original_path": "artifacts/development_search_pilot_20261011T051807Z_289be02e/interpretation.json",
+      "original_sha256": "a3078b5b49871b16663ea2481c8e607a5139c59102e5ce4035c0f0873be6f473",
+      "original_size_bytes": 3295,
+      "publication_sha256": "a3078b5b49871b16663ea2481c8e607a5139c59102e5ce4035c0f0873be6f473",
+      "publication_size_bytes": 3295,
+      "byte_identical_to_original": true
+    },
+    "output_hashes.json": {
+      "original_path": "artifacts/development_search_pilot_20261011T051807Z_289be02e/output_hashes.json",
+      "original_sha256": "09788005f52a35a2ffbb130327828496a85837b29e7315e73389db4f4055d2ed",
+      "original_size_bytes": 1758,
+      "publication_sha256": "09788005f52a35a2ffbb130327828496a85837b29e7315e73389db4f4055d2ed",
+      "publication_size_bytes": 1758,
+      "byte_identical_to_original": true
+    },
+    "plan.json": {
+      "original_path": "artifacts/development_search_pilot_20261011T051807Z_289be02e/plan.json",
+      "original_sha256": "95c937afdb11eeeb4b26e07fd4900a4a8a219442e110796ac1f53a8efb6f3ebc",
+      "original_size_bytes": 66198,
+      "publication_sha256": "95c937afdb11eeeb4b26e07fd4900a4a8a219442e110796ac1f53a8efb6f3ebc",
+      "publication_size_bytes": 66198,
+      "byte_identical_to_original": true
+    },
+    "replay_result.json": {
+      "original_path": "artifacts/development_search_pilot_20261011T051807Z_289be02e/replay_result.json",
+      "original_sha256": "0ac64b2496bbf1d6b790a1215d3e9a894bd1f1cc4aac9b7b7ebc6faaf7b8a352",
+      "original_size_bytes": 2783,
+      "publication_sha256": "0ac64b2496bbf1d6b790a1215d3e9a894bd1f1cc4aac9b7b7ebc6faaf7b8a352",
+      "publication_size_bytes": 2783,
+      "byte_identical_to_original": true
+    },
+    "REPORT.md": {
+      "original_path": "artifacts/development_search_pilot_20261011T051807Z_289be02e/REPORT.md",
+      "original_sha256": "a6674daa403ce050a54c3a25f09597f4f3b20ff9a28d4580c29deb7e374d49f9",
+      "original_size_bytes": 4328,
+      "publication_sha256": "a6674daa403ce050a54c3a25f09597f4f3b20ff9a28d4580c29deb7e374d49f9",
+      "publication_size_bytes": 4328,
+      "byte_identical_to_original": true
+    },
+    "representative_case.json": {
+      "original_path": "artifacts/development_search_pilot_20261011T051807Z_289be02e/representative_case.json",
+      "original_sha256": "3c66469e2114276e760b4b00345b03e6a06756b1f51d6fe1a205b87e0c5c8ae8",
+      "original_size_bytes": 2242,
+      "publication_sha256": "3c66469e2114276e760b4b00345b03e6a06756b1f51d6fe1a205b87e0c5c8ae8",
+      "publication_size_bytes": 2242,
+      "byte_identical_to_original": true
+    },
+    "results.jsonl": {
+      "original_path": "artifacts/development_search_pilot_20261011T051807Z_289be02e/results.jsonl",
+      "original_sha256": "546557f11d59fcb70553891e1266184e0717842a9e26999baefe25b260719391",
+      "original_size_bytes": 220551,
+      "publication_sha256": "546557f11d59fcb70553891e1266184e0717842a9e26999baefe25b260719391",
+      "publication_size_bytes": 220551,
+      "byte_identical_to_original": true
+    },
+    "run_with_deadline.py": {
+      "original_path": "artifacts/development_search_pilot_20261011T051807Z_289be02e/run_with_deadline.py",
+      "original_sha256": "a1f19dd51551615a3029a8393f2de196968bedcda248a4761bc7a7ccba603a3d",
+      "original_size_bytes": 1523,
+      "publication_sha256": "a1f19dd51551615a3029a8393f2de196968bedcda248a4761bc7a7ccba603a3d",
+      "publication_size_bytes": 1523,
+      "byte_identical_to_original": true
+    },
+    "selected_manifest.json": {
+      "original_path": "artifacts/development_search_pilot_20261011T051807Z_289be02e/selected_manifest.json",
+      "original_sha256": "8feb6c8814f5e72428472a12fb4db29fef8c8e7f90c6296cc46cca4ce2b1a0f3",
+      "original_size_bytes": 956,
+      "publication_sha256": "8feb6c8814f5e72428472a12fb4db29fef8c8e7f90c6296cc46cca4ce2b1a0f3",
+      "publication_size_bytes": 956,
+      "byte_identical_to_original": true
+    },
+    "summary.json": {
+      "original_path": "artifacts/development_search_pilot_20261011T051807Z_289be02e/summary.json",
+      "original_sha256": "fd9e17d6b3259787e2eed8d03015f3cb7e9934c8ee37be99da8e7c7568a78686",
+      "original_size_bytes": 62321,
+      "publication_sha256": "fd9e17d6b3259787e2eed8d03015f3cb7e9934c8ee37be99da8e7c7568a78686",
+      "publication_size_bytes": 62321,
+      "byte_identical_to_original": true
+    }
+  },
+  "excluded_original_files": [
+    "representative_case.zip"
+  ]
+}

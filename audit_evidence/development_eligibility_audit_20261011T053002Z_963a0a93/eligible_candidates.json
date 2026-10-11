@@ -1,0 +1,13 @@
+{
+  "selection_by_baseline_correctness_intentional": true,
+  "conditional_robustness_only": true,
+  "cases": [
+    {
+      "case_id": "tless-s000002-i000024-g02-o07",
+      "scene_id": 2,
+      "image_id": 24,
+      "gt_index": 2,
+      "object_id": 7
+    }
+  ]
+}

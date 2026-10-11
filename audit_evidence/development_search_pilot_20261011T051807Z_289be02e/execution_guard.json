@@ -1,0 +1,10 @@
+{
+  "command": ".\\.venv\\Scripts\\python.exe -B artifacts/development_search_pilot_20261011T051807Z_289be02e/run_with_deadline.py",
+  "child_command": ".\\.venv\\Scripts\\python.exe -B scripts/development_search_pilot.py --run artifacts/development_search_pilot_20261011T051807Z_289be02e",
+  "guard_source_sha256": "a1f19dd51551615a3029a8393f2de196968bedcda248a4761bc7a7ccba603a3d",
+  "process_tree_wall_timeout_seconds": 895,
+  "overall_limit_seconds": 900,
+  "timeout_action": "Terminate only the freshly spawned pilot PID and descendants; no retry.",
+  "returncode": 0,
+  "elapsed_seconds": 243.28145719999975
+}

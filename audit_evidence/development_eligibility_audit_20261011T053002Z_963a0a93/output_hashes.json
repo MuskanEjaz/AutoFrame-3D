@@ -1,0 +1,42 @@
+{
+  "eligibility_table.csv": {
+    "sha256": "90cfbe643b0914594ed69a98c7be4e2e36d60c9a569d9b8730146a5362dd2b68",
+    "bytes": 5148
+  },
+  "eligible_candidates.json": {
+    "sha256": "fb0f7233cff89284fb4da8b83e81814d4daae06603d1b14bfca982be4048331a",
+    "bytes": 277
+  },
+  "execution_guard.json": {
+    "sha256": "909f8812038ef36ba4a67e549ecbd0ee5d34b8b60b7ccf0160d06e9a8e07c5c5",
+    "bytes": 397
+  },
+  "plan.json": {
+    "sha256": "ae1545b69c6b697280769c1ed19fb85dafb684cdead96144f5f5b62c60d12799",
+    "bytes": 26948
+  },
+  "previous_pilot_review.json": {
+    "sha256": "00b89d7dea88aff92996ec681200e089226b03ca3d1923452091e651b09d4553",
+    "bytes": 2472
+  },
+  "REPORT.md": {
+    "sha256": "b84e796b733aadabe35310aaedfd1aebafece3e6aa0636b6ae6ea24bf1663a6a",
+    "bytes": 7001
+  },
+  "results.jsonl": {
+    "sha256": "56d85181c19de95ecfa54834cc530a90d4d64ba6955ec39ed98ed873d7e10bd8",
+    "bytes": 42794
+  },
+  "selected_manifest.json": {
+    "sha256": "d8e6cd18a736f5faccca12822cf3a20f4a9c781abb51a173dd534e384db483f0",
+    "bytes": 5326
+  },
+  "summary.json": {
+    "sha256": "8888528d5400f62f351162c2dad1ba2086f2e8085e66aebb46a7ca04d2ebba97",
+    "bytes": 1486
+  },
+  "verification.json": {
+    "sha256": "33ef0107f290456576e24d1f937d119897448daa58141352ee45b52babe4a5de",
+    "bytes": 507
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "conclusion": "Fails to support usefulness of the existing deterministic schedule over random search; inconclusive about ability to induce failures from correct baselines, because none were selected.",
+  "discovery_ceiling": "All five baselines were accepted-but-wrong; all 15 case-seed trials per method therefore start from a known failure. Zero correct-baseline opportunities; 0 transitions must not be interpreted as an estimated 0% transition rate.",
+  "agent_scope": "T-LESS local deterministic policy is fixed, not adaptive; both tested methods consume no GT feedback. Optional T-LESS live feedback is geometry-only. Separate synthetic live proposal code includes GT-derived pose_errors and classification; it was excluded and no model calls occurred.",
+  "representative": "First zero-noise/zero-dropout proposal with seed 101 on object 2. This duplicates its already-wrong baseline and establishes replay consistency, not new failure induction or perturbation robustness.",
+  "no_discovery_representation": "evaluations_to_first_discovery=null and no_discovery=true are supported; no such trials occurred here.",
+  "severity": "No existing justified scalar severity; noise standard deviation (mm) and dropout fraction retained independently in results.jsonl. Deterministic ladder uses (0mm,0%), (1mm,5%), (3mm,10%), (5mm,20%); random uniformly samples the same allowed 0\u20135mm and 0\u201320% ranges.",
+  "limits": "Five outcome-blind development cases from three scenes; three seeds reuse proposal lists across cases and are not independent case samples. Four proposals per arm, within requested maximum ten. Runtime includes subprocess startup. No live/adaptive agent claim or generalization claim; no post-outcome tuning or rerun.",
+  "actual_registration_calls": 126,
+  "calls_breakdown": {
+    "shared_unperturbed": 5,
+    "deterministic_candidates": 60,
+    "random_candidates": 60,
+    "extra_replay": 1,
+    "export_without_registration": 1
+  },
+  "total_process_tree_wall_seconds": 243.28145719999975,
+  "fixed_evaluator": {
+    "fitness_min": 0.7,
+    "rmse_max_m": 0.01,
+    "correspondence_distance_m": 0.015,
+    "correct_mssd_over_diameter_max": 0.1,
+    "starts": 6,
+    "iterations_per_start": 8,
+    "max_registration_model_points": 3000,
+    "outer_call_seconds": 30
+  },
+  "focused_tests": "4 passed after retrying with access to pytest temporary directory; tests mocked registration/export data, not additional real evaluator calls.",
+  "commands_executed": [
+    ".\\.venv\\Scripts\\python.exe -B -m pytest -q -p no:cacheprovider tests/test_tless_search.py tests/test_tless_replay_parameters.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts/development_search_pilot.py --prepare",
+    ".\\.venv\\Scripts\\python.exe -B artifacts/development_search_pilot_20261011T051807Z_289be02e/run_with_deadline.py",
+    ".\\.venv\\Scripts\\python.exe -B scripts/development_search_pilot.py --run artifacts/development_search_pilot_20261011T051807Z_289be02e"
+  ],
+  "final_read_only_integrity_checks": "Verified 125 primary results (5 baseline + 120 candidate), 126 evaluator calls including replay, all 48 plan inventory hashes unchanged, ZIP saved parameters/scan count, and exact replay metric equality. No new registration run."
+}
