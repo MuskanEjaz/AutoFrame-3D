@@ -141,7 +141,7 @@ At most 3 model turns / 6 tools; finish within remaining budget. No external bro
 """
 
 
-def investigate(request, *, provider=None):
+def investigate(request, *, provider=None, trace=None):
     start = time.monotonic()
     turns = executions = 0
     records = {}
@@ -149,6 +149,11 @@ def investigate(request, *, provider=None):
     mode = "mocked" if provider is not None else "live"
     model = "mocked-provider" if provider is not None else nebius.DEFAULT_MODEL
     identity = {}
+
+    def observe(event, **fields):
+        # Evaluation-only caller-owned trace. No credentials/provider bodies recorded.
+        if trace is not None:
+            trace.append({"event": event, **fields})
 
     def response(status, message):
         return {"status": status, "analysis_mode": mode, "evidence_computation": "recorded",
@@ -178,9 +183,13 @@ def investigate(request, *, provider=None):
             if remaining <= 0:
                 return response("incomplete", "Investigation deadline reached")
             turns += 1
+            observe("provider_start", turn=turns, timeout_seconds=min(20.0, remaining))
             body = provider({"model": model, "temperature": 0.0, "max_tokens": 1200,
                              "response_format": {"type": "json_object"}, "guided_json": schema,
                              "messages": messages}, timeout=min(20.0, remaining), max_response_bytes=32768)
+            usage = body.get("usage") if isinstance(body, dict) else None
+            observe("provider_result", turn=turns, usage={k: usage[k] for k in (
+                "prompt_tokens", "completion_tokens", "total_tokens") if k in usage} if isinstance(usage, dict) else None)
             if time.monotonic() - start >= DEADLINE_SECONDS:
                 return response("incomplete", "Investigation deadline reached")
             content = body["choices"][0]["message"]["content"]
@@ -195,7 +204,9 @@ def investigate(request, *, provider=None):
                 outputs = []
                 for call in action.calls:
                     executions += 1  # Invalid attempted tools also consume budget.
+                    observe("tool_attempt", attempt=executions, call=call.model_dump())
                     item = tools.execute(call)
+                    observe("tool_result", attempt=executions, output=item)
                     records[item["id"]] = item
                     outputs.append(item)
                 messages.extend([{"role": "assistant", "content": content}, {"role": "user", "content": json.dumps({

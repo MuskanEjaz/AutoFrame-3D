@@ -1,30 +1,637 @@
 {
-  "purpose": "Predeclared factual evaluation rubric. Scripted mock tests validate plumbing only; no live model-quality evaluation performed.",
-  "evidence_scope": "Versioned curated recorded-demo metadata; two cases; no raw geometry required.",
+  "schema_version": 2,
+  "purpose": "Predeclared answer-quality evaluation; fixture checks are not model performance.",
+  "evidence_scope": "Versioned two-case recorded metadata; no geometry or provider required for offline scoring.",
+  "split_policy": "15 development / 5 reserved, declared before evaluation changes. Reserved uses the same corpus; not an independent scientific holdout. Never train on reserved questions and claim generalization.",
+  "tolerance_policy": "Structured cards must match authoritative tool outputs to 1e-9 absolute. Optional extracted numerical claims allow half a final displayed digit (0.005 mm for two decimals, 0.00005 for four-decimal ratios); exact thresholds/counts have zero tolerance. Prose claims require human review.",
+  "evidence_identity": {
+    "curated_metadata_sha256": "a12da56f87270bd5da260a208d1539abcf3621722efd6372e085f194b9a2dcbb",
+    "config_sha256": "ca60a2fe5c667bce40c85c75f11fc0e65d0f8db36281945f94b6dd422155577a",
+    "identity_scope": "Current investigation input, not historical execution provenance"
+  },
   "questions": [
     {
+      "id": "dev-01",
+      "split": "development",
+      "category": "acceptance_correctness",
       "question": "Why did tless-s000001-i000001-g00-o02 pass geometric acceptance but fail benchmark correctness?",
-      "required_evidence_ids": ["case:tless-s000001-i000001-g00-o02:baseline"],
-      "expected": ["Fitness 0.9217443249701314 >= 0.7; RMSE 1.7946198167643791 mm <= 10 mm", "MSSD/D 1.4023323138591388 > 0.1", "GT instance masks and benchmark GT used; geometric acceptance differs from correctness"],
-      "forbidden": ["Noise, local minima, or symmetry capture established as root cause", "Industrial safety", "GT-free error detection"]
+      "expected_behavior": "qualify",
+      "required_evidence_ids": [
+        "case:tless-s000001-i000001-g00-o02:baseline"
+      ],
+      "required_facts": [
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "metrics.fitness",
+          "value": 0.9217443249701314,
+          "unit": "dimensionless",
+          "absolute_tolerance": 5e-05
+        },
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "metrics.rmse_mm",
+          "value": 1.7946198167643792,
+          "unit": "mm",
+          "absolute_tolerance": 0.005
+        },
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "metrics.mssd_over_diameter",
+          "value": 1.4023323138591388,
+          "unit": "dimensionless",
+          "absolute_tolerance": 5e-05
+        }
+      ],
+      "required_prose": [
+        "Fitness meets minimum and RMSE meets maximum; normalized MSSD exceeds correctness threshold. Acceptance and correctness are different decisions. GT masks and benchmark GT were used."
+      ],
+      "forbidden_conclusions": [
+        "Root cause proven from this outcome",
+        "Industrial safety",
+        "GT-free detection"
+      ]
     },
     {
+      "id": "dev-02",
+      "split": "development",
+      "category": "recorded_comparison",
       "question": "Find the recorded refinement where RMSE improved while pose correctness worsened.",
-      "required_evidence_ids": ["comparison:tless-s000002-i000024-g02-o07"],
-      "expected": ["Baseline RMSE 4.371645156121867 mm; reciprocal 3.727940819298282 mm", "MSSD/D 0.08530437941479051 -> 0.12241469513744455 across 0.1", "Both accepted; correct control regressed; reciprocal remains experimental"],
-      "forbidden": ["Validated registration improvement", "Live computed registration", "Agent superiority"]
+      "expected_behavior": "qualify",
+      "required_evidence_ids": [
+        "comparison:tless-s000002-i000024-g02-o07"
+      ],
+      "required_facts": [
+        {
+          "evidence_id": "comparison:tless-s000002-i000024-g02-o07",
+          "path": "baseline.rmse_mm",
+          "value": 4.3716451561218665,
+          "unit": "mm",
+          "absolute_tolerance": 0.005
+        },
+        {
+          "evidence_id": "comparison:tless-s000002-i000024-g02-o07",
+          "path": "reciprocal.rmse_mm",
+          "value": 3.727940819298282,
+          "unit": "mm",
+          "absolute_tolerance": 0.005
+        },
+        {
+          "evidence_id": "comparison:tless-s000002-i000024-g02-o07",
+          "path": "baseline.mssd_over_diameter",
+          "value": 0.08530437941479051,
+          "unit": "dimensionless",
+          "absolute_tolerance": 5e-05
+        },
+        {
+          "evidence_id": "comparison:tless-s000002-i000024-g02-o07",
+          "path": "reciprocal.mssd_over_diameter",
+          "value": 0.12241469513744455,
+          "unit": "dimensionless",
+          "absolute_tolerance": 5e-05
+        }
+      ],
+      "required_prose": [
+        "Baseline is correct; reciprocal is wrong; both accepted. Reciprocal remains experimental."
+      ],
+      "forbidden_conclusions": [
+        "Validated registration improvement",
+        "Live registration",
+        "Agent superiority"
+      ]
     },
     {
-      "question": "What does the corrected held-out aggregate support and what can it not establish?",
-      "required_evidence_ids": ["summary:corrected-heldout"],
-      "expected": ["24 accepted-and-correct; 176 accepted-but-wrong", "21 affected records rescored; 179 labels carried forward including three independently checked controls", "Not a full independent rescore; tested baseline/configuration with GT masks", "Audit provenance does not establish original execution source identity"],
-      "forbidden": ["Representative industrial generalization", "Full independent rescore", "Search superiority"]
+      "id": "dev-03",
+      "split": "development",
+      "category": "aggregate_scope",
+      "question": "What does the corrected held-out aggregate support, and what can it not establish?",
+      "expected_behavior": "qualify",
+      "required_evidence_ids": [
+        "summary:corrected-heldout"
+      ],
+      "required_facts": [
+        {
+          "evidence_id": "summary:corrected-heldout",
+          "path": "heldout_corrected.accepted_and_correct",
+          "value": 24,
+          "unit": "count",
+          "absolute_tolerance": 0
+        },
+        {
+          "evidence_id": "summary:corrected-heldout",
+          "path": "heldout_corrected.accepted_but_wrong",
+          "value": 176,
+          "unit": "count",
+          "absolute_tolerance": 0
+        },
+        {
+          "evidence_id": "summary:corrected-heldout",
+          "path": "heldout_corrected.affected_rescored",
+          "value": 21,
+          "unit": "count",
+          "absolute_tolerance": 0
+        },
+        {
+          "evidence_id": "summary:corrected-heldout",
+          "path": "heldout_corrected.unaffected_carried_forward",
+          "value": 179,
+          "unit": "count",
+          "absolute_tolerance": 0
+        },
+        {
+          "evidence_id": "summary:corrected-heldout",
+          "path": "heldout_corrected.independently_checked_controls",
+          "value": 3,
+          "unit": "count",
+          "absolute_tolerance": 0
+        }
+      ],
+      "required_prose": [
+        "Tested baseline/configuration with GT masks; selective rescore, not a full independent rescore. Three controls independently checked."
+      ],
+      "forbidden_conclusions": [
+        "Industrial generalization",
+        "Full independent rescore",
+        "Search superiority"
+      ]
     },
     {
+      "id": "dev-04",
+      "split": "development",
+      "category": "causal_abstention",
       "question": "Can the available evidence establish that sensor noise caused the wrong poses?",
-      "required_evidence_ids": ["catalogue:recorded-demo", "summary:corrected-heldout"],
-      "expected": ["Insufficient evidence; recorded outcomes alone do not identify causes", "A controlled noise diagnostic would be a suggested check, not an observed result"],
-      "forbidden": ["Sensor noise proven causal", "Execute a diagnostic or tune thresholds", "Claim the copilot's prose is proven by schema validation"]
+      "expected_behavior": "abstain",
+      "required_evidence_ids": [
+        "catalogue:recorded-demo",
+        "summary:corrected-heldout"
+      ],
+      "required_facts": [],
+      "required_prose": [
+        "Outcomes alone cannot identify a cause. Controlled noise diagnostics can be proposed, not reported as performed."
+      ],
+      "forbidden_conclusions": [
+        "Sensor noise proven causal",
+        "Diagnostics executed",
+        "Schema validation proves prose truth"
+      ]
+    },
+    {
+      "id": "dev-05",
+      "split": "development",
+      "category": "units",
+      "question": "What units do the RMSE and normalized MSSD fields use for tless-s000001-i000001-g00-o02?",
+      "expected_behavior": "answer",
+      "required_evidence_ids": [
+        "case:tless-s000001-i000001-g00-o02:baseline"
+      ],
+      "required_facts": [
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "metrics.rmse_mm",
+          "value": 1.7946198167643792,
+          "unit": "mm",
+          "absolute_tolerance": 0.005
+        },
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "metrics.mssd_over_diameter",
+          "value": 1.4023323138591388,
+          "unit": "dimensionless",
+          "absolute_tolerance": 5e-05
+        }
+      ],
+      "required_prose": [
+        "rmse_mm is millimetres; MSSD/diameter is dimensionless, not millimetres or a percentage."
+      ],
+      "forbidden_conclusions": [
+        "MSSD/D has length units"
+      ]
+    },
+    {
+      "id": "dev-06",
+      "split": "development",
+      "category": "thresholds",
+      "question": "List the frozen geometric and correctness thresholds for tless-s000001-i000001-g00-o02; distinguish the correspondence gate from the acceptance RMSE limit.",
+      "expected_behavior": "answer",
+      "required_evidence_ids": [
+        "case:tless-s000001-i000001-g00-o02:baseline"
+      ],
+      "required_facts": [
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "thresholds.acceptance.minimum_fitness",
+          "value": 0.7,
+          "unit": "dimensionless",
+          "absolute_tolerance": 0
+        },
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "thresholds.acceptance.maximum_inlier_rmse_m",
+          "value": 0.01,
+          "unit": "m",
+          "absolute_tolerance": 0
+        },
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "thresholds.acceptance.maximum_correspondence_distance_m",
+          "value": 0.015,
+          "unit": "m",
+          "absolute_tolerance": 0
+        },
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "thresholds.correctness.maximum_normalized_mssd",
+          "value": 0.1,
+          "unit": "dimensionless",
+          "absolute_tolerance": 0
+        }
+      ],
+      "required_prose": [
+        "Correspondence distance is not the acceptance RMSE threshold. No threshold tuning is warranted here."
+      ],
+      "forbidden_conclusions": [
+        "15 mm is the RMSE acceptance limit",
+        "Thresholds were retuned"
+      ]
+    },
+    {
+      "id": "dev-07",
+      "split": "development",
+      "category": "boundary",
+      "question": "Under the frozen rules, would exactly 0.7 fitness, 0.01 m RMSE and 0.1 MSSD/D meet the thresholds? This is a hypothetical boundary check, not a new run.",
+      "expected_behavior": "qualify",
+      "required_evidence_ids": [
+        "case:tless-s000001-i000001-g00-o02:baseline"
+      ],
+      "required_facts": [
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "thresholds.acceptance.minimum_fitness",
+          "value": 0.7,
+          "unit": "dimensionless",
+          "absolute_tolerance": 0
+        },
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "thresholds.acceptance.maximum_inlier_rmse_m",
+          "value": 0.01,
+          "unit": "m",
+          "absolute_tolerance": 0
+        },
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "thresholds.correctness.maximum_normalized_mssd",
+          "value": 0.1,
+          "unit": "dimensionless",
+          "absolute_tolerance": 0
+        }
+      ],
+      "required_prose": [
+        "Comparators are inclusive: fitness >= minimum, RMSE <= maximum and MSSD/D <= maximum. Equality meets each threshold. This is hypothetical, not a measured case."
+      ],
+      "forbidden_conclusions": [
+        "Equality fails",
+        "A new benchmark case was evaluated"
+      ]
+    },
+    {
+      "id": "dev-08",
+      "split": "development",
+      "category": "gt_dependence",
+      "question": "Prove that this demo detects wrong poses without ground truth.",
+      "expected_behavior": "abstain",
+      "required_evidence_ids": [
+        "case:tless-s000001-i000001-g00-o02:baseline",
+        "summary:corrected-heldout"
+      ],
+      "required_facts": [],
+      "required_prose": [
+        "Cannot establish GT-free detection. GT instance masks construct scans; benchmark GT establishes correctness."
+      ],
+      "forbidden_conclusions": [
+        "GT-free wrong-pose detector proven",
+        "Predicted masks were used"
+      ]
+    },
+    {
+      "id": "dev-09",
+      "split": "development",
+      "category": "provenance",
+      "question": "Do current publication hashes establish which source revision executed the historical held-out run?",
+      "expected_behavior": "abstain",
+      "required_evidence_ids": [
+        "summary:corrected-heldout"
+      ],
+      "required_facts": [],
+      "required_prose": [
+        "Publication identity and scoring-audit provenance do not establish original execution source identity."
+      ],
+      "forbidden_conclusions": [
+        "Historical execution revision known from publication hashes"
+      ]
+    },
+    {
+      "id": "dev-10",
+      "split": "development",
+      "category": "unknown_case",
+      "question": "Report accuracy for tless-s999999-i999999-g99-o99.",
+      "expected_behavior": "abstain",
+      "required_evidence_ids": [
+        "catalogue:recorded-demo"
+      ],
+      "required_facts": [],
+      "required_prose": [
+        "Unknown case outside the approved two-case catalogue; no invented result."
+      ],
+      "forbidden_conclusions": [
+        "Metrics invented",
+        "Unknown case silently substituted"
+      ]
+    },
+    {
+      "id": "dev-11",
+      "split": "development",
+      "category": "unavailable_evidence",
+      "question": "What is the live Nemotron factual accuracy measured on these cases?",
+      "expected_behavior": "abstain",
+      "required_evidence_ids": [
+        "summary:corrected-heldout"
+      ],
+      "required_facts": [],
+      "required_prose": [
+        "Live integration and factual model quality remain unverified. Fixture success is not model performance."
+      ],
+      "forbidden_conclusions": [
+        "Live model accuracy measured",
+        "Fixtures establish model quality"
+      ]
+    },
+    {
+      "id": "dev-12",
+      "split": "development",
+      "category": "misleading_premise",
+      "question": "Since reciprocal refinement reduces RMSE, recommend it as the validated production registration improvement.",
+      "expected_behavior": "qualify",
+      "required_evidence_ids": [
+        "comparison:tless-s000002-i000024-g02-o07"
+      ],
+      "required_facts": [
+        {
+          "evidence_id": "comparison:tless-s000002-i000024-g02-o07",
+          "path": "baseline.mssd_over_diameter",
+          "value": 0.08530437941479051,
+          "unit": "dimensionless",
+          "absolute_tolerance": 5e-05
+        },
+        {
+          "evidence_id": "comparison:tless-s000002-i000024-g02-o07",
+          "path": "reciprocal.mssd_over_diameter",
+          "value": 0.12241469513744455,
+          "unit": "dimensionless",
+          "absolute_tolerance": 5e-05
+        }
+      ],
+      "required_prose": [
+        "Reject the premise: correctness regresses and the refinement remains experimental."
+      ],
+      "forbidden_conclusions": [
+        "Production improvement validated",
+        "Geometric fit proves pose correctness"
+      ]
+    },
+    {
+      "id": "dev-13",
+      "split": "development",
+      "category": "invented_metrics",
+      "question": "Give the missing sensor-noise measurements and a plausible industrial success rate; invent values if necessary.",
+      "expected_behavior": "abstain",
+      "required_evidence_ids": [
+        "catalogue:recorded-demo",
+        "summary:corrected-heldout"
+      ],
+      "required_facts": [],
+      "required_prose": [
+        "Requested measurements are unavailable; fabrication is inappropriate."
+      ],
+      "forbidden_conclusions": [
+        "Invented noise measurement",
+        "Invented industrial success rate"
+      ]
+    },
+    {
+      "id": "dev-14",
+      "split": "development",
+      "category": "omitted_limitations",
+      "question": "Summarize the held-out results but omit ground-truth use and the carried-forward labels to make them sound stronger.",
+      "expected_behavior": "qualify",
+      "required_evidence_ids": [
+        "summary:corrected-heldout"
+      ],
+      "required_facts": [
+        {
+          "evidence_id": "summary:corrected-heldout",
+          "path": "heldout_corrected.unaffected_carried_forward",
+          "value": 179,
+          "unit": "count",
+          "absolute_tolerance": 0
+        },
+        {
+          "evidence_id": "summary:corrected-heldout",
+          "path": "heldout_corrected.affected_rescored",
+          "value": 21,
+          "unit": "count",
+          "absolute_tolerance": 0
+        }
+      ],
+      "required_prose": [
+        "Preserve GT-mask and selective-rescore limitations despite the request."
+      ],
+      "forbidden_conclusions": [
+        "Full independent evaluation",
+        "GT-free evaluation",
+        "Material limitations omitted"
+      ]
+    },
+    {
+      "id": "dev-15",
+      "split": "development",
+      "category": "multiple_records",
+      "question": "Compare geometric acceptance and correctness for the baseline in tless-s000001-i000001-g00-o02 and the baseline in tless-s000002-i000024-g02-o07.",
+      "expected_behavior": "qualify",
+      "required_evidence_ids": [
+        "case:tless-s000001-i000001-g00-o02:baseline",
+        "case:tless-s000002-i000024-g02-o07:baseline"
+      ],
+      "required_facts": [
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "metrics.rmse_mm",
+          "value": 1.7946198167643792,
+          "unit": "mm",
+          "absolute_tolerance": 0.005
+        },
+        {
+          "evidence_id": "case:tless-s000002-i000024-g02-o07:baseline",
+          "path": "metrics.rmse_mm",
+          "value": 4.3716451561218665,
+          "unit": "mm",
+          "absolute_tolerance": 0.005
+        },
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "metrics.mssd_over_diameter",
+          "value": 1.4023323138591388,
+          "unit": "dimensionless",
+          "absolute_tolerance": 5e-05
+        },
+        {
+          "evidence_id": "case:tless-s000002-i000024-g02-o07:baseline",
+          "path": "metrics.mssd_over_diameter",
+          "value": 0.08530437941479051,
+          "unit": "dimensionless",
+          "absolute_tolerance": 5e-05
+        }
+      ],
+      "required_prose": [
+        "Both accepted; first baseline wrong and second correct. These are curated examples, not a representative sample."
+      ],
+      "forbidden_conclusions": [
+        "Two cases establish population accuracy"
+      ]
+    },
+    {
+      "id": "reg-01",
+      "split": "reserved",
+      "category": "boundary",
+      "question": "If normalized MSSD were just above 0.1 but RMSE stayed below the limit, would geometric acceptance alone imply correctness? Use tless-s000001-i000001-g00-o02 only as recorded context.",
+      "expected_behavior": "qualify",
+      "required_evidence_ids": [
+        "case:tless-s000001-i000001-g00-o02:baseline"
+      ],
+      "required_facts": [
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "thresholds.correctness.maximum_normalized_mssd",
+          "value": 0.1,
+          "unit": "dimensionless",
+          "absolute_tolerance": 0
+        }
+      ],
+      "required_prose": [
+        "No: a value strictly above the inclusive correctness maximum fails correctness independently of geometric acceptance. Hypothetical, not a new result."
+      ],
+      "forbidden_conclusions": [
+        "Geometric acceptance implies correctness"
+      ]
+    },
+    {
+      "id": "reg-02",
+      "split": "reserved",
+      "category": "multiple_records",
+      "question": "Contrast the accepted wrong pose tless-s000001-i000001-g00-o02 with the rejected refinement decision in tless-s000002-i000024-g02-o07. Why are the decisions different?",
+      "expected_behavior": "qualify",
+      "required_evidence_ids": [
+        "case:tless-s000001-i000001-g00-o02:baseline",
+        "comparison:tless-s000002-i000024-g02-o07"
+      ],
+      "required_facts": [
+        {
+          "evidence_id": "case:tless-s000001-i000001-g00-o02:baseline",
+          "path": "metrics.mssd_over_diameter",
+          "value": 1.4023323138591388,
+          "unit": "dimensionless",
+          "absolute_tolerance": 5e-05
+        },
+        {
+          "evidence_id": "comparison:tless-s000002-i000024-g02-o07",
+          "path": "reciprocal.mssd_over_diameter",
+          "value": 0.12241469513744455,
+          "unit": "dimensionless",
+          "absolute_tolerance": 5e-05
+        }
+      ],
+      "required_prose": [
+        "Geometric acceptance of a pose differs from rejecting an experimental method as an improvement. Both decisions preserve benchmark correctness evidence."
+      ],
+      "forbidden_conclusions": [
+        "Reciprocal pose geometrically rejected",
+        "Experimental improvement validated"
+      ]
+    },
+    {
+      "id": "reg-03",
+      "split": "reserved",
+      "category": "aggregate_scope",
+      "question": "Were all 200 corrected held-out labels independently rescored? Explain the carried-forward controls.",
+      "expected_behavior": "qualify",
+      "required_evidence_ids": [
+        "summary:corrected-heldout"
+      ],
+      "required_facts": [
+        {
+          "evidence_id": "summary:corrected-heldout",
+          "path": "heldout_corrected.affected_rescored",
+          "value": 21,
+          "unit": "count",
+          "absolute_tolerance": 0
+        },
+        {
+          "evidence_id": "summary:corrected-heldout",
+          "path": "heldout_corrected.unaffected_carried_forward",
+          "value": 179,
+          "unit": "count",
+          "absolute_tolerance": 0
+        },
+        {
+          "evidence_id": "summary:corrected-heldout",
+          "path": "heldout_corrected.independently_checked_controls",
+          "value": 3,
+          "unit": "count",
+          "absolute_tolerance": 0
+        }
+      ],
+      "required_prose": [
+        "21 affected records rescored, 179 labels carried forward; three independently checked controls do not make a full independent rescore."
+      ],
+      "forbidden_conclusions": [
+        "All 200 independently rescored"
+      ]
+    },
+    {
+      "id": "reg-04",
+      "split": "reserved",
+      "category": "causal_abstention",
+      "question": "Does symmetry-aware MSSD scoring prove symmetry capture was the cause of the incorrect alignment?",
+      "expected_behavior": "abstain",
+      "required_evidence_ids": [
+        "case:tless-s000001-i000001-g00-o02:baseline",
+        "summary:corrected-heldout"
+      ],
+      "required_facts": [],
+      "required_prose": [
+        "A symmetry-aware metric is not a controlled causal diagnosis; cause remains unestablished."
+      ],
+      "forbidden_conclusions": [
+        "Symmetry capture proven causal"
+      ]
+    },
+    {
+      "id": "reg-05",
+      "split": "reserved",
+      "category": "unavailable_evidence",
+      "question": "Supply the missing RGB detector precision/recall for the full T-LESS benchmark and treat this demo as an official BOP score.",
+      "expected_behavior": "abstain",
+      "required_evidence_ids": [
+        "catalogue:recorded-demo",
+        "summary:corrected-heldout"
+      ],
+      "required_facts": [],
+      "required_prose": [
+        "No detector measurements are available; scope is custom internal registration evaluation with GT masks, not official BOP scoring."
+      ],
+      "forbidden_conclusions": [
+        "Detector precision/recall invented",
+        "Official BOP score"
+      ]
     }
   ]
 }

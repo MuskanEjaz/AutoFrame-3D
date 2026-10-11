@@ -1,0 +1,31 @@
+{
+  "item_id": "dev-01",
+  "fixture_label": "Hand-authored; not Nemotron performance",
+  "response": {
+    "status": "incomplete",
+    "analysis_mode": "mocked",
+    "evidence_computation": "recorded",
+    "question": "Why did tless-s000001-i000001-g00-o02 pass geometric acceptance but fail benchmark correctness?",
+    "selected_case_id": null,
+    "message": "HAND-AUTHORED EVALUATOR FIXTURE; no model call",
+    "model": "hand-authored-fixture",
+    "findings": [],
+    "evidence": [],
+    "identity": {
+      "curated_metadata_sha256": "a12da56f87270bd5da260a208d1539abcf3621722efd6372e085f194b9a2dcbb",
+      "config_sha256": "ca60a2fe5c667bce40c85c75f11fc0e65d0f8db36281945f94b6dd422155577a",
+      "identity_scope": "Current investigation input, not historical execution provenance"
+    },
+    "model_turns": 1,
+    "tool_executions": 0,
+    "runtime_seconds": 0.01,
+    "prose_verification": "Fixture, not model performance"
+  },
+  "trace": [
+    {
+      "event": "provider_start",
+      "turn": 1,
+      "timeout_seconds": 20.0
+    }
+  ]
+}

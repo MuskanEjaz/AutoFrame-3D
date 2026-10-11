@@ -1,0 +1,184 @@
+{
+  "item_id": "dev-08",
+  "fixture_label": "Hand-authored; not Nemotron performance",
+  "response": {
+    "status": "insufficient",
+    "analysis_mode": "mocked",
+    "evidence_computation": "recorded",
+    "question": "Prove that this demo detects wrong poses without ground truth.",
+    "selected_case_id": null,
+    "message": "HAND-AUTHORED EVALUATOR FIXTURE; no model call",
+    "model": "hand-authored-fixture",
+    "findings": [
+      {
+        "kind": "limitation",
+        "text": "This proves reliable ground-truth-free wrong-pose detection in industry.",
+        "evidence_ids": [
+          "case:tless-s000001-i000001-g00-o02:baseline",
+          "summary:corrected-heldout"
+        ]
+      }
+    ],
+    "evidence": [
+      {
+        "id": "case:tless-s000001-i000001-g00-o02:baseline",
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "viewer_id": "accepted-wrong",
+        "object_id": 2,
+        "computation": "recorded",
+        "gt_instance_masks_used": true,
+        "correctness_uses_benchmark_gt": true,
+        "thresholds": {
+          "acceptance": {
+            "minimum_fitness": 0.7,
+            "maximum_inlier_rmse_m": 0.01,
+            "maximum_correspondence_distance_m": 0.015
+          },
+          "correctness": {
+            "metric": "BOP MSSD / object diameter",
+            "maximum_normalized_mssd": 0.1,
+            "continuous_symmetry_max_vertex_travel_over_diameter": 0.01
+          }
+        },
+        "metrics": {
+          "method_id": "baseline",
+          "method": "First six diversity-ordered PCA starts; model-to-scan ICP; scan-fitness/RMSE ranking",
+          "experimental": false,
+          "fitness": 0.9217443249701314,
+          "rmse_mm": 1.7946198167643792,
+          "mssd_over_diameter": 1.4023323138591388,
+          "accepted": true,
+          "correct": false,
+          "category": "accepted_but_wrong",
+          "source": "audit_evidence/development_eligibility_audit_20261011T053002Z_963a0a93/results.jsonl",
+          "source_sha256": "56d85181c19de95ecfa54834cc530a90d4d64ba6955ec39ed98ed873d7e10bd8"
+        }
+      },
+      {
+        "id": "summary:corrected-heldout",
+        "heldout_corrected": {
+          "accepted_and_correct": 24,
+          "accepted_but_wrong": 176,
+          "affected_rescored": 21,
+          "unaffected_carried_forward": 179,
+          "independently_checked_controls": 3,
+          "full_independent_rescore": false
+        },
+        "scope": "Tested historical baseline and frozen internal T-LESS configuration; not an official BOP score. GT visible instance masks were used.",
+        "pilot": "The local feedback-free search pilot demonstrated no advantage over random search; all five baselines were already wrong. Deterministic included 15 no-ops, random none.",
+        "experimental": "Scan-to-model and reciprocal refinements remain experimental; neither is a production improvement.",
+        "AI": "Optional remote model proposals are implemented but live integration remains unverified. No model calls contributed to this demo; deterministic schedules are not adaptive AI.",
+        "historical_provenance": "Scoring audit provenance does not establish original held-out execution source identity.",
+        "source": "audit_evidence/symmetry_scoring_audit_20261011_02a10626368f/audit_summary.json"
+      }
+    ],
+    "identity": {
+      "curated_metadata_sha256": "a12da56f87270bd5da260a208d1539abcf3621722efd6372e085f194b9a2dcbb",
+      "config_sha256": "ca60a2fe5c667bce40c85c75f11fc0e65d0f8db36281945f94b6dd422155577a",
+      "identity_scope": "Current investigation input, not historical execution provenance"
+    },
+    "model_turns": 2,
+    "tool_executions": 2,
+    "runtime_seconds": 0.01,
+    "prose_verification": "Fixture, not model performance"
+  },
+  "trace": [
+    {
+      "event": "provider_start",
+      "turn": 1,
+      "timeout_seconds": 20.0
+    },
+    {
+      "event": "provider_result",
+      "turn": 1,
+      "usage": null
+    },
+    {
+      "event": "tool_attempt",
+      "attempt": 1,
+      "call": {
+        "name": "get_case_evidence",
+        "arguments": {
+          "case_id": "tless-s000001-i000001-g00-o02"
+        }
+      }
+    },
+    {
+      "event": "tool_result",
+      "attempt": 1,
+      "output": {
+        "id": "case:tless-s000001-i000001-g00-o02:baseline",
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "viewer_id": "accepted-wrong",
+        "object_id": 2,
+        "computation": "recorded",
+        "gt_instance_masks_used": true,
+        "correctness_uses_benchmark_gt": true,
+        "thresholds": {
+          "acceptance": {
+            "minimum_fitness": 0.7,
+            "maximum_inlier_rmse_m": 0.01,
+            "maximum_correspondence_distance_m": 0.015
+          },
+          "correctness": {
+            "metric": "BOP MSSD / object diameter",
+            "maximum_normalized_mssd": 0.1,
+            "continuous_symmetry_max_vertex_travel_over_diameter": 0.01
+          }
+        },
+        "metrics": {
+          "method_id": "baseline",
+          "method": "First six diversity-ordered PCA starts; model-to-scan ICP; scan-fitness/RMSE ranking",
+          "experimental": false,
+          "fitness": 0.9217443249701314,
+          "rmse_mm": 1.7946198167643792,
+          "mssd_over_diameter": 1.4023323138591388,
+          "accepted": true,
+          "correct": false,
+          "category": "accepted_but_wrong",
+          "source": "audit_evidence/development_eligibility_audit_20261011T053002Z_963a0a93/results.jsonl",
+          "source_sha256": "56d85181c19de95ecfa54834cc530a90d4d64ba6955ec39ed98ed873d7e10bd8"
+        }
+      }
+    },
+    {
+      "event": "tool_attempt",
+      "attempt": 2,
+      "call": {
+        "name": "get_benchmark_summary",
+        "arguments": {}
+      }
+    },
+    {
+      "event": "tool_result",
+      "attempt": 2,
+      "output": {
+        "id": "summary:corrected-heldout",
+        "heldout_corrected": {
+          "accepted_and_correct": 24,
+          "accepted_but_wrong": 176,
+          "affected_rescored": 21,
+          "unaffected_carried_forward": 179,
+          "independently_checked_controls": 3,
+          "full_independent_rescore": false
+        },
+        "scope": "Tested historical baseline and frozen internal T-LESS configuration; not an official BOP score. GT visible instance masks were used.",
+        "pilot": "The local feedback-free search pilot demonstrated no advantage over random search; all five baselines were already wrong. Deterministic included 15 no-ops, random none.",
+        "experimental": "Scan-to-model and reciprocal refinements remain experimental; neither is a production improvement.",
+        "AI": "Optional remote model proposals are implemented but live integration remains unverified. No model calls contributed to this demo; deterministic schedules are not adaptive AI.",
+        "historical_provenance": "Scoring audit provenance does not establish original held-out execution source identity.",
+        "source": "audit_evidence/symmetry_scoring_audit_20261011_02a10626368f/audit_summary.json"
+      }
+    },
+    {
+      "event": "provider_start",
+      "turn": 2,
+      "timeout_seconds": 20.0
+    },
+    {
+      "event": "provider_result",
+      "turn": 2,
+      "usage": null
+    }
+  ]
+}

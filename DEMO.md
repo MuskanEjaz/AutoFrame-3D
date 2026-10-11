@@ -67,6 +67,12 @@ The expandable replay control runs **new local baseline computation** only after
 
 ## Investigation copilot — Nebius × NVIDIA / Best Apps and Agents
 
+Answer-quality evaluation now has a predeclared 15-question development set and
+5-question reserved regression set. See [offline evaluation and training decision](audit_evidence/INVESTIGATION_EVALUATION.md)
+for saved-response scoring, human-review requirements and bounded future live
+capture. Evaluator fixtures are not Nemotron performance; no live model quality
+has been measured.
+
 The [official rules](https://nebiusglobalaihackathon.devpost.com/rules) require Nebius runtime usage and an NVIDIA model; these are submission requirements, not optional extras. Our route is Nemotron via Token Factory. A real runtime request has **not** been verified. Track selection does not establish overall eligibility or submission readiness. Recorded 3D portability is verified in a selected clean candidate using bundled assets; fresh dependency installation remains untested.
 
 The new panel sends a request only when **Ask Nemotron · live inference** is clicked. GET availability checks do not invoke inference. Missing credentials show **Live analysis unavailable**, with no mock/cache fallback. Registration evidence stays recorded even when analysis is live. No registration, asset restoration, experimental ICP policy, or remote browsing is accessible to the copilot. It reads only versioned curated metadata and does not depend on the uncommitted adapter/audit changes.
