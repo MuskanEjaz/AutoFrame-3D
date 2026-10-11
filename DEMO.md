@@ -47,6 +47,21 @@ defect was found. Live Nebius/NVIDIA integration and model quality remain
 `artifacts/install_check_40937c9/`, `artifacts/install_environment.json` and
 `artifacts/install_runtime_results/`.
 
+The installation's npm advisory was subsequently remediated on 2026-10-11:
+[GHSA-68fv-2mgg-jv7q / CVE-2026-93749](https://github.com/advisories/GHSA-68fv-2mgg-jv7q)
+affects `source-map-js >=1.0.0 <1.2.2`. Vite 7.3.6 → PostCSS 8.5.28 had locked
+1.2.1; only that lockfile entry was updated to the compatible
+[maintainer patch 1.2.2](https://github.com/7rulnik/source-map-js/releases/tag/v1.2.2).
+PostCSS's existing `^1.2.1` range permits it; no overrides or direct dependency
+changes were needed. Exploitation requires processing a malicious indexed source
+map whose extreme section offsets block the Node event loop. This dependency
+belongs to development/build CSS tooling, with no application import or
+user-supplied CSS/source-map flow; ordinary recorded-demo inputs do not reach it.
+`npm ci`, production build and focused recorded-demo browser smoke passed after
+the patch. The subsequent `npm audit --json` reported zero known findings; this
+does not establish that the application is vulnerability-free. Smoke results are
+in ignored `artifacts/npm_advisory_smoke/`. No inference ran.
+
 ## Required assets and a fresh clone
 
 The Python dependencies are declared in `pyproject.toml` (including Pillow for depth/mask images); frontend dependencies and lockfile are in `frontend/`. Launch commands above assume these dependencies already exist locally. Neither environments nor build output are versioned.
