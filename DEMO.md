@@ -16,6 +16,37 @@ npm run dev --prefix frontend -- --port 5173 --strictPort
 
 Open **http://127.0.0.1:5173/**. The API serves bundled visualization geometry using unchanged saved transforms; no full dataset is required for recorded browsing. Missing or mismatched local inputs produce a readable geometry message while recorded metrics and evidence remain available. No downloads or installations happen automatically. The old experimental workbench remains available only through `?workbench=1`; it can compute samples and is outside this recorded flow.
 
+## First-time Windows setup verification (2026-10-11)
+
+An isolated Git export of commit `40937c9698a4e579694bb3415b7d7413ceb17ddf`
+passed the corrected [README setup](README.md): `python -m venv .venv`, pip
+upgrade, editable `.[test]` installation and fresh `npm ci --prefix frontend`.
+The documented `py -3.12` command failed to discover the installed interpreter;
+the README now checks and uses `python`, without requiring activation.
+
+Tested: **Windows 11 x64 build 26200.0; Python 3.12.7; Node.js 24.14.1;
+npm 11.11.0; pip 26.2.1; PowerShell 7.5.3**. Resolved runtime dependencies:
+NumPy 2.5.4, SciPy 1.18.1, Pillow 12.3.0, FastAPI 0.143.0, Pydantic 2.14.0,
+Uvicorn 0.54.0, huggingface_hub 2.2.0; locked frontend Vite 7.3.6.
+`pip check` and the frontend production build passed. npm reported one existing
+high-severity lockfile advisory; dependency-security remediation was outside this
+installation check. The existing build-size advisory also remains.
+
+The fresh API/frontend ran on documented ports 8000/5173, with dotenv disabled
+and no Nebius key. Installed Edge verified API health, both bundled 3D examples,
+GT reveal, baseline/reciprocal comparison, valid nonempty evidence download and
+the disabled **Live analysis unavailable** state. Desktop and 390 px checks had
+no console errors/exceptions, remote requests or POSTs. The export had no raw
+dataset and imported its own application files. No inference or registration ran.
+
+This verifies editable installation and launch **from a checkout**, including its
+bundled geometry and evidence. It does not verify standalone wheel installation,
+other Python versions or Linux compatibility. No runtime/dependency declaration
+defect was found. Live Nebius/NVIDIA integration and model quality remain
+**UNVERIFIED**. Local setup/browser evidence is preserved in ignored
+`artifacts/install_check_40937c9/`, `artifacts/install_environment.json` and
+`artifacts/install_runtime_results/`.
+
 ## Required assets and a fresh clone
 
 The Python dependencies are declared in `pyproject.toml` (including Pillow for depth/mask images); frontend dependencies and lockfile are in `frontend/`. Launch commands above assume these dependencies already exist locally. Neither environments nor build output are versioned.

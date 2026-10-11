@@ -6,13 +6,13 @@ The default dashboard is a **Recorded benchmark demo** using saved cases, benchm
 
 ## Windows setup
 
-Open PowerShell in the repository root. Python 3.10 or newer and Node.js 20.19+ or 22.12+ are required. The verified environment was Windows 11, Python 3.12.7, and Node.js 24.14.1.
+Open PowerShell in the repository root. Python 3.10 or newer and Node.js 20.19+ or 22.12+ are required. Check that `python` selects your intended supported interpreter before creating the environment. The Python launcher may not discover an installed interpreter; `py -3.12` failed on the tested machine even though `python` selected Python 3.12.7.
 
 ```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -e ".[test]"
+python --version
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -e ".[test]"
 npm ci --prefix frontend
 ```
 
@@ -21,7 +21,7 @@ Start the backend in one PowerShell terminal:
 ```powershell
 $env:AUTOFRAME3D_SKIP_DOTENV='1'
 Remove-Item Env:NEBIUS_API_KEY -ErrorAction SilentlyContinue
-python -m uvicorn autoframe3d.api:app --host 127.0.0.1 --port 8000
+.\.venv\Scripts\python.exe -m uvicorn autoframe3d.api:app --host 127.0.0.1 --port 8000
 ```
 
 Start the dashboard in another:
@@ -32,7 +32,9 @@ npm run dev --prefix frontend
 
 Open <http://127.0.0.1:5173>. The local API health check is <http://127.0.0.1:8000/api/health>.
 
-PowerShell may block local activation scripts. For that terminal only, either run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` before activation, or use `.\.venv\Scripts\python.exe -m pip install -e ".[test]"` and `.\.venv\Scripts\python.exe -m uvicorn ...` without activating.
+These commands use the environment executable directly; activation is unnecessary. This is an **editable install from a checkout**: keep the checkout, including `demo_assets/` and `audit_evidence/`, and launch from its root. Standalone wheel installation is not verified; the runtime currently reads these files outside the Python package.
+
+Fresh setup of commit `40937c9698a4e579694bb3415b7d7413ceb17ddf` was verified on 2026-10-11 with **Windows 11 x64 (build 26200.0), Python 3.12.7, Node.js 24.14.1, npm 11.11.0, pip 26.2.1, and PowerShell 7.5.3**. A new isolated virtual environment and `npm ci` were used; no existing environment, `node_modules`, credentials or dataset was copied. `pip check`, frontend production build and offline browser checks passed. Other Python versions and Linux compatibility remain unverified. See [DEMO.md](DEMO.md) for the checks and dependency snapshot.
 
 ## Core experiment
 
