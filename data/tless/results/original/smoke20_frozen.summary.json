@@ -1,0 +1,204 @@
+{
+  "manifest": "smoke20_frozen",
+  "group": "original",
+  "custom_internal_evaluation": true,
+  "official_bop_score": false,
+  "attribution": {
+    "repository": "bop-benchmark/tless",
+    "revision": "5fd309a04476a842d93abfb584fba9ee7caecdf1",
+    "license": "CC-BY-4.0",
+    "source_url": "https://huggingface.co/datasets/bop-benchmark/tless/tree/5fd309a04476a842d93abfb584fba9ee7caecdf1",
+    "download_method": "huggingface_hub.hf_hub_download with explicit filenames and pinned revision",
+    "download_resume": "Hub local_dir download metadata is retained; rerunning skips validated existing files.",
+    "archives": [
+      {
+        "file": "tless_base.zip",
+        "archive_bytes": 49597,
+        "sha256": "dd70ca884b7c471a530a952f70c5ab2c212f3d2c2f371be86397442b97d70a7e",
+        "entry_count": 4,
+        "uncompressed_bytes": 958199
+      },
+      {
+        "file": "tless_models.zip",
+        "archive_bytes": 33468762,
+        "sha256": "6a29c59766b8d2af05e62e71739f0ca7243ad81bc3c7f9a24925504a8cb37928",
+        "entry_count": 93,
+        "uncompressed_bytes": 98360329
+      },
+      {
+        "file": "tless_test_primesense_bop19.zip",
+        "archive_bytes": 825276992,
+        "sha256": "1a18f6bbfb5ac4ced8529f7a35225adfed88c0f62ef38067933e2b541ef1d00b",
+        "entry_count": 15861,
+        "uncompressed_bytes": 841678314
+      }
+    ],
+    "extracted_to": "data\\tless\\bop",
+    "extracted_bytes_uncompressed": 940996842
+  },
+  "frozen_config": {
+    "protocol": "custom_internal_tless_test_primesense_bop19",
+    "label": "Custom internal evaluation on the public BOP test subset; not an official BOP score",
+    "instance_masks": "GT-provided mask_visib; registration evaluation with ground-truth instance masks",
+    "minimum_visible_fraction_for_manifest": 0.1,
+    "geometric_acceptance": {
+      "minimum_fitness": 0.7,
+      "maximum_inlier_rmse_m": 0.01,
+      "maximum_correspondence_distance_m": 0.015
+    },
+    "pose_correctness": {
+      "metric": "BOP MSSD / object diameter",
+      "maximum_normalized_mssd": 0.1,
+      "continuous_symmetry_max_vertex_travel_over_diameter": 0.01
+    },
+    "registration": {
+      "initializer": "6 geometry-ranked starts from 24 proper PCA signed-axis/permutation alignments, max-geodesic diversity ordered",
+      "max_registration_evaluations": 6,
+      "max_iterations_per_start": 8,
+      "model_registration_points_max": 3000,
+      "random_seed": 20260928
+    },
+    "execution": {
+      "timeout_seconds": 30,
+      "default_workers": 1,
+      "max_workers": 4
+    },
+    "perturbed_group": {
+      "noise_std_m": 0.002,
+      "point_dropout_fraction": 0.1,
+      "seed_offset": 700000
+    }
+  },
+  "summary": {
+    "evaluated_cases": 20,
+    "valid_cases": 20,
+    "timeouts": 0,
+    "processing_failures": 0,
+    "categories": {
+      "accepted_and_correct": 0,
+      "accepted_but_wrong": 20,
+      "rejected_and_correct": 0,
+      "rejected_and_wrong": 0
+    },
+    "accepted_but_wrong_over_valid": 1.0,
+    "accepted_but_wrong_over_accepted": 1.0,
+    "median_runtime_seconds": 4.223749100000077,
+    "mean_runtime_seconds": 4.716418665000015,
+    "by_object": {
+      "2": {
+        "valid_cases": 2,
+        "accepted_but_wrong": 2,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 1.0423576661568301,
+        "median_runtime_seconds": 3.8065553000001273
+      },
+      "5": {
+        "valid_cases": 6,
+        "accepted_but_wrong": 6,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.4751483749371015,
+        "median_runtime_seconds": 3.6306560999998965
+      },
+      "6": {
+        "valid_cases": 1,
+        "accepted_but_wrong": 1,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.542367955057242,
+        "median_runtime_seconds": 2.963865199999873
+      },
+      "7": {
+        "valid_cases": 1,
+        "accepted_but_wrong": 1,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.671912609301698,
+        "median_runtime_seconds": 4.678814500000044
+      },
+      "8": {
+        "valid_cases": 2,
+        "accepted_but_wrong": 2,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.46723762534691543,
+        "median_runtime_seconds": 8.844678650000105
+      },
+      "11": {
+        "valid_cases": 1,
+        "accepted_but_wrong": 1,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.7299908842462558,
+        "median_runtime_seconds": 4.479724100000112
+      },
+      "12": {
+        "valid_cases": 1,
+        "accepted_but_wrong": 1,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.7307650701905899,
+        "median_runtime_seconds": 4.3249808000000485
+      },
+      "18": {
+        "valid_cases": 1,
+        "accepted_but_wrong": 1,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.9797079882643444,
+        "median_runtime_seconds": 5.078728599999977
+      },
+      "25": {
+        "valid_cases": 1,
+        "accepted_but_wrong": 1,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 1.0868675603540399,
+        "median_runtime_seconds": 4.065160300000116
+      },
+      "26": {
+        "valid_cases": 1,
+        "accepted_but_wrong": 1,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 1.0872300656850895,
+        "median_runtime_seconds": 3.957637099999829
+      },
+      "28": {
+        "valid_cases": 1,
+        "accepted_but_wrong": 1,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.8667610340038742,
+        "median_runtime_seconds": 6.090791999999965
+      },
+      "29": {
+        "valid_cases": 1,
+        "accepted_but_wrong": 1,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.5202947899194196,
+        "median_runtime_seconds": 4.709379400000216
+      },
+      "30": {
+        "valid_cases": 1,
+        "accepted_but_wrong": 1,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.883237903533428,
+        "median_runtime_seconds": 8.020139899999776
+      }
+    }
+  },
+  "frozen_config_sha256": "ca60a2fe5c667bce40c85c75f11fc0e65d0f8db36281945f94b6dd422155577a",
+  "environment": {
+    "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.3.4"
+  },
+  "wall_runtime_seconds_this_invocation": 94.55516810000017,
+  "case_results_jsonl": "data\\tless\\results\\original\\smoke20_frozen.jsonl",
+  "case_results_csv": "data\\tless\\results\\original\\smoke20_frozen.csv",
+  "resume_command": "python scripts/tless_benchmark.py evaluate smoke20_frozen --group original --workers 1"
+}

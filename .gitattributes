@@ -1,0 +1,2 @@
+# Preserve exact file bytes across platforms, including frozen inputs and audit hashes.
+* -text

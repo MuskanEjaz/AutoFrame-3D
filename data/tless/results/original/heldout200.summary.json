@@ -1,0 +1,339 @@
+{
+  "manifest": "heldout200",
+  "group": "original",
+  "custom_internal_evaluation": true,
+  "official_bop_score": false,
+  "attribution": {
+    "repository": "bop-benchmark/tless",
+    "revision": "5fd309a04476a842d93abfb584fba9ee7caecdf1",
+    "license": "CC-BY-4.0",
+    "source_url": "https://huggingface.co/datasets/bop-benchmark/tless/tree/5fd309a04476a842d93abfb584fba9ee7caecdf1",
+    "download_method": "huggingface_hub.hf_hub_download with explicit filenames and pinned revision",
+    "download_resume": "Hub local_dir download metadata is retained; rerunning skips validated existing files.",
+    "archive_contents": "data\\tless\\archive_contents.json",
+    "archives": [
+      {
+        "file": "tless_base.zip",
+        "archive_bytes": 49597,
+        "sha256": "dd70ca884b7c471a530a952f70c5ab2c212f3d2c2f371be86397442b97d70a7e",
+        "entry_count": 4,
+        "uncompressed_bytes": 958199
+      },
+      {
+        "file": "tless_models.zip",
+        "archive_bytes": 33468762,
+        "sha256": "6a29c59766b8d2af05e62e71739f0ca7243ad81bc3c7f9a24925504a8cb37928",
+        "entry_count": 93,
+        "uncompressed_bytes": 98360329
+      },
+      {
+        "file": "tless_test_primesense_bop19.zip",
+        "archive_bytes": 825276992,
+        "sha256": "1a18f6bbfb5ac4ced8529f7a35225adfed88c0f62ef38067933e2b541ef1d00b",
+        "entry_count": 15861,
+        "uncompressed_bytes": 841678314
+      }
+    ]
+  },
+  "frozen_config": {
+    "protocol": "custom_internal_tless_test_primesense_bop19",
+    "label": "Custom internal evaluation on the public BOP test subset; not an official BOP score",
+    "instance_masks": "GT-provided mask_visib; registration evaluation with ground-truth instance masks",
+    "minimum_visible_fraction_for_manifest": 0.1,
+    "geometric_acceptance": {
+      "minimum_fitness": 0.7,
+      "maximum_inlier_rmse_m": 0.01,
+      "maximum_correspondence_distance_m": 0.015
+    },
+    "pose_correctness": {
+      "metric": "BOP MSSD / object diameter",
+      "maximum_normalized_mssd": 0.1,
+      "continuous_symmetry_max_vertex_travel_over_diameter": 0.01
+    },
+    "registration": {
+      "initializer": "6 geometry-ranked starts from 24 proper PCA signed-axis/permutation alignments, max-geodesic diversity ordered",
+      "max_registration_evaluations": 6,
+      "max_iterations_per_start": 8,
+      "model_registration_points_max": 3000,
+      "random_seed": 20260928
+    },
+    "execution": {
+      "timeout_seconds": 30,
+      "default_workers": 1,
+      "max_workers": 4
+    },
+    "perturbed_group": {
+      "noise_std_m": 0.002,
+      "point_dropout_fraction": 0.1,
+      "seed_offset": 700000
+    }
+  },
+  "summary": {
+    "evaluated_cases": 200,
+    "valid_cases": 200,
+    "timeouts": 0,
+    "processing_failures": 0,
+    "categories": {
+      "accepted_and_correct": 23,
+      "accepted_but_wrong": 177,
+      "rejected_and_correct": 0,
+      "rejected_and_wrong": 0
+    },
+    "accepted_but_wrong_over_valid": 0.885,
+    "accepted_but_wrong_over_accepted": 0.885,
+    "median_runtime_seconds": 1.1405771000002005,
+    "mean_runtime_seconds": 1.2839166730000124,
+    "by_object": {
+      "1": {
+        "valid_cases": 18,
+        "accepted_but_wrong": 18,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.8325120957615368,
+        "median_runtime_seconds": 1.1133531000000403
+      },
+      "2": {
+        "valid_cases": 9,
+        "accepted_but_wrong": 9,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.7778223399935971,
+        "median_runtime_seconds": 1.1116233000002467
+      },
+      "3": {
+        "valid_cases": 12,
+        "accepted_but_wrong": 12,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 1.0367431531717324,
+        "median_runtime_seconds": 1.1527432499997303
+      },
+      "4": {
+        "valid_cases": 15,
+        "accepted_but_wrong": 14,
+        "accepted_but_wrong_over_valid": 0.9333333333333333,
+        "accepted_but_wrong_over_accepted": 0.9333333333333333,
+        "median_normalized_mssd": 1.0459713822188328,
+        "median_runtime_seconds": 0.9389270000001488
+      },
+      "5": {
+        "valid_cases": 3,
+        "accepted_but_wrong": 3,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.6640057543762135,
+        "median_runtime_seconds": 0.9853812000001199
+      },
+      "6": {
+        "valid_cases": 3,
+        "accepted_but_wrong": 3,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.6069240870665953,
+        "median_runtime_seconds": 1.3575732999997854
+      },
+      "7": {
+        "valid_cases": 12,
+        "accepted_but_wrong": 9,
+        "accepted_but_wrong_over_valid": 0.75,
+        "accepted_but_wrong_over_accepted": 0.75,
+        "median_normalized_mssd": 0.1658156454188845,
+        "median_runtime_seconds": 1.8387683000003108
+      },
+      "8": {
+        "valid_cases": 3,
+        "accepted_but_wrong": 1,
+        "accepted_but_wrong_over_valid": 0.3333333333333333,
+        "accepted_but_wrong_over_accepted": 0.3333333333333333,
+        "median_normalized_mssd": 0.09434121899781213,
+        "median_runtime_seconds": 2.6450306000001547
+      },
+      "9": {
+        "valid_cases": 15,
+        "accepted_but_wrong": 10,
+        "accepted_but_wrong_over_valid": 0.6666666666666666,
+        "accepted_but_wrong_over_accepted": 0.6666666666666666,
+        "median_normalized_mssd": 0.11971707667988132,
+        "median_runtime_seconds": 1.1933404000001246
+      },
+      "10": {
+        "valid_cases": 6,
+        "accepted_but_wrong": 6,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.8198367897979121,
+        "median_runtime_seconds": 0.755510299999969
+      },
+      "11": {
+        "valid_cases": 4,
+        "accepted_but_wrong": 4,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.5285768576845887,
+        "median_runtime_seconds": 0.7338591000000179
+      },
+      "12": {
+        "valid_cases": 4,
+        "accepted_but_wrong": 4,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.14519832373550248,
+        "median_runtime_seconds": 0.9566554499999711
+      },
+      "13": {
+        "valid_cases": 6,
+        "accepted_but_wrong": 6,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.9163440385737534,
+        "median_runtime_seconds": 0.8645387500000652
+      },
+      "14": {
+        "valid_cases": 6,
+        "accepted_but_wrong": 6,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 1.0381400068481725,
+        "median_runtime_seconds": 1.0430777499998385
+      },
+      "15": {
+        "valid_cases": 6,
+        "accepted_but_wrong": 6,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.15870020011718644,
+        "median_runtime_seconds": 0.9911720000000059
+      },
+      "16": {
+        "valid_cases": 6,
+        "accepted_but_wrong": 6,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.8143780512599759,
+        "median_runtime_seconds": 0.8668469999997797
+      },
+      "17": {
+        "valid_cases": 6,
+        "accepted_but_wrong": 2,
+        "accepted_but_wrong_over_valid": 0.3333333333333333,
+        "accepted_but_wrong_over_accepted": 0.3333333333333333,
+        "median_normalized_mssd": 0.07720572183862341,
+        "median_runtime_seconds": 1.5759985500001221
+      },
+      "18": {
+        "valid_cases": 4,
+        "accepted_but_wrong": 4,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.9616714942550558,
+        "median_runtime_seconds": 1.408600750000005
+      },
+      "19": {
+        "valid_cases": 8,
+        "accepted_but_wrong": 8,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 1.0477157034093638,
+        "median_runtime_seconds": 1.106682999999748
+      },
+      "20": {
+        "valid_cases": 8,
+        "accepted_but_wrong": 8,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.9073177069942376,
+        "median_runtime_seconds": 0.9545393999999305
+      },
+      "21": {
+        "valid_cases": 6,
+        "accepted_but_wrong": 6,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.9648093520934007,
+        "median_runtime_seconds": 1.0304062499999418
+      },
+      "22": {
+        "valid_cases": 6,
+        "accepted_but_wrong": 4,
+        "accepted_but_wrong_over_valid": 0.6666666666666666,
+        "accepted_but_wrong_over_accepted": 0.6666666666666666,
+        "median_normalized_mssd": 0.3963341465537721,
+        "median_runtime_seconds": 0.8245043000001715
+      },
+      "23": {
+        "valid_cases": 8,
+        "accepted_but_wrong": 7,
+        "accepted_but_wrong_over_valid": 0.875,
+        "accepted_but_wrong_over_accepted": 0.875,
+        "median_normalized_mssd": 0.3175454224199557,
+        "median_runtime_seconds": 1.5320236000000023
+      },
+      "24": {
+        "valid_cases": 8,
+        "accepted_but_wrong": 8,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.15385975349738396,
+        "median_runtime_seconds": 0.8614811500001451
+      },
+      "25": {
+        "valid_cases": 2,
+        "accepted_but_wrong": 2,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.6327034512440971,
+        "median_runtime_seconds": 1.3343342000000575
+      },
+      "26": {
+        "valid_cases": 2,
+        "accepted_but_wrong": 2,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.850404021133514,
+        "median_runtime_seconds": 1.6361115500001233
+      },
+      "27": {
+        "valid_cases": 4,
+        "accepted_but_wrong": 1,
+        "accepted_but_wrong_over_valid": 0.25,
+        "accepted_but_wrong_over_accepted": 0.25,
+        "median_normalized_mssd": 0.06662659643817402,
+        "median_runtime_seconds": 1.9762886999997136
+      },
+      "28": {
+        "valid_cases": 4,
+        "accepted_but_wrong": 4,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 0.9075697241796207,
+        "median_runtime_seconds": 1.485616100000243
+      },
+      "29": {
+        "valid_cases": 2,
+        "accepted_but_wrong": 0,
+        "accepted_but_wrong_over_valid": 0.0,
+        "accepted_but_wrong_over_accepted": 0.0,
+        "median_normalized_mssd": 0.044306033324282276,
+        "median_runtime_seconds": 2.0501787000000604
+      },
+      "30": {
+        "valid_cases": 4,
+        "accepted_but_wrong": 4,
+        "accepted_but_wrong_over_valid": 1.0,
+        "accepted_but_wrong_over_accepted": 1.0,
+        "median_normalized_mssd": 1.0396043847777903,
+        "median_runtime_seconds": 2.9821422999998504
+      }
+    }
+  },
+  "frozen_config_sha256": "ca60a2fe5c667bce40c85c75f11fc0e65d0f8db36281945f94b6dd422155577a",
+  "environment": {
+    "python": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.3.4"
+  },
+  "wall_runtime_seconds_this_invocation": 257.0880056000001,
+  "case_results_jsonl": "data\\tless\\results\\original\\heldout200.jsonl",
+  "case_results_csv": "data\\tless\\results\\original\\heldout200.csv",
+  "resume_command": "python scripts/tless_benchmark.py evaluate heldout200 --group original --workers 1"
+}

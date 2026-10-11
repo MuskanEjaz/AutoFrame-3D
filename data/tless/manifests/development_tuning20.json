@@ -1,0 +1,172 @@
+{
+  "protocol": "custom_internal_tless_test_primesense_bop19",
+  "selection": "BOP19 target IDs plus visible-instance metadata; no registration outcomes or GT pose values used",
+  "scene_partition": {
+    "development_scene_ids": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "heldout_scene_ids": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "tless-s000002-i000013-g01-o06",
+      "scene_id": 2,
+      "image_id": 13,
+      "gt_index": 1,
+      "object_id": 6
+    },
+    {
+      "case_id": "tless-s000002-i000013-g02-o07",
+      "scene_id": 2,
+      "image_id": 13,
+      "gt_index": 2,
+      "object_id": 7
+    },
+    {
+      "case_id": "tless-s000003-i000010-g01-o08",
+      "scene_id": 3,
+      "image_id": 10,
+      "gt_index": 1,
+      "object_id": 8
+    },
+    {
+      "case_id": "tless-s000004-i000010-g01-o08",
+      "scene_id": 4,
+      "image_id": 10,
+      "gt_index": 1,
+      "object_id": 8
+    },
+    {
+      "case_id": "tless-s000003-i000010-g02-o11",
+      "scene_id": 3,
+      "image_id": 10,
+      "gt_index": 2,
+      "object_id": 11
+    },
+    {
+      "case_id": "tless-s000003-i000010-g03-o12",
+      "scene_id": 3,
+      "image_id": 10,
+      "gt_index": 3,
+      "object_id": 12
+    },
+    {
+      "case_id": "tless-s000003-i000010-g04-o18",
+      "scene_id": 3,
+      "image_id": 10,
+      "gt_index": 4,
+      "object_id": 18
+    },
+    {
+      "case_id": "tless-s000001-i000017-g01-o25",
+      "scene_id": 1,
+      "image_id": 17,
+      "gt_index": 1,
+      "object_id": 25
+    },
+    {
+      "case_id": "tless-s000004-i000010-g02-o26",
+      "scene_id": 4,
+      "image_id": 10,
+      "gt_index": 2,
+      "object_id": 26
+    },
+    {
+      "case_id": "tless-s000004-i000010-g03-o28",
+      "scene_id": 4,
+      "image_id": 10,
+      "gt_index": 3,
+      "object_id": 28
+    },
+    {
+      "case_id": "tless-s000001-i000017-g02-o29",
+      "scene_id": 1,
+      "image_id": 17,
+      "gt_index": 2,
+      "object_id": 29
+    },
+    {
+      "case_id": "tless-s000001-i000017-g03-o30",
+      "scene_id": 1,
+      "image_id": 17,
+      "gt_index": 3,
+      "object_id": 30
+    },
+    {
+      "case_id": "tless-s000001-i000030-g00-o02",
+      "scene_id": 1,
+      "image_id": 30,
+      "gt_index": 0,
+      "object_id": 2
+    },
+    {
+      "case_id": "tless-s000002-i000024-g00-o05",
+      "scene_id": 2,
+      "image_id": 24,
+      "gt_index": 0,
+      "object_id": 5
+    },
+    {
+      "case_id": "tless-s000003-i000016-g00-o05",
+      "scene_id": 3,
+      "image_id": 16,
+      "gt_index": 0,
+      "object_id": 5
+    },
+    {
+      "case_id": "tless-s000004-i000025-g00-o05",
+      "scene_id": 4,
+      "image_id": 25,
+      "gt_index": 0,
+      "object_id": 5
+    },
+    {
+      "case_id": "tless-s000002-i000024-g01-o06",
+      "scene_id": 2,
+      "image_id": 24,
+      "gt_index": 1,
+      "object_id": 6
+    },
+    {
+      "case_id": "tless-s000002-i000024-g02-o07",
+      "scene_id": 2,
+      "image_id": 24,
+      "gt_index": 2,
+      "object_id": 7
+    },
+    {
+      "case_id": "tless-s000003-i000016-g01-o08",
+      "scene_id": 3,
+      "image_id": 16,
+      "gt_index": 1,
+      "object_id": 8
+    },
+    {
+      "case_id": "tless-s000004-i000025-g01-o08",
+      "scene_id": 4,
+      "image_id": 25,
+      "gt_index": 1,
+      "object_id": 8
+    }
+  ]
+}

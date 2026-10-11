@@ -1,0 +1,605 @@
+{
+  "audit_timestamp_utc": "2026-10-11T04:58:25.755845+00:00",
+  "scope": "All five JSONL run files present under data/tless/results/original and perturbed; archives/backups/search/replay outputs excluded.",
+  "units_and_direction": "Saved estimates and GT are camera-from-object, translations in metres; GT independently matched local annotation obj_id/instance and mm-to-m translation for every valid record. Evaluation vertices/diameter and metadata translations/offsets converted mm to m. Symmetry applied in object coordinates before GT camera transform.",
+  "affected_objects": {
+    "8": {
+      "discrete_translations_mm": [
+        [
+          -0.0266153,
+          -0.0926988,
+          -5.29696e-05
+        ]
+      ],
+      "continuous_offsets_mm": []
+    },
+    "10": {
+      "discrete_translations_mm": [
+        [
+          -0.143745,
+          -0.517981,
+          0.00964629
+        ]
+      ],
+      "continuous_offsets_mm": []
+    },
+    "11": {
+      "discrete_translations_mm": [
+        [
+          2.01636e-05,
+          -0.000163209,
+          2.10486e-08
+        ]
+      ],
+      "continuous_offsets_mm": []
+    },
+    "12": {
+      "discrete_translations_mm": [
+        [
+          0.00405229,
+          -0.000700235,
+          4.85766e-08
+        ]
+      ],
+      "continuous_offsets_mm": []
+    },
+    "25": {
+      "discrete_translations_mm": [
+        [
+          -14.0,
+          3.2415389999999997e-13,
+          0.0
+        ]
+      ],
+      "continuous_offsets_mm": []
+    },
+    "26": {
+      "discrete_translations_mm": [
+        [
+          -14.0,
+          3.2415389999999997e-13,
+          0.0
+        ]
+      ],
+      "continuous_offsets_mm": []
+    }
+  },
+  "continuous_nonzero_offset_objects": [],
+  "frozen_threshold": 0.1,
+  "symmetry_step": 0.01,
+  "symmetry_samples_per_continuous_axis": 315,
+  "analytical_validation": [
+    {
+      "name": "identity",
+      "reference": 0.0,
+      "production": 0.0,
+      "expected": 0.0,
+      "passed": true
+    },
+    {
+      "name": "known_nonequivalent_translation",
+      "reference": 0.2,
+      "production": 0.2,
+      "expected": 0.2,
+      "passed": true
+    },
+    {
+      "name": "translated_discrete_symmetry_nonidentity_GT",
+      "reference": 0.0,
+      "production": 5.551115123125783e-17,
+      "expected": 0.0,
+      "passed": true
+    },
+    {
+      "name": "translated_symmetry_legacy_units_negative_control",
+      "legacy": 0.565685424949238,
+      "passed": true
+    },
+    {
+      "name": "offset_axis_continuous_on_grid",
+      "reference": 0.0,
+      "production": 1.1443916996305594e-16,
+      "expected": 0.0,
+      "passed": true
+    },
+    {
+      "name": "offset_axis_continuous_half_grid",
+      "reference": 0.0029919806032548193,
+      "production": 0.002991980603254813,
+      "expected": 0.0029919806032548298,
+      "passed": true
+    },
+    {
+      "name": "continuous_discrete_composition",
+      "reference": 1.1443916996305594e-16,
+      "production": 1.1102230246251565e-16,
+      "expected": 0.0,
+      "passed": true
+    }
+  ],
+  "run_summaries": [
+    {
+      "run": "data/tless/results/original/development_tuning20.jsonl",
+      "records": 20,
+      "manifest_cases": 20,
+      "valid_records": 20,
+      "affected_records": 8,
+      "affected_valid_rescored": 8,
+      "affected_without_label": 0,
+      "unaffected_controls_rescored": 3,
+      "unaffected_valid_carried_forward": 12,
+      "statuses_preserved": {
+        "valid": 20
+      },
+      "historical_categories": {
+        "accepted_but_wrong": 19,
+        "accepted_and_correct": 1
+      },
+      "corrected_categories": {
+        "accepted_but_wrong": 19,
+        "accepted_and_correct": 1
+      },
+      "affected_label_transitions": {
+        "accepted_but_wrong -> accepted_but_wrong": 8
+      },
+      "complete_for_saved_valid_records": true,
+      "aggregate_method": "All affected valid records rescored; unaffected valid labels carried forward, with deterministic controls. Not a full independent rescore."
+    },
+    {
+      "run": "data/tless/results/original/heldout200.jsonl",
+      "records": 200,
+      "manifest_cases": 200,
+      "valid_records": 200,
+      "affected_records": 21,
+      "affected_valid_rescored": 21,
+      "affected_without_label": 0,
+      "unaffected_controls_rescored": 3,
+      "unaffected_valid_carried_forward": 179,
+      "statuses_preserved": {
+        "valid": 200
+      },
+      "historical_categories": {
+        "accepted_but_wrong": 177,
+        "accepted_and_correct": 23
+      },
+      "corrected_categories": {
+        "accepted_but_wrong": 176,
+        "accepted_and_correct": 24
+      },
+      "affected_label_transitions": {
+        "accepted_but_wrong -> accepted_and_correct": 1,
+        "accepted_but_wrong -> accepted_but_wrong": 18,
+        "accepted_and_correct -> accepted_and_correct": 2
+      },
+      "complete_for_saved_valid_records": true,
+      "aggregate_method": "All affected valid records rescored; unaffected valid labels carried forward, with deterministic controls. Not a full independent rescore."
+    },
+    {
+      "run": "data/tless/results/original/smoke20.jsonl",
+      "records": 20,
+      "manifest_cases": 20,
+      "valid_records": 12,
+      "affected_records": 6,
+      "affected_valid_rescored": 4,
+      "affected_without_label": 2,
+      "unaffected_controls_rescored": 3,
+      "unaffected_valid_carried_forward": 8,
+      "statuses_preserved": {
+        "valid": 12,
+        "timeout": 8
+      },
+      "historical_categories": {
+        "accepted_but_wrong": 11,
+        "accepted_and_correct": 1
+      },
+      "corrected_categories": {
+        "accepted_but_wrong": 11,
+        "accepted_and_correct": 1
+      },
+      "affected_label_transitions": {
+        "accepted_but_wrong -> accepted_but_wrong": 4
+      },
+      "complete_for_saved_valid_records": true,
+      "aggregate_method": "All affected valid records rescored; unaffected valid labels carried forward, with deterministic controls. Not a full independent rescore."
+    },
+    {
+      "run": "data/tless/results/original/smoke20_frozen.jsonl",
+      "records": 20,
+      "manifest_cases": 20,
+      "valid_records": 20,
+      "affected_records": 6,
+      "affected_valid_rescored": 6,
+      "affected_without_label": 0,
+      "unaffected_controls_rescored": 3,
+      "unaffected_valid_carried_forward": 14,
+      "statuses_preserved": {
+        "valid": 20
+      },
+      "historical_categories": {
+        "accepted_but_wrong": 20
+      },
+      "corrected_categories": {
+        "accepted_but_wrong": 20
+      },
+      "affected_label_transitions": {
+        "accepted_but_wrong -> accepted_but_wrong": 6
+      },
+      "complete_for_saved_valid_records": true,
+      "aggregate_method": "All affected valid records rescored; unaffected valid labels carried forward, with deterministic controls. Not a full independent rescore."
+    },
+    {
+      "run": "data/tless/results/perturbed/heldout200.jsonl",
+      "records": 4,
+      "manifest_cases": 200,
+      "valid_records": 4,
+      "affected_records": 0,
+      "affected_valid_rescored": 0,
+      "affected_without_label": 0,
+      "unaffected_controls_rescored": 3,
+      "unaffected_valid_carried_forward": 4,
+      "statuses_preserved": {
+        "valid": 4
+      },
+      "historical_categories": {
+        "accepted_but_wrong": 4
+      },
+      "corrected_categories": {
+        "accepted_but_wrong": 4
+      },
+      "affected_label_transitions": {},
+      "complete_for_saved_valid_records": true,
+      "aggregate_method": "All affected valid records rescored; unaffected valid labels carried forward, with deterministic controls. Not a full independent rescore."
+    }
+  ],
+  "issues": [
+    {
+      "run": "data/tless/results/original/smoke20.jsonl",
+      "case_id": "tless-s000003-i000005-g00-o05",
+      "status": "timeout",
+      "affected_object": false,
+      "note": "No historical correctness label or saved estimate to rescore; original status carried forward."
+    },
+    {
+      "run": "data/tless/results/original/smoke20.jsonl",
+      "case_id": "tless-s000004-i000000-g00-o05",
+      "status": "timeout",
+      "affected_object": false,
+      "note": "No historical correctness label or saved estimate to rescore; original status carried forward."
+    },
+    {
+      "run": "data/tless/results/original/smoke20.jsonl",
+      "case_id": "tless-s000002-i000003-g02-o07",
+      "status": "timeout",
+      "affected_object": false,
+      "note": "No historical correctness label or saved estimate to rescore; original status carried forward."
+    },
+    {
+      "run": "data/tless/results/original/smoke20.jsonl",
+      "case_id": "tless-s000003-i000005-g01-o08",
+      "status": "timeout",
+      "affected_object": true,
+      "note": "No historical correctness label or saved estimate to rescore; original status carried forward."
+    },
+    {
+      "run": "data/tless/results/original/smoke20.jsonl",
+      "case_id": "tless-s000004-i000000-g01-o08",
+      "status": "timeout",
+      "affected_object": true,
+      "note": "No historical correctness label or saved estimate to rescore; original status carried forward."
+    },
+    {
+      "run": "data/tless/results/original/smoke20.jsonl",
+      "case_id": "tless-s000003-i000005-g04-o18",
+      "status": "timeout",
+      "affected_object": false,
+      "note": "No historical correctness label or saved estimate to rescore; original status carried forward."
+    },
+    {
+      "run": "data/tless/results/original/smoke20.jsonl",
+      "case_id": "tless-s000004-i000000-g03-o28",
+      "status": "timeout",
+      "affected_object": false,
+      "note": "No historical correctness label or saved estimate to rescore; original status carried forward."
+    },
+    {
+      "run": "data/tless/results/original/smoke20.jsonl",
+      "case_id": "tless-s000001-i000001-g03-o30",
+      "status": "timeout",
+      "affected_object": false,
+      "note": "No historical correctness label or saved estimate to rescore; original status carried forward."
+    }
+  ],
+  "missing_or_invalid_valid_record_inputs": [],
+  "maximum_saved_GT_annotation_abs_delta": 0.0,
+  "maximum_production_reference_abs_delta": 2.220446049250313e-16,
+  "maximum_historical_legacy_reference_abs_delta": 2.220446049250313e-16,
+  "provenance": {
+    "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+    "executable": "<absolute local Python executable path redacted for publication>",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "dependency_versions": {
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "Pillow": "12.3.0",
+      "fastapi": "0.142.2",
+      "pydantic": "2.13.5",
+      "uvicorn": "0.54.0",
+      "huggingface_hub": "2.0.0"
+    },
+    "commands": [
+      {
+        "command": ".\\.venv\\Scripts\\python.exe artifacts/symmetry_scoring_audit_20261011_02a10626368f/audit.py",
+        "outcome": "Initial attempt failed on rounded GT matrix orthogonality validation; audit_failure.json retained."
+      },
+      {
+        "command": ".\\.venv\\Scripts\\python.exe artifacts/symmetry_scoring_audit_20261011_02a10626368f/audit.py",
+        "outcome": "Passed after correcting input-validation tolerance; no scoring-threshold changes."
+      },
+      {
+        "command": ".\\.venv\\Scripts\\python.exe -B artifacts/symmetry_scoring_audit_20261011_02a10626368f/audit.py",
+        "outcome": "Final reproducibility run; bytecode writing disabled."
+      },
+      {
+        "command": ".\\.venv\\Scripts\\python.exe -B artifacts/symmetry_scoring_audit_20261011_02a10626368f/audit.py",
+        "outcome": "Final run after strengthening analytical composition fixture to noncommuting axes; bytecode writing disabled."
+      }
+    ],
+    "sampling": "No randomness or seed: first three unaffected valid case IDs lexicographically per run, plus first unaffected continuous-symmetry case when available.",
+    "original_run_provenance": "Original execution source hashes and complete dependency identities unavailable; historical counts/poses/metrics audited as saved. No current source hash attributed to historical runs.",
+    "inputs_and_audit_current_sources": {
+      "configs/tless_frozen.json": {
+        "sha256": "ca60a2fe5c667bce40c85c75f11fc0e65d0f8db36281945f94b6dd422155577a",
+        "size_bytes": 1181
+      },
+      "data/tless/bop/models_cad/models_info.json": {
+        "sha256": "48a13b6e4532c20954dbe014a082439b05984d12ff13da1da62635a8dee59925",
+        "size_bytes": 7047
+      },
+      "data/tless/results/original/development_tuning20.jsonl": {
+        "sha256": "757ba36bf9a6ff741e496d2b76177b92517130780d4d580a0c2ee35e1976d99f",
+        "size_bytes": 26006
+      },
+      "data/tless/results/original/development_tuning20.summary.json": {
+        "sha256": "9207b2a571cb9437c5d568fb3188f3b1080e772db841092f5cda45410cec4303",
+        "size_bytes": 3190943
+      },
+      "data/tless/results/original/development_tuning20.csv": {
+        "sha256": "b06080d9a0ebcc3da480aaafac5ef112d69ff66fe22823068358b73f6a8852f8",
+        "size_bytes": 3828
+      },
+      "data/tless/manifests/development_tuning20.json": {
+        "sha256": "a4c6a83bf5c8f61ed1ab3b41546d5dc90cde4c0c6c2e3102b23400f83454f5b3",
+        "size_bytes": 3622
+      },
+      "data/tless/bop/test_primesense/000002/scene_gt.json": {
+        "sha256": "a04b5aabc88dab06280670270b4954e5e353e490f5e661a92b42aa730726316f",
+        "size_bytes": 29501
+      },
+      "data/tless/bop/test_primesense/000003/scene_gt.json": {
+        "sha256": "a0975e3a1cc508c4c0cfc13a67cf62ae9309bf8adadd40624ac68a8196ca7be3",
+        "size_bytes": 49894
+      },
+      "data/tless/bop/models_eval/obj_000008.ply": {
+        "sha256": "0da512f33c790363c60bac33a61a1c2034a01d1ab27f722dcf3414cceee8b3b8",
+        "size_bytes": 563302
+      },
+      "data/tless/bop/test_primesense/000004/scene_gt.json": {
+        "sha256": "c77afd5a702a55a30bd98a6416aa463890427bd4a7bf119bfe6ff913ac727150",
+        "size_bytes": 39440
+      },
+      "data/tless/bop/models_eval/obj_000011.ply": {
+        "sha256": "59f06f1ff174773854a8408ff50301239f8be40cfa6e997c7a810291c32bb61d",
+        "size_bytes": 441800
+      },
+      "data/tless/bop/models_eval/obj_000012.ply": {
+        "sha256": "d8890073075ad61fa2be30046efd980d4bac015dd1b4bc5507dea48ec6fe8f2d",
+        "size_bytes": 519192
+      },
+      "data/tless/bop/test_primesense/000001/scene_gt.json": {
+        "sha256": "742c77860d984760a67b352159007b04dd260b8a27b7029574be7d845fcda1b2",
+        "size_bytes": 39820
+      },
+      "data/tless/bop/models_eval/obj_000025.ply": {
+        "sha256": "29f60e42f80c03465d4fd702a0efd0ffb5ff375c0892d98a2f677f63499ea664",
+        "size_bytes": 273395
+      },
+      "data/tless/bop/models_eval/obj_000026.ply": {
+        "sha256": "8ee5a2d370956b60f4af8814b8b80c187ce4147d2c27556e5adf20a9d1217aec",
+        "size_bytes": 262771
+      },
+      "data/tless/bop/models_eval/obj_000029.ply": {
+        "sha256": "7e8ee4863cd307fda820b78eb354ada61691a484de57f6cde5a6495aa0e230ef",
+        "size_bytes": 257731
+      },
+      "data/tless/bop/models_eval/obj_000030.ply": {
+        "sha256": "d0d1113d70ac2f8309f4e8edb198e129637ac9d7ed6dd046ae374ebafeeaf804",
+        "size_bytes": 375817
+      },
+      "data/tless/bop/models_eval/obj_000002.ply": {
+        "sha256": "f09eeb95cf1e3231485e0f89f69671331cbb40ed30f2e87f4507722660dd8441",
+        "size_bytes": 771455
+      },
+      "data/tless/results/original/heldout200.jsonl": {
+        "sha256": "33ce5c8cb778839c048afcd732ab1d14fec3aa45594a2a05be3cc4d5bcb1e582",
+        "size_bytes": 259711
+      },
+      "data/tless/results/original/heldout200.summary.json": {
+        "sha256": "672aaa9b3432db4013af4e4dfd0c6bf8ffbb15ac153d0f169fa225f5df74594b",
+        "size_bytes": 12762
+      },
+      "data/tless/results/original/heldout200.csv": {
+        "sha256": "ea3dfd513cc7a9d4ebd4c1a658ddacbc8e04e445b5e5461d8706c1d44b92d9e2",
+        "size_bytes": 36996
+      },
+      "data/tless/manifests/heldout200.json": {
+        "sha256": "9818f50d647afb63fcfddfd2c283c201784dd7405972317211572c68cee5f6a1",
+        "size_bytes": 31636
+      },
+      "data/tless/bop/test_primesense/000005/scene_gt.json": {
+        "sha256": "25e9ca7de536c55141b63ffc0138f3e52325cb91e813063951869f4267d5843a",
+        "size_bytes": 49610
+      },
+      "data/tless/bop/models_eval/obj_000001.ply": {
+        "sha256": "c5c1c7e3c9f93cc37eb4fa5b9164f662421bc345be550807bd724eb797e7df1e",
+        "size_bytes": 717972
+      },
+      "data/tless/bop/test_primesense/000007/scene_gt.json": {
+        "sha256": "ccc4cc6a8783666842fd6138fbc15eba042a0d8c138a0624b49921b5f5d3377e",
+        "size_bytes": 77302
+      },
+      "data/tless/bop/test_primesense/000009/scene_gt.json": {
+        "sha256": "62bbe5667e213c38b09d9453fd15057443fb9be9390555c55736f7641578ea0b",
+        "size_bytes": 117119
+      },
+      "data/tless/bop/test_primesense/000017/scene_gt.json": {
+        "sha256": "9622b27aa4f7d5c21d3b792f7ad55e22e4edd86b13629f2b4d8df71cdb399a96",
+        "size_bytes": 69312
+      },
+      "data/tless/bop/test_primesense/000018/scene_gt.json": {
+        "sha256": "25a98729dd05d3b580976bed1aa68eda17cab888a9c2d6071d8b87853116a101",
+        "size_bytes": 69128
+      },
+      "data/tless/bop/test_primesense/000020/scene_gt.json": {
+        "sha256": "223e0ea603e82f60ec83b3d0b74330d14736174b694c6a8cc20e96674021f820",
+        "size_bytes": 178173
+      },
+      "data/tless/bop/test_primesense/000012/scene_gt.json": {
+        "sha256": "dd4e1e504261b514215e7ee2f9212506f476bd4f9aa930f37a4d32815870d82a",
+        "size_bytes": 58893
+      },
+      "data/tless/bop/models_eval/obj_000004.ply": {
+        "sha256": "f7d88c7f5082230a0d5763d8713f90137fccd2232ea648bee77d9d5eae5b5d17",
+        "size_bytes": 157723
+      },
+      "data/tless/bop/test_primesense/000011/scene_gt.json": {
+        "sha256": "8aeb659e7c4b8ee9dbccece51aa5297da02b099737b604923e322d17a147b73b",
+        "size_bytes": 39454
+      },
+      "data/tless/bop/test_primesense/000006/scene_gt.json": {
+        "sha256": "e06c01e5492e38bd92f0749681040c6617c92fca4c2613cedffe1d44766b4df6",
+        "size_bytes": 49490
+      },
+      "data/tless/bop/models_eval/obj_000009.ply": {
+        "sha256": "caa598941f96a228cd8218cc25bbc51cd16e3794cd4969b359b3f417c87adf65",
+        "size_bytes": 393269
+      },
+      "data/tless/bop/models_eval/obj_000010.ply": {
+        "sha256": "49d8d31b86051b89f0c3a5e235214ca3a0b9ea37b6e54827fa416da5e837739a",
+        "size_bytes": 651972
+      },
+      "data/tless/bop/test_primesense/000016/scene_gt.json": {
+        "sha256": "b1584e9bce60b046b3362ced4f40d9e9f83f4fb007f772425ad7d81a1b03020e",
+        "size_bytes": 78151
+      },
+      "data/tless/bop/test_primesense/000019/scene_gt.json": {
+        "sha256": "4314806a916494b386dc91eaf5f810bf548be49e2a91c7c65a6f59c7ac449525",
+        "size_bytes": 88972
+      },
+      "data/tless/bop/test_primesense/000008/scene_gt.json": {
+        "sha256": "3eb5f99301940f64284abc4a5c5b2183746264530001e7a798ac012f01c5c997",
+        "size_bytes": 59973
+      },
+      "data/tless/bop/test_primesense/000010/scene_gt.json": {
+        "sha256": "a897ccd731598c5b7cf5ad2f54bc1e47f36a7ce3bc6e3389f917a1eb1de942d3",
+        "size_bytes": 59584
+      },
+      "data/tless/bop/test_primesense/000013/scene_gt.json": {
+        "sha256": "4f2184894fffac5a1e1d156a355337a9e90cefb151cefde8da46fe934b1f787b",
+        "size_bytes": 79539
+      },
+      "data/tless/bop/test_primesense/000014/scene_gt.json": {
+        "sha256": "300f3c5fa1ca28fb762b7562a06e7dad716eaa321de74cf1179e7bbcced2b88d",
+        "size_bytes": 69653
+      },
+      "data/tless/bop/test_primesense/000015/scene_gt.json": {
+        "sha256": "3e3cee92274055096adf0a7ff5020b3cecd35160254d53351e2ecb1b3b93663d",
+        "size_bytes": 58709
+      },
+      "data/tless/results/original/smoke20.jsonl": {
+        "sha256": "dce8ab050ac3fdf4974e1888f4c035083d07ed13892b08ad839ef82ff4e7a00c",
+        "size_bytes": 17480
+      },
+      "data/tless/results/original/smoke20.summary.json": {
+        "sha256": "c81469df863ecba3b2c16fe092a55665c7d658e8e9ad7bbc938e88fb677192b5",
+        "size_bytes": 3189471
+      },
+      "data/tless/results/original/smoke20.csv": {
+        "sha256": "8411771293b0dc032b758f162225e11f33e4cf9b3ea059fd8c86f09381b7cd79",
+        "size_bytes": 3358
+      },
+      "data/tless/manifests/smoke20.json": {
+        "sha256": "627927dd8d01f0994cbf876e3122080fcbc35a27ea13815ac86944e6a404e7a7",
+        "size_bytes": 3606
+      },
+      "data/tless/results/original/smoke20_frozen.jsonl": {
+        "sha256": "8bdaed5bc51aa968de27fd38d9e7d2d21517ff88e606a25be2887461b2821048",
+        "size_bytes": 26032
+      },
+      "data/tless/results/original/smoke20_frozen.summary.json": {
+        "sha256": "0a211a70babcff5075999cfc5aa56f52e86159a256e7f1c9f403a1dcbfdb2f09",
+        "size_bytes": 7651
+      },
+      "data/tless/results/original/smoke20_frozen.csv": {
+        "sha256": "b2849df56a06afcec36d7eb5f314bfdcb4eb7b8dce611c3b209ef0c397c53527",
+        "size_bytes": 3805
+      },
+      "data/tless/manifests/smoke20_frozen.json": {
+        "sha256": "627927dd8d01f0994cbf876e3122080fcbc35a27ea13815ac86944e6a404e7a7",
+        "size_bytes": 3606
+      },
+      "data/tless/results/perturbed/heldout200.jsonl": {
+        "sha256": "dd3dd6933fb583452d37f330eeff3487144bf7931a2583834cbdedd1fba18a30",
+        "size_bytes": 5496
+      },
+      "data/tless/results/perturbed/heldout200.summary.json": {
+        "sha256": "91c0415046ac9adc5d19c867a8c669d2467399c1f8bc810921c54e97f3ac7c13",
+        "size_bytes": 4124
+      },
+      "data/tless/results/perturbed/heldout200.csv": {
+        "sha256": "c56ee851ef9835626505174fcbbabadace126c841d4e17538892c8f40f551a10",
+        "size_bytes": 892
+      },
+      "autoframe3d/tless_metrics.py": {
+        "sha256": "b8f833c7c8051854521bc26fbeae4a38d51534f54a525b3d2b605a7cd280743c",
+        "size_bytes": 3496
+      },
+      "autoframe3d/geometry.py": {
+        "sha256": "16f43ec402ab6ef9f01785cb32618ff3155dd8bbb1bea3ae09de7265de9c3fdf",
+        "size_bytes": 7276
+      },
+      "autoframe3d/tless_adapter.py": {
+        "sha256": "116132f4c77c6783b0f31406fb04736e31d1bd74a7aeebdaf3df78c47c781e6b",
+        "size_bytes": 17250
+      },
+      "autoframe3d/tless_benchmark.py": {
+        "sha256": "d4146c21bf0323a0c1f0179420ebc8d738171ed09b70aea94c71bfba2ae45cda",
+        "size_bytes": 18407
+      },
+      "pyproject.toml": {
+        "sha256": "453becd6ddf4a623f9f40e5ac034fcef0b6b4020b59291af8671aa1dc13f15cd",
+        "size_bytes": 613
+      },
+      "data/tless/provenance.json": {
+        "sha256": "a194a11398f94ffc137b331ac2fbf228226bbe9cf57521c8a58f821c57b6b763",
+        "size_bytes": 1254
+      },
+      "artifacts/symmetry_scoring_audit_20261011_02a10626368f/audit.py": {
+        "sha256": "8f1e0436a429f038a212eb3939788869eb8517b55a0a553c55c1d89bbd858d2e",
+        "size_bytes": 26738
+      }
+    }
+  },
+  "input_rotation_orthogonality_residuals": {
+    "estimate": 6.8833827526759706e-15,
+    "ground_truth": 1.377944333080805e-06
+  },
+  "input_validation_note": "Initial audit stopped on GT orthogonality residual 1.09e-6 at 1e-6 validation tolerance. Read-only inspection measured maximum 1.38e-6 in rounded GT matrices. Final validation tolerance is 1e-5; no pose matrix projected, altered, or re-estimated; scoring threshold remains 0.10. Initial failure retained in audit_failure.json.",
+  "publication_copy": {
+    "derived_copy": true,
+    "redacted_fields": [
+      "provenance.executable"
+    ],
+    "original_artifact_sha256": "5dd97b434bdcd85b962a7e0ec581b5c2d3412f2827a1bc22299b1b0525fe9bbc",
+    "note": "Input hashes describe original audit inputs; this derived summary has a different file hash. Original execution source identity remains unavailable."
+  }
+}

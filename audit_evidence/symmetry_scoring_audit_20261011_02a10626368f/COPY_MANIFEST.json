@@ -1,0 +1,37 @@
+{
+  "purpose": "Versioned audit evidence copies; original artifact files preserved unchanged.",
+  "files": {
+    "REPORT.md": {
+      "original_path": "artifacts/symmetry_scoring_audit_20261011_02a10626368f/REPORT.md",
+      "original_sha256": "db4b40e493f706fb700ecec3ff61b7bf33a70ad6f33516d8e46d6ebf167bb557",
+      "original_size_bytes": 11246,
+      "publication_sha256": "f8487d7d9cc7a3b9fed75a9f301d3e4c14dc86c3bfa73fa4357c277edf5776a2",
+      "publication_size_bytes": 11403,
+      "byte_identical_to_original": false
+    },
+    "rescored_records.csv": {
+      "original_path": "artifacts/symmetry_scoring_audit_20261011_02a10626368f/rescored_records.csv",
+      "original_sha256": "17399125c49b7622a2d20731e945d2a48a5747d61cf64ec0b807ee7f576a0de8",
+      "original_size_bytes": 11818,
+      "publication_sha256": "17399125c49b7622a2d20731e945d2a48a5747d61cf64ec0b807ee7f576a0de8",
+      "publication_size_bytes": 11818,
+      "byte_identical_to_original": true
+    },
+    "audit_summary.json": {
+      "original_path": "artifacts/symmetry_scoring_audit_20261011_02a10626368f/audit_summary.json",
+      "original_sha256": "5dd97b434bdcd85b962a7e0ec581b5c2d3412f2827a1bc22299b1b0525fe9bbc",
+      "original_size_bytes": 24039,
+      "publication_sha256": "404303d68ae5a1c03f36c6d038fca44fe9fa1303790ea8ede2c2f31fffe6f8a2",
+      "publication_size_bytes": 24418,
+      "byte_identical_to_original": false
+    },
+    "audit.py": {
+      "original_path": "artifacts/symmetry_scoring_audit_20261011_02a10626368f/audit.py",
+      "original_sha256": "8f1e0436a429f038a212eb3939788869eb8517b55a0a553c55c1d89bbd858d2e",
+      "original_size_bytes": 26738,
+      "publication_sha256": "8f1e0436a429f038a212eb3939788869eb8517b55a0a553c55c1d89bbd858d2e",
+      "publication_size_bytes": 26738,
+      "byte_identical_to_original": true
+    }
+  }
+}

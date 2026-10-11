@@ -1,0 +1,33 @@
+{
+  "protocol": "custom_internal_tless_test_primesense_bop19",
+  "label": "Custom internal evaluation on the public BOP test subset; not an official BOP score",
+  "instance_masks": "GT-provided mask_visib; registration evaluation with ground-truth instance masks",
+  "minimum_visible_fraction_for_manifest": 0.1,
+  "geometric_acceptance": {
+    "minimum_fitness": 0.7,
+    "maximum_inlier_rmse_m": 0.01,
+    "maximum_correspondence_distance_m": 0.015
+  },
+  "pose_correctness": {
+    "metric": "BOP MSSD / object diameter",
+    "maximum_normalized_mssd": 0.1,
+    "continuous_symmetry_max_vertex_travel_over_diameter": 0.01
+  },
+  "registration": {
+    "initializer": "6 geometry-ranked starts from 24 proper PCA signed-axis/permutation alignments, max-geodesic diversity ordered",
+      "max_registration_evaluations": 6,
+      "max_iterations_per_start": 8,
+      "model_registration_points_max": 3000,
+    "random_seed": 20260928
+  },
+  "execution": {
+    "timeout_seconds": 30,
+    "default_workers": 1,
+    "max_workers": 4
+  },
+  "perturbed_group": {
+    "noise_std_m": 0.002,
+    "point_dropout_fraction": 0.1,
+    "seed_offset": 700000
+  }
+}

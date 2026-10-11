@@ -1,0 +1,13 @@
+{
+  "protocol": "custom_internal_tless_test_primesense_bop19",
+  "selection": "One development-only accepted-correct starting case from the preselected development tuning manifest; chosen before perturbation search, never from held-out scenes.",
+  "cases": [
+    {
+      "case_id": "tless-s000002-i000024-g02-o07",
+      "scene_id": 2,
+      "image_id": 24,
+      "gt_index": 2,
+      "object_id": 7
+    }
+  ]
+}
