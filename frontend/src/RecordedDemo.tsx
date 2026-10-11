@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Archive, Crosshair, Eye, EyeOff, RotateCcw } from "lucide-react";
 import Scene, { type GeometryPayload } from "./Scene";
+import InvestigationPanel from "./InvestigationPanel";
 
 type RecordedResult = {
   accepted: boolean; correct: boolean; category: string;
@@ -165,6 +166,7 @@ export default function RecordedDemo() {
           <pre>{JSON.stringify(catalogue.publication, null, 2)}</pre>
         </details>
       </section>}
+      <InvestigationPanel caseId={selected?.case_id} onSelect={(viewerId, methodId) => { setCaseId(viewerId); setVariantId(methodId); setShowTruth(false); }} />
     </main>
     <footer className="app-footer">Benchmark stress-testing and replay tool · not a validated industrial pose estimator · not a proven adaptive AI agent</footer>
   </div>;

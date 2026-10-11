@@ -1,0 +1,56 @@
+{
+  "status": "complete",
+  "analysis_mode": "mocked",
+  "evidence_computation": "recorded",
+  "message": "TEST FIXTURE response; no live model was called",
+  "question": "fixture",
+  "selected_case_id": null,
+  "findings": [
+    {
+      "kind": "observed",
+      "text": "TEST FIXTURE: cited recorded evidence",
+      "evidence_ids": [
+        "case:tless-s000002-i000024-g02-o07:reciprocal"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "case:tless-s000002-i000024-g02-o07:reciprocal",
+      "case_id": "tless-s000002-i000024-g02-o07",
+      "viewer_id": "control-regression",
+      "object_id": 7,
+      "computation": "recorded",
+      "gt_instance_masks_used": true,
+      "correctness_uses_benchmark_gt": true,
+      "thresholds": {
+        "acceptance": {
+          "minimum_fitness": 0.7,
+          "maximum_inlier_rmse_m": 0.01,
+          "maximum_correspondence_distance_m": 0.015
+        },
+        "correctness": {
+          "metric": "BOP MSSD / object diameter",
+          "maximum_normalized_mssd": 0.1,
+          "continuous_symmetry_max_vertex_travel_over_diameter": 0.01
+        }
+      },
+      "metrics": {
+        "method_id": "reciprocal",
+        "method": "Same six PCA starts; reciprocal ICP correspondences; unchanged ranking and thresholds",
+        "experimental": true,
+        "fitness": 0.988827421629244,
+        "rmse_mm": 3.727940819298282,
+        "mssd_over_diameter": 0.12241469513744455,
+        "accepted": true,
+        "correct": false,
+        "category": "accepted_but_wrong",
+        "source": "audit_evidence/recorded_benchmark_demo/reciprocal_results.jsonl",
+        "source_sha256": "0843567aa68d7d31a826647ed5e2a3f0f987f3de7200d1f4b3f40df550c0a51e"
+      }
+    }
+  ],
+  "model_turns": 2,
+  "tool_executions": 1,
+  "prose_verification": "TEST FIXTURE; no model-quality verification"
+}

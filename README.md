@@ -1,6 +1,6 @@
 # AutoFrame 3D
 
-The default dashboard is now a **Recorded benchmark demo** using verified saved cases, benchmark GT reveal, separate acceptance/correctness, and evidence export. See [DEMO.md](DEMO.md) for exact local launch commands, the 90-second script, current verification and limits. No registration is run by opening the recorded flow.
+The default dashboard is a **Recorded benchmark demo** using saved cases, benchmark GT reveal, separate acceptance/correctness, and evidence export. The two display geometries are bundled with T-LESS attribution; no full dataset or Nebius key is required. See [DEMO.md](DEMO.md) for launch commands, asset regeneration, current verification and limits. No registration is run by opening the recorded flow. Live Nebius/NVIDIA integration remains **UNVERIFIED**.
 
 **Break the pose before it breaks the robot.** AutoFrame 3D generates seeded synthetic CAD-to-scan registration experiments, measures alignment quality separately from true pose error, searches for accepted-but-wrong alignments, and exports cases that can be recomputed and replayed.
 
@@ -13,12 +13,14 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e ".[test]"
-npm install --prefix frontend
+npm ci --prefix frontend
 ```
 
 Start the backend in one PowerShell terminal:
 
 ```powershell
+$env:AUTOFRAME3D_SKIP_DOTENV='1'
+Remove-Item Env:NEBIUS_API_KEY -ErrorAction SilentlyContinue
 python -m uvicorn autoframe3d.api:app --host 127.0.0.1 --port 8000
 ```
 

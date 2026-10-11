@@ -46,18 +46,18 @@ def test_recorded_case_geometry_export_and_regression_without_compute(monkeypatc
 
 
 def test_missing_or_changed_geometry_keeps_recorded_metrics_available(monkeypatch):
-    def missing(case, verify_hashes=False):
+    def missing(case):
         raise FileNotFoundError("Local geometry input missing: fixture. Recorded metrics remain available.")
-    monkeypatch.setattr(recorded_demo, "check_inputs", missing)
+    monkeypatch.setattr(recorded_demo, "display_asset", missing)
     client = TestClient(api.app)
     listing = client.get("/api/demo").json()
     assert not listing["cases"][0]["geometry_available"]
     assert listing["cases"][0]["variants"][0]["record"]["pose_metrics"]
     response = client.get("/api/demo/cases/accepted-wrong/geometry")
     assert response.status_code == 503 and "Recorded metrics" in response.json()["detail"]
-    def changed(case, verify_hashes=False):
+    def changed(case):
         raise ValueError("Local input differs from recorded evidence")
-    monkeypatch.setattr(recorded_demo, "check_inputs", changed)
+    monkeypatch.setattr(recorded_demo, "display_asset", changed)
     assert client.get("/api/demo/cases/accepted-wrong/geometry").status_code == 409
 
 

@@ -1,9 +1,10 @@
 """Read-only curated benchmark evidence. Geometry loading never registers a pose."""
 import hashlib
+import gzip
 import json
 from pathlib import Path
 
-from autoframe3d.tless_cases import geometry_payload
+import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 EVIDENCE_PATH = ROOT / "audit_evidence/recorded_benchmark_demo/demo.json"
@@ -36,10 +37,10 @@ def catalogue():
     result = evidence()
     for case in result["cases"]:
         try:
-            check_inputs(case)
-            case["geometry_status"] = "Local inputs present; hashes checked when geometry is opened."
+            display_asset(case)
+            case["geometry_status"] = "Bundled T-LESS display geometry; visualization only, not scoring/replay inputs."
             case["geometry_available"] = True
-        except FileNotFoundError as error:
+        except (FileNotFoundError, ValueError) as error:
             case["geometry_status"] = str(error)
             case["geometry_available"] = False
     return result
@@ -47,5 +48,22 @@ def catalogue():
 
 def geometry(case_id, variant):
     case, selected = case_variant(case_id, variant)
-    check_inputs(case, verify_hashes=True)
-    return geometry_payload(selected["record"])
+    payload = display_asset(case)
+    record = selected["record"]
+    return {**payload, "config": {"object_kind": "T-LESS object", "object_id": case["object_id"],
+                                  "units": "metres", "visualization_only": True},
+            "estimated_T_object_from_scan": np.linalg.inv(record["camera_from_object_estimate"]).tolist(),
+            "ground_truth_T_object_from_scan": np.linalg.inv(record["camera_from_object_ground_truth"]).tolist()}
+
+
+def display_asset(case):
+    directory = ROOT / "demo_assets"
+    try:
+        manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
+        entry = manifest["cases"][case["id"]]
+        raw = (directory / (case["id"] + ".json.gz")).read_bytes()
+    except FileNotFoundError as error:
+        raise FileNotFoundError("Display geometry missing; restore demo_assets or run python scripts/prepare_demo_assets.py --dataset <T-LESS BOP root>. Recorded metrics remain available.") from error
+    if len(raw) != entry["size_bytes"] or hashlib.sha256(raw).hexdigest() != entry["publication_sha256"]:
+        raise ValueError("Display geometry differs from publication manifest; regenerate demo_assets.")
+    return json.loads(gzip.decompress(raw))

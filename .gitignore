@@ -33,6 +33,7 @@ service-account*.json
 *.zip
 *.tar
 *.gz
+!demo_assets/*.json.gz
 publish_checkout_*/
 # Bulk generated inventories and summaries; original local files are preserved.
 data/tless/archive_contents.json

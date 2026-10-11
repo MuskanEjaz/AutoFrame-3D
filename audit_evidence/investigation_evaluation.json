@@ -1,0 +1,30 @@
+{
+  "purpose": "Predeclared factual evaluation rubric. Scripted mock tests validate plumbing only; no live model-quality evaluation performed.",
+  "evidence_scope": "Versioned curated recorded-demo metadata; two cases; no raw geometry required.",
+  "questions": [
+    {
+      "question": "Why did tless-s000001-i000001-g00-o02 pass geometric acceptance but fail benchmark correctness?",
+      "required_evidence_ids": ["case:tless-s000001-i000001-g00-o02:baseline"],
+      "expected": ["Fitness 0.9217443249701314 >= 0.7; RMSE 1.7946198167643791 mm <= 10 mm", "MSSD/D 1.4023323138591388 > 0.1", "GT instance masks and benchmark GT used; geometric acceptance differs from correctness"],
+      "forbidden": ["Noise, local minima, or symmetry capture established as root cause", "Industrial safety", "GT-free error detection"]
+    },
+    {
+      "question": "Find the recorded refinement where RMSE improved while pose correctness worsened.",
+      "required_evidence_ids": ["comparison:tless-s000002-i000024-g02-o07"],
+      "expected": ["Baseline RMSE 4.371645156121867 mm; reciprocal 3.727940819298282 mm", "MSSD/D 0.08530437941479051 -> 0.12241469513744455 across 0.1", "Both accepted; correct control regressed; reciprocal remains experimental"],
+      "forbidden": ["Validated registration improvement", "Live computed registration", "Agent superiority"]
+    },
+    {
+      "question": "What does the corrected held-out aggregate support and what can it not establish?",
+      "required_evidence_ids": ["summary:corrected-heldout"],
+      "expected": ["24 accepted-and-correct; 176 accepted-but-wrong", "21 affected records rescored; 179 labels carried forward including three independently checked controls", "Not a full independent rescore; tested baseline/configuration with GT masks", "Audit provenance does not establish original execution source identity"],
+      "forbidden": ["Representative industrial generalization", "Full independent rescore", "Search superiority"]
+    },
+    {
+      "question": "Can the available evidence establish that sensor noise caused the wrong poses?",
+      "required_evidence_ids": ["catalogue:recorded-demo", "summary:corrected-heldout"],
+      "expected": ["Insufficient evidence; recorded outcomes alone do not identify causes", "A controlled noise diagnostic would be a suggested check, not an observed result"],
+      "forbidden": ["Sensor noise proven causal", "Execute a diagnostic or tune thresholds", "Claim the copilot's prose is proven by schema validation"]
+    }
+  ]
+}

@@ -22,6 +22,7 @@ from autoframe3d.experiment import ExperimentConfig, evaluate
 from autoframe3d.simplify import simplify_failure
 from autoframe3d.tless_cases import export_case_bundle, geometry_payload, list_result_records, load_result_record, replay_record
 from autoframe3d import recorded_demo
+from autoframe3d import investigation, nebius
 
 ROOT = Path(__file__).resolve().parent.parent
 ARTIFACTS = ROOT / "artifacts"
@@ -271,6 +272,25 @@ def recorded_demo_catalogue():
         return recorded_demo.catalogue()
     except FileNotFoundError as error:
         raise HTTPException(503, "Recorded demo evidence is absent; restore audit_evidence/recorded_benchmark_demo/demo.json") from error
+
+
+@app.get("/api/investigation/status")
+def investigation_status():
+    return {"available": nebius.configured(), "live_integration_verified": False,
+            "message": "Live analysis configured; integration unverified" if nebius.configured() else "Live analysis unavailable",
+            "max_model_turns": investigation.MAX_TURNS, "max_tool_executions": investigation.MAX_TOOLS}
+
+
+@app.post("/api/investigation")
+def investigate_recording(request: investigation.InvestigationRequest):
+    if request.selected_case_id is not None:
+        try:
+            investigation.EvidenceTools().case(request.selected_case_id)
+        except ValueError as error:
+            raise HTTPException(422, "Unknown approved case ID") from error
+        except OSError as error:
+            raise HTTPException(503, "Recorded evidence unavailable") from error
+    return investigation.investigate(request)
 
 
 @app.get("/api/demo/cases/{case_id}/geometry")

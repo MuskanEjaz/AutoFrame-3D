@@ -160,6 +160,9 @@ input[type=number] { font-family: var(--mono); }
 .recorded-demo pre, .recorded-demo code { font: 10px/1.6 var(--mono); overflow-wrap: anywhere; white-space: pre-wrap; }
 .recorded-demo pre { max-height: 250px; overflow: auto; }
 .recorded-demo .table-scroll { overflow-x: auto; }
+.investigation-panel textarea { display: block; width: 100%; margin: 10px 0; padding: 12px; color: var(--text); background: #10191e; border: 1px solid var(--line); font: inherit; resize: vertical; }
+.investigation-examples { display: flex; flex-wrap: wrap; gap: 8px; }
+.investigation-examples .button { white-space: normal; text-align: left; max-width: 100%; }
 .recorded-demo table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
 .recorded-demo th, .recorded-demo td { padding: 12px 10px; border-bottom: 1px solid var(--line); }
 .recorded-demo .loading-state { padding: 28px; text-align: center; line-height: 1.6; }
