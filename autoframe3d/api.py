@@ -12,7 +12,7 @@ from typing import Literal
 
 import numpy as np
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, ConfigDict, Field
 
 from autoframe3d.agent import DEFAULT_MODEL
@@ -21,6 +21,7 @@ from autoframe3d.cases import export_case, replay_bundle
 from autoframe3d.experiment import ExperimentConfig, evaluate
 from autoframe3d.simplify import simplify_failure
 from autoframe3d.tless_cases import export_case_bundle, geometry_payload, list_result_records, load_result_record, replay_record
+from autoframe3d import recorded_demo
 
 ROOT = Path(__file__).resolve().parent.parent
 ARTIFACTS = ROOT / "artifacts"
@@ -28,6 +29,8 @@ ARTIFACTS.mkdir(exist_ok=True)
 
 
 def _load_dotenv() -> None:
+    if os.environ.get("AUTOFRAME3D_SKIP_DOTENV") == "1":
+        return
     env_path = ROOT / ".env"
     if not env_path.exists():
         return
@@ -260,6 +263,62 @@ def stop_job(job_id: str) -> dict[str, str]:
 def get_case(case_id: str) -> dict[str, object]:
     case = store.case(case_id)
     return _json_safe({"case_id": case_id, **case["result"]})
+
+
+@app.get("/api/demo")
+def recorded_demo_catalogue():
+    try:
+        return recorded_demo.catalogue()
+    except FileNotFoundError as error:
+        raise HTTPException(503, "Recorded demo evidence is absent; restore audit_evidence/recorded_benchmark_demo/demo.json") from error
+
+
+@app.get("/api/demo/cases/{case_id}/geometry")
+def recorded_demo_geometry(case_id: str, variant: str = "baseline"):
+    try:
+        return recorded_demo.geometry(case_id, variant)
+    except KeyError as error:
+        raise HTTPException(404, str(error)) from error
+    except FileNotFoundError as error:
+        raise HTTPException(503, str(error)) from error
+    except ValueError as error:
+        raise HTTPException(409, str(error)) from error
+
+
+@app.get("/api/demo/cases/{case_id}/evidence")
+def recorded_demo_export(case_id: str):
+    try:
+        case, _ = recorded_demo.case_variant(case_id)
+        bundle = {**recorded_demo.evidence(), "cases": [case]}
+    except KeyError as error:
+        raise HTTPException(404, str(error)) from error
+    except FileNotFoundError as error:
+        raise HTTPException(503, "Recorded demo evidence is absent; restore audit_evidence/recorded_benchmark_demo/demo.json") from error
+    return Response(json.dumps(bundle, indent=2), media_type="application/json",
+                    headers={"Content-Disposition": f'attachment; filename="autoframe3d-{case_id}-recorded-evidence.json"'})
+
+
+@app.post("/api/demo/cases/{case_id}/replay")
+def recorded_demo_replay(case_id: str):
+    try:
+        case, selected = recorded_demo.case_variant(case_id, "baseline")
+        recorded_demo.check_inputs(case, verify_hashes=True)
+    except KeyError as error:
+        raise HTTPException(404, str(error)) from error
+    except FileNotFoundError as error:
+        raise HTTPException(503, str(error)) from error
+    except ValueError as error:
+        raise HTTPException(409, str(error)) from error
+    job_id = store.new_job("recorded_baseline_replay", 1)
+
+    def run():
+        result = replay_record(selected["record"])
+        with store.lock:
+            store.jobs[job_id]["result"] = result
+            store.jobs[job_id]["progress"]["completed"] = 1
+
+    _start_worker(job_id, run)
+    return {"job_id": job_id}
 
 
 @app.get("/api/tless/cases")

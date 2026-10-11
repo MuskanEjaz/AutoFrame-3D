@@ -1,0 +1,374 @@
+{
+  "label": "Recorded benchmark demo",
+  "schema_version": 1,
+  "config": {
+    "protocol": "custom_internal_tless_test_primesense_bop19",
+    "label": "Custom internal evaluation on the public BOP test subset; not an official BOP score",
+    "instance_masks": "GT-provided mask_visib; registration evaluation with ground-truth instance masks",
+    "minimum_visible_fraction_for_manifest": 0.1,
+    "geometric_acceptance": {
+      "minimum_fitness": 0.7,
+      "maximum_inlier_rmse_m": 0.01,
+      "maximum_correspondence_distance_m": 0.015
+    },
+    "pose_correctness": {
+      "metric": "BOP MSSD / object diameter",
+      "maximum_normalized_mssd": 0.1,
+      "continuous_symmetry_max_vertex_travel_over_diameter": 0.01
+    },
+    "registration": {
+      "initializer": "6 geometry-ranked starts from 24 proper PCA signed-axis/permutation alignments, max-geodesic diversity ordered",
+      "max_registration_evaluations": 6,
+      "max_iterations_per_start": 8,
+      "model_registration_points_max": 3000,
+      "random_seed": 20260928
+    },
+    "execution": {
+      "timeout_seconds": 30,
+      "default_workers": 1,
+      "max_workers": 4
+    },
+    "perturbed_group": {
+      "noise_std_m": 0.002,
+      "point_dropout_fraction": 0.1,
+      "seed_offset": 700000
+    }
+  },
+  "config_sha256": "ca60a2fe5c667bce40c85c75f11fc0e65d0f8db36281945f94b6dd422155577a",
+  "cases": [
+    {
+      "id": "accepted-wrong",
+      "title": "A \u00b7 Geometrically accepted, incorrect pose",
+      "case_id": "tless-s000001-i000001-g00-o02",
+      "object_id": 2,
+      "inputs": {
+        "data/tless/bop/test_primesense/000001/scene_camera.json": "0f4e972b56ef220fe2d4efbbd4767f77ca0e54fe76093d46f952d515700f1ce1",
+        "data/tless/bop/test_primesense/000001/depth/000001.png": "9d32acb46ad00d08ee2cb28c27c0042e29e13585daccec768ba735c541199535",
+        "data/tless/bop/test_primesense/000001/mask_visib/000001_000000.png": "ad94caf3cbe67179d3ca8d5ce7b1ac6ac88b71528fc4a44a03395e3d4dd1cd21",
+        "data/tless/bop/models_cad/obj_000002.ply": "354d8969694176aa65d4d470badd304532bead5aa8e96bdecaa0ae41620f81b2",
+        "data/tless/bop/models_eval/obj_000002.ply": "f09eeb95cf1e3231485e0f89f69671331cbb40ed30f2e87f4507722660dd8441",
+        "data/tless/bop/models_cad/models_info.json": "48a13b6e4532c20954dbe014a082439b05984d12ff13da1da62635a8dee59925"
+      },
+      "variants": [
+        {
+          "id": "baseline",
+          "label": "Historical PCA + ICP baseline",
+          "experimental": false,
+          "record": {
+            "case_id": "tless-s000001-i000001-g00-o02",
+            "scene_id": 1,
+            "image_id": 1,
+            "gt_index": 0,
+            "object_id": 2,
+            "group": "original",
+            "status": "valid",
+            "accepted": true,
+            "correct": false,
+            "category": "accepted_but_wrong",
+            "alignment_quality_metrics": {
+              "fitness": 0.9217443249701314,
+              "inlier_rmse_m": 0.0017946198167643791,
+              "inlier_count": 3086,
+              "scan_point_count": 3348,
+              "max_correspondence_distance_m": 0.015
+            },
+            "pose_metrics": {
+              "mssd_m": 0.09276596536055867,
+              "mssd_over_diameter": 1.4023323138591388
+            },
+            "diameter_m": 0.06615120000000001,
+            "camera_from_object_estimate": [
+              [
+                -0.9420434860105634,
+                0.15970511461397158,
+                -0.2950395682467046,
+                -0.048509956762149246
+              ],
+              [
+                -0.05807759358253542,
+                -0.9437805777507866,
+                -0.32543081320620715,
+                0.08301115606619423
+              ],
+              [
+                -0.3304255795012335,
+                -0.28943478959263025,
+                0.8983576342330181,
+                0.7049428069090315
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "camera_from_object_ground_truth": [
+              [
+                0.91721348,
+                0.39839448,
+                0.00094431,
+                -0.04978205778000001
+              ],
+              [
+                0.38220217,
+                -0.87926045,
+                -0.284292,
+                0.08639767747
+              ],
+              [
+                -0.11243008,
+                0.26111738,
+                -0.958737,
+                0.73773818516
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "registration_initialization": "24 PCA signed-axis starts; geometry-only ranking",
+            "registration_evaluations": 6,
+            "selected_initialization_index": 3,
+            "perturbation": null,
+            "runtime_seconds": 1.173732999999629,
+            "evaluation_note": "Registration evaluation with ground-truth instance masks; not end-to-end detection.",
+            "outer_call_seconds": 2.4312858999992386
+          },
+          "evidence_source": "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/results.jsonl",
+          "source_sha256": "56d85181c19de95ecfa54834cc530a90d4d64ba6955ec39ed98ed873d7e10bd8",
+          "method": "First six diversity-ordered PCA starts; model-to-scan ICP; scan-fitness/RMSE ranking",
+          "execution_source_identity": "116132f4c77c6783b0f31406fb04736e31d1bd74a7aeebdaf3df78c47c781e6b",
+          "publication_copy": "audit_evidence/development_eligibility_audit_20261011T053002Z_963a0a93/results.jsonl"
+        }
+      ]
+    },
+    {
+      "id": "control-regression",
+      "title": "B \u00b7 Lower RMSE, worse pose",
+      "case_id": "tless-s000002-i000024-g02-o07",
+      "object_id": 7,
+      "inputs": {
+        "data/tless/bop/test_primesense/000002/scene_camera.json": "84d4a7b2106ed19c59d11da0fa406a763bd408c8585a77b8f44e5d3d7b300d9b",
+        "data/tless/bop/test_primesense/000002/depth/000024.png": "aa091e3d7274b21ef274186b8935ede1932d1aa0efcb8d01e4f2ada21b65c097",
+        "data/tless/bop/test_primesense/000002/mask_visib/000024_000002.png": "a611a43947c358d1d5729c7e9446dbf8944468b4c18b5ae9f318015ae98a4631",
+        "data/tless/bop/models_cad/obj_000007.ply": "da526fe974d4184986022ad353c559019cb4bd98a0b20b3219d59b9e8b2935c7",
+        "data/tless/bop/models_eval/obj_000007.ply": "fdac88ebf5334d552d343652dceacb2bec4ec28400e9a8202f1e0f73bd3c2c27",
+        "data/tless/bop/models_cad/models_info.json": "48a13b6e4532c20954dbe014a082439b05984d12ff13da1da62635a8dee59925"
+      },
+      "variants": [
+        {
+          "id": "baseline",
+          "label": "Historical PCA + ICP baseline",
+          "experimental": false,
+          "record": {
+            "case_id": "tless-s000002-i000024-g02-o07",
+            "scene_id": 2,
+            "image_id": 24,
+            "gt_index": 2,
+            "object_id": 7,
+            "group": "original",
+            "status": "valid",
+            "accepted": true,
+            "correct": true,
+            "category": "accepted_and_correct",
+            "alignment_quality_metrics": {
+              "fitness": 0.9963842788444155,
+              "inlier_rmse_m": 0.004371645156121867,
+              "inlier_count": 27557,
+              "scan_point_count": 27657,
+              "max_correspondence_distance_m": 0.015
+            },
+            "pose_metrics": {
+              "mssd_m": 0.015236641729172808,
+              "mssd_over_diameter": 0.08530437941479051
+            },
+            "diameter_m": 0.17861500000000002,
+            "camera_from_object_estimate": [
+              [
+                -0.056587952205245234,
+                -0.9981344223368098,
+                -0.022923320256452086,
+                -0.0789589842436678
+              ],
+              [
+                -0.9639045180907702,
+                0.06060153025160985,
+                -0.25925958909047386,
+                0.00825649226793261
+              ],
+              [
+                0.2601651084780867,
+                0.007424922728632746,
+                -0.965535595849816,
+                0.7470334807884046
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "camera_from_object_ground_truth": [
+              [
+                -0.05836674,
+                -0.99824031,
+                0.0104892,
+                -0.07893862257
+              ],
+              [
+                -0.95565499,
+                0.0528328,
+                -0.289713,
+                0.011173229600000001
+              ],
+              [
+                0.28864895,
+                -0.0269337,
+                -0.957056,
+                0.75809973135
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "registration_initialization": "24 PCA signed-axis starts; geometry-only ranking",
+            "registration_evaluations": 6,
+            "selected_initialization_index": 1,
+            "perturbation": null,
+            "runtime_seconds": 1.2128297999997812,
+            "evaluation_note": "Registration evaluation with ground-truth instance masks; not end-to-end detection.",
+            "outer_call_seconds": 2.066681499999504
+          },
+          "evidence_source": "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/results.jsonl",
+          "source_sha256": "56d85181c19de95ecfa54834cc530a90d4d64ba6955ec39ed98ed873d7e10bd8",
+          "method": "First six diversity-ordered PCA starts; model-to-scan ICP; scan-fitness/RMSE ranking",
+          "execution_source_identity": "116132f4c77c6783b0f31406fb04736e31d1bd74a7aeebdaf3df78c47c781e6b",
+          "publication_copy": "audit_evidence/development_eligibility_audit_20261011T053002Z_963a0a93/results.jsonl"
+        },
+        {
+          "id": "reciprocal",
+          "label": "Reciprocal ICP \u2014 experimental, rejected for promotion",
+          "experimental": true,
+          "record": {
+            "case_id": "tless-s000002-i000024-g02-o07",
+            "scene_id": 2,
+            "image_id": 24,
+            "gt_index": 2,
+            "object_id": 7,
+            "group": "original",
+            "status": "valid",
+            "camera_from_object_ground_truth": [
+              [
+                -0.05836674,
+                -0.99824031,
+                0.0104892,
+                -0.07893862257
+              ],
+              [
+                -0.95565499,
+                0.0528328,
+                -0.289713,
+                0.011173229600000001
+              ],
+              [
+                0.28864895,
+                -0.0269337,
+                -0.957056,
+                0.75809973135
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "camera_from_object_estimate": [
+              [
+                -0.07586661131794917,
+                -0.995898686693446,
+                -0.04929567049349775,
+                -0.07977090614909516
+              ],
+              [
+                -0.9583224635385557,
+                0.08648182306508939,
+                -0.2722846858652377,
+                0.0077258452908640085
+              ],
+              [
+                0.27543114051342105,
+                0.02658383195874591,
+                -0.9609531657234214,
+                0.7404316727526192
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "alignment_quality_metrics": {
+              "fitness": 0.988827421629244,
+              "inlier_rmse_m": 0.003727940819298282,
+              "inlier_count": 27348,
+              "scan_point_count": 27657
+            },
+            "pose_metrics": {
+              "mssd_m": 0.02186510077197466,
+              "mssd_over_diameter": 0.12241469513744455
+            },
+            "category": "accepted_but_wrong",
+            "accepted": true,
+            "correct": false,
+            "perturbation": null
+          },
+          "evidence_source": "artifacts/partial_overlap_refinement_20261011T055630Z/real_results.jsonl",
+          "source_sha256": "0843567aa68d7d31a826647ed5e2a3f0f987f3de7200d1f4b3f40df550c0a51e",
+          "method": "Same six PCA starts; reciprocal ICP correspondences; unchanged ranking and thresholds",
+          "execution_source_identity": "0ff26092dc0739d1e4f51345d28a894f6142ae9bd9d45a95edb45e999622ae5e",
+          "publication_copy": "audit_evidence/recorded_benchmark_demo/reciprocal_results.jsonl"
+        }
+      ]
+    }
+  ],
+  "evidence": {
+    "heldout_corrected": {
+      "accepted_and_correct": 24,
+      "accepted_but_wrong": 176,
+      "affected_rescored": 21,
+      "unaffected_carried_forward": 179,
+      "independently_checked_controls": 3,
+      "full_independent_rescore": false
+    },
+    "scope": "Tested historical baseline and frozen internal T-LESS configuration; not an official BOP score. GT visible instance masks were used.",
+    "pilot": "The local feedback-free search pilot demonstrated no advantage over random search; all five baselines were already wrong. Deterministic included 15 no-ops, random none.",
+    "experimental": "Scan-to-model and reciprocal refinements remain experimental; neither is a production improvement.",
+    "AI": "Optional remote model proposals are implemented but live integration remains unverified. No model calls contributed to this demo; deterministic schedules are not adaptive AI.",
+    "historical_provenance": "Scoring audit provenance does not establish original held-out execution source identity."
+  },
+  "publication": {
+    "kind": "Derived curated copies of saved records; originals remain unchanged. Reciprocal record joins its saved estimate/metrics to the same case baseline GT pose under unchanged verified inputs; no geometry or results generated by registration.",
+    "source_files": {
+      "artifacts/development_eligibility_audit_20261011T053002Z_963a0a93/results.jsonl": "56d85181c19de95ecfa54834cc530a90d4d64ba6955ec39ed98ed873d7e10bd8",
+      "artifacts/partial_overlap_refinement_20261011T055630Z/real_results.jsonl": "0843567aa68d7d31a826647ed5e2a3f0f987f3de7200d1f4b3f40df550c0a51e",
+      "configs/tless_frozen.json": "ca60a2fe5c667bce40c85c75f11fc0e65d0f8db36281945f94b6dd422155577a",
+      "audit_evidence/symmetry_scoring_audit_20261011_02a10626368f/audit_summary.json": "404303d68ae5a1c03f36c6d038fca44fe9fa1303790ea8ede2c2f31fffe6f8a2",
+      "audit_evidence/development_search_pilot_20261011T051807Z_289be02e/summary.json": "fd9e17d6b3259787e2eed8d03015f3cb7e9934c8ee37be99da8e7c7568a78686"
+    },
+    "dataset_attribution": {
+      "repository": "bop-benchmark/tless",
+      "revision": "5fd309a04476a842d93abfb584fba9ee7caecdf1",
+      "license": "CC-BY-4.0",
+      "source_url": "https://huggingface.co/datasets/bop-benchmark/tless/tree/5fd309a04476a842d93abfb584fba9ee7caecdf1"
+    }
+  }
+}

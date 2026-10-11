@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
@@ -30,6 +30,7 @@ function objectToWorld(transform: number[][]): THREE.Matrix4 {
 export default function Scene({ data, showScan, showEstimate, showTruth }: SceneProps) {
   const host = useRef<HTMLDivElement>(null);
   const objects = useRef<{ scan?: THREE.Object3D; estimate?: THREE.Object3D; truth?: THREE.Object3D }>({});
+  const [renderError, setRenderError] = useState<string | null>(null);
 
   useEffect(() => {
     const container = host.current;
@@ -40,7 +41,14 @@ export default function Scene({ data, showScan, showEstimate, showTruth }: Scene
     camera.up.set(0, 0, 1);
     camera.position.set(3.4, -4.2, 3.0);
     camera.lookAt(0, 0, 0);
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: true });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: true });
+      setRenderError(null);
+    } catch {
+      setRenderError("3D rendering is unavailable in this browser. Recorded metrics and evidence export remain available.");
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.setSize(container.clientWidth, container.clientHeight);
@@ -51,7 +59,6 @@ export default function Scene({ data, showScan, showEstimate, showTruth }: Scene
     grid.position.z = -1.03;
     scene.add(grid);
     const axes = new THREE.AxesHelper(1.35);
-    axes.rotation.x = Math.PI / 2;
     scene.add(axes);
     scene.add(new THREE.HemisphereLight("#d8f0eb", "#17242a", 2.2));
     const keyLight = new THREE.DirectionalLight("#fff4e8", 2.3);
@@ -93,9 +100,25 @@ export default function Scene({ data, showScan, showEstimate, showTruth }: Scene
       objects.current = { scan: scanPoints, estimate, truth };
       controls = new OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
-      controls.target.set(0, 0, 0);
-      controls.minDistance = 1.5;
-      controls.maxDistance = 12;
+      scene.updateMatrixWorld(true);
+      const bounds = new THREE.Box3().setFromObject(scanPoints)
+        .union(new THREE.Box3().setFromObject(estimate))
+        .union(new THREE.Box3().setFromObject(truth));
+      const center = bounds.getCenter(new THREE.Vector3());
+      const extent = Math.max(bounds.getSize(new THREE.Vector3()).length(), 0.001);
+      controls.target.copy(center);
+      camera.position.copy(center).add(new THREE.Vector3(1.1, -1.5, 1).multiplyScalar(extent));
+      camera.near = extent / 1000;
+      camera.far = extent * 100;
+      camera.lookAt(center);
+      camera.updateProjectionMatrix();
+      controls.minDistance = extent * 0.15;
+      controls.maxDistance = extent * 20;
+      grid.scale.setScalar(extent * 0.7);
+      grid.position.set(center.x, center.y, bounds.min.z - extent * 0.15);
+      axes.scale.setScalar(extent * 0.4);
+      axes.position.copy(center);
+      (scanPoints.material as THREE.PointsMaterial).size = extent * 0.008;
     }
 
     const resize = new ResizeObserver(() => {
@@ -134,5 +157,5 @@ export default function Scene({ data, showScan, showEstimate, showTruth }: Scene
     if (objects.current.truth) objects.current.truth.visible = showTruth;
   }, [showScan, showEstimate, showTruth, data]);
 
-  return <div className="scene-host" ref={host} aria-label="Interactive 3D registration view" />;
+  return <div className="scene-host" ref={host} aria-label="Interactive 3D registration view">{renderError && <div className="loading-state" role="status">{renderError}</div>}</div>;
 }

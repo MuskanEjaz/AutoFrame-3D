@@ -1,5 +1,7 @@
 # AutoFrame 3D
 
+The default dashboard is now a **Recorded benchmark demo** using verified saved cases, benchmark GT reveal, separate acceptance/correctness, and evidence export. See [DEMO.md](DEMO.md) for exact local launch commands, the 90-second script, current verification and limits. No registration is run by opening the recorded flow.
+
 **Break the pose before it breaks the robot.** AutoFrame 3D generates seeded synthetic CAD-to-scan registration experiments, measures alignment quality separately from true pose error, searches for accepted-but-wrong alignments, and exports cases that can be recomputed and replayed.
 
 ## Windows setup

@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap");
 
 :root {
   font-family: "Manrope", "Trebuchet MS", sans-serif;
@@ -142,6 +141,29 @@ input[type=number] { font-family: var(--mono); }
 .case-actions { flex-direction: row; align-items: center; justify-content: end; gap: 6px; border-left: 1px solid var(--line-soft); padding: 10px; }.case-actions .button { min-height: 33px; padding: 0 8px; white-space: nowrap; font-size: 8px; }
 .app-footer { display: flex; justify-content: space-between; gap: 12px; padding: 12px 3px 0; color: var(--subtle); font-size: 8px; }.app-footer i { color: var(--cyan-dim); font-style: normal; }
 .spin { animation: spin 1.3s linear infinite; }@keyframes spin { to { transform: rotate(360deg); } }
+
+.recorded-demo h1 { font: 600 24px var(--display); margin: 8px 0 14px; }
+.recorded-demo h2 { font: 600 21px var(--display); }
+.recorded-demo p { color: #aab8bd; font-size: 12px; line-height: 1.65; }
+.recorded-demo .case-identity { font: 10px/1.6 var(--mono); overflow-wrap: anywhere; }
+.recorded-demo a.button { text-decoration: none; }
+.recorded-demo .decision { margin: 12px 0; padding: 12px; border: 1px solid #34463d; }
+.recorded-demo .decision span { display: block; color: var(--muted); font-size: 11px; }
+.recorded-demo .decision strong { display: block; margin-top: 6px; color: var(--green); }
+.recorded-demo .wrong-pose { border-color: #76513e; }
+.recorded-demo .wrong-pose strong { color: var(--orange); }
+.recorded-demo .metric-cell { border-left: 0; border-bottom: 1px solid var(--line-soft); padding-left: 0; }
+.recorded-demo .metric-cell small { font-size: 10px; color: var(--muted); }
+.recorded-evidence { grid-column: 1 / -1; padding: 18px; }
+.recorded-demo details { margin-top: 18px; }
+.recorded-demo summary { color: var(--cyan); cursor: pointer; font-size: 12px; line-height: 1.6; }
+.recorded-demo pre, .recorded-demo code { font: 10px/1.6 var(--mono); overflow-wrap: anywhere; white-space: pre-wrap; }
+.recorded-demo pre { max-height: 250px; overflow: auto; }
+.recorded-demo .table-scroll { overflow-x: auto; }
+.recorded-demo table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+.recorded-demo th, .recorded-demo td { padding: 12px 10px; border-bottom: 1px solid var(--line); }
+.recorded-demo .loading-state { padding: 28px; text-align: center; line-height: 1.6; }
+.recorded-demo button:focus-visible, .recorded-demo summary:focus-visible, .recorded-demo a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
 
 @media (min-width: 1500px) { .workbench { grid-template-columns: minmax(255px, 290px) minmax(480px, 1fr) minmax(300px, 350px); }.viewer-stage { min-height: 465px; } }
 @media (max-width: 1180px) { .workbench { grid-template-columns: 235px minmax(350px, 1fr); grid-template-rows: minmax(450px, 1fr) auto auto; }.history-panel { grid-column: 1 / -1; min-height: 250px; }.history-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: 300px; }.metrics-panel { grid-row: 3; }.scenario-panel { grid-row: 1 / 3; }.viewer-panel { grid-row: 1; }.history-panel { grid-row: 2; } }
