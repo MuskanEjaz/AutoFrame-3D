@@ -303,9 +303,7 @@ export default function PoseInspection() {
           </div>
         </div>
         <p className="pose-playback-note">
-          Reference-guided animation in the main viewport.
-          <br />
-          Your original estimate is preserved.
+          Animation preview · original estimate preserved.
         </p>
         <div className="pose-actions">
           <button onClick={reset}>
@@ -387,12 +385,12 @@ export default function PoseInspection() {
             establish manufacturing accuracy, collision clearance or benchmark
             correctness. This demo computes no RMSE or registration.
           </p>
+          <p>
+            Synthetic geometry and known reference. No live scanner acquisition
+            or automatic pose recovery. Recorded T-LESS evidence is in the
+            separate benchmark workspace.
+          </p>
         </details>
-        <p className="pose-limit">
-          Synthetic geometry and known reference. No live scanner acquisition or
-          automatic pose recovery. Recorded T-LESS evidence is in the separate
-          benchmark workspace.
-        </p>
       </aside>
     </main>
   );

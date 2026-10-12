@@ -1,3 +1,38 @@
+.pose-workspace,
+.workspace-header.pose-active {
+  --pose-page: #0d1217;
+  --pose-header: #10171d;
+  --pose-panel: #151e26;
+  --pose-raised: #202c36;
+  --pose-input: #101820;
+  --pose-border: #364854;
+  --pose-text: #edf3f7;
+  --pose-secondary: #a8bac7;
+  --pose-cyan: #06bdd2;
+  --pose-cyan-hover: #18cfe1;
+  --pose-selected: #123e49;
+  --pose-amber: #f5a623;
+  --pose-amber-text: #ffc35a;
+  --pose-warning: #302414;
+}
+.workspace-header.pose-active {
+  background: var(--pose-header);
+  border-color: var(--pose-border);
+}
+.workspace-header.pose-active a {
+  color: var(--pose-text);
+}
+.workspace-header.pose-active button {
+  color: var(--pose-secondary);
+}
+.workspace-header.pose-active button[aria-pressed="true"] {
+  color: var(--pose-cyan-hover);
+  border-color: var(--pose-cyan);
+}
+.workspace-header.pose-active > span {
+  color: var(--pose-secondary);
+  border-color: var(--pose-border);
+}
 .workspace-header {
   height: 58px;
   display: flex;
@@ -44,13 +79,17 @@
   text-transform: uppercase;
   color: #b9c9d3;
 }
+.workspace-header button:focus-visible {
+  outline: 2px solid #8debf2;
+  outline-offset: 3px;
+}
 .pose-workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(330px, 26%);
   height: calc(100vh - 58px);
   font-family: Arial, sans-serif;
-  color: #e3ecf2;
-  background: #131d24;
+  color: var(--pose-text);
+  background: var(--pose-page);
 }
 .pose-stage {
   min-width: 0;
@@ -73,7 +112,7 @@
   align-items: center;
   gap: 20px;
   font-size: 12px;
-  color: #9cb2c0;
+  color: var(--pose-secondary);
 }
 .pose-scene-heading label {
   display: flex;
@@ -83,10 +122,10 @@
 .pose-workspace select {
   width: auto;
   display: inline-block;
-  background: #202d36;
-  border: 1px solid #40535f;
+  background: var(--pose-raised);
+  border: 1px solid var(--pose-border);
   padding: 8px 14px;
-  color: #e0eaf0;
+  color: var(--pose-text);
   border-radius: 4px;
 }
 .pose-labels {
@@ -98,7 +137,7 @@
   gap: 14px;
   max-width: 85%;
   font-size: 11px;
-  color: #bfccd4;
+  color: var(--pose-secondary);
   pointer-events: none;
 }
 .pose-labels span {
@@ -113,22 +152,22 @@
   border-radius: 50%;
   display: inline-block;
 }
-.observed-dot {
+.pose-workspace .observed-dot {
   background: #bfc8cc;
 }
-.estimate-dot {
-  background: #eeb743;
+.pose-workspace .estimate-dot {
+  background: var(--pose-amber);
 }
-.reference-dot {
-  background: #4dcbd3;
+.pose-workspace .reference-dot {
+  background: var(--pose-cyan);
 }
 .pose-source {
   position: absolute;
   bottom: 73px;
   left: 20px;
   padding: 9px 11px;
-  background: #15212bdd;
-  border: 1px solid #455964;
+  background: var(--pose-input);
+  border: 1px solid var(--pose-border);
   border-radius: 4px;
   max-width: 240px;
   pointer-events: none;
@@ -137,13 +176,13 @@
   display: block;
   font-size: 9px;
   letter-spacing: 1.5px;
-  color: #8da3b1;
+  color: var(--pose-secondary);
   margin-bottom: 5px;
 }
 .pose-source span {
   font-size: 11px;
   line-height: 1.5;
-  color: #b9cad5;
+  color: var(--pose-secondary);
 }
 .pose-toolbar {
   position: absolute;
@@ -155,8 +194,8 @@
   justify-content: center;
   align-items: center;
   gap: 8px;
-  background: #17232bea;
-  border-top: 1px solid #384c58;
+  background: var(--pose-header);
+  border-top: 1px solid var(--pose-border);
 }
 .pose-toolbar > span,
 .pose-toolbar button {
@@ -167,13 +206,13 @@
   font-size: 11px;
 }
 .pose-toolbar > span {
-  color: #899da9;
+  color: var(--pose-secondary);
 }
 .pose-workspace button {
   cursor: pointer;
-  border: 1px solid #425661;
-  background: #202e38;
-  color: #c5d5df;
+  border: 1px solid var(--pose-border);
+  background: var(--pose-raised);
+  color: var(--pose-text);
   border-radius: 4px;
   font: inherit;
   font-size: 12px;
@@ -184,33 +223,34 @@
   font-size: 11px;
 }
 .pose-workspace button[aria-pressed="true"] {
-  color: #62d6de;
-  background: #1c3b46;
+  color: var(--pose-text);
+  background: var(--pose-selected);
 }
 .pose-inspector {
   min-width: 0;
-  padding: 23px 20px;
-  border-left: 1px solid #3e515c;
-  background: linear-gradient(130deg, #1b2932, #121d25);
+  padding: 20px 20px;
+  border-left: 1px solid var(--pose-border);
+  background: var(--pose-panel);
   overflow-y: auto;
 }
 .pose-eyebrow {
   font-size: 9px;
   letter-spacing: 2px;
-  color: #69cdd4;
+  color: var(--pose-cyan);
 }
 .pose-inspector h1 {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 500;
-  margin: 8px 0 17px;
+  margin: 6px 0 14px;
 }
 .pose-status {
   display: flex;
   gap: 10px;
   align-items: center;
-  padding: 14px 10px;
-  background: #3b311e;
-  color: #f4bf59;
+  padding: 12px 11px;
+  border: 1px solid #76531f;
+  background: var(--pose-warning);
+  color: var(--pose-amber-text);
   border-radius: 5px;
   font-size: 15px;
   line-height: 1.4;
@@ -219,18 +259,18 @@
   flex-shrink: 0;
 }
 .pose-status.aligned {
-  background: #183c37;
-  color: #7ce0c0;
+  background: var(--pose-selected);
+  color: var(--pose-cyan-hover);
 }
 .pose-inspector h2 {
   font-size: 13px;
   font-weight: 500;
-  margin: 22px 0 12px;
+  margin: 18px 0 10px;
 }
 .pose-correction-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 13px;
+  gap: 10px;
 }
 .pose-deltas,
 .pose-angle {
@@ -241,24 +281,24 @@
 .pose-deltas > div,
 .pose-angle > div {
   display: flex;
-  border: 1px solid #42535e;
+  border: 1px solid var(--pose-border);
   border-radius: 4px;
   align-items: center;
   min-height: 37px;
-  background: #152129;
+  background: var(--pose-input);
 }
 .pose-deltas span,
 .pose-angle span {
   padding: 8px;
-  border-right: 1px solid #344650;
+  border-right: 1px solid var(--pose-border);
   font-size: 12px;
-  color: #bfccd5;
+  color: var(--pose-secondary);
   min-width: 37px;
 }
 .pose-correction-grid strong {
   flex: 1;
   text-align: center;
-  color: #f4c268;
+  color: var(--pose-amber-text);
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
@@ -273,21 +313,21 @@
 .pose-angle small {
   font-size: 10px;
   line-height: 1.5;
-  color: #91a8b8;
+  color: var(--pose-secondary);
 }
 .pose-reference-note {
   font-size: 11px;
   line-height: 1.7;
-  color: #95abb9;
-  margin: 12px 0 20px;
+  color: var(--pose-secondary);
+  margin: 10px 0 13px;
 }
 .pose-reference-note b {
   font-weight: 400;
-  color: #c7d8e2;
+  color: var(--pose-text);
 }
 .pose-inspector hr {
   border: 0;
-  border-top: 1px solid #364b57;
+  border-top: 1px solid var(--pose-border);
 }
 .pose-overlay-switch {
   display: flex;
@@ -302,11 +342,11 @@
   display: flex;
   gap: 8px;
   align-items: center;
-  padding: 12px 9px;
-  margin: 18px 0 13px;
+  padding: 10px 9px;
+  margin: 14px 0 12px;
   border-radius: 4px;
-  background: #342d1e;
-  color: #eebd60;
+  background: var(--pose-warning);
+  color: var(--pose-amber-text);
   font-size: 11px;
 }
 .pose-warning svg {
@@ -315,9 +355,9 @@
 .pose-workspace .pose-primary {
   width: 100%;
   padding: 13px 8px;
-  background: #4dc8d3;
+  background: var(--pose-cyan);
   color: #07242c;
-  border-color: #64dce4;
+  border-color: var(--pose-cyan);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -331,7 +371,7 @@
 .pose-progress progress {
   width: 100%;
   height: 4px;
-  accent-color: #58d5dd;
+  accent-color: var(--pose-cyan);
   display: block;
 }
 .pose-progress > div {
@@ -342,7 +382,7 @@
 }
 .pose-progress span {
   font-size: 10px;
-  color: #9cb3c2;
+  color: var(--pose-secondary);
 }
 .pose-progress button {
   display: flex;
@@ -356,8 +396,8 @@
 .pose-playback-note {
   font-size: 11px;
   line-height: 1.6;
-  color: #9bb0bd;
-  margin: 16px 0;
+  color: var(--pose-secondary);
+  margin: 12px 0;
 }
 .pose-actions {
   display: flex;
@@ -373,14 +413,14 @@
   font-size: 11px;
 }
 .pose-inspector details {
-  margin-top: 22px;
-  color: #99afbf;
+  margin-top: 16px;
+  color: var(--pose-secondary);
   font-size: 11px;
   line-height: 1.6;
 }
 .pose-inspector summary {
   cursor: pointer;
-  color: #bed0dc;
+  color: var(--pose-text);
 }
 .pose-inspector details button {
   padding: 7px;
@@ -410,8 +450,8 @@
 .pose-numeric input {
   margin-top: 5px;
   width: 100%;
-  background: #0f1b24;
-  color: #dae9f3;
+  background: var(--pose-input);
+  color: var(--pose-text);
   border: 1px solid #455965;
   border-radius: 4px;
   padding: 8px 5px;
@@ -424,14 +464,14 @@
 }
 .pose-workspace button:focus-visible,
 .pose-workspace input:focus-visible,
-.workspace-header button:focus-visible {
-  outline: 2px solid #8debf2;
+.workspace-header.pose-active button:focus-visible {
+  outline: 2px solid var(--pose-cyan-hover);
   outline-offset: 3px;
 }
 .pose-limit {
   font-size: 10px;
   line-height: 1.7;
-  color: #7893a6;
+  color: var(--pose-secondary);
   margin: 20px 0 0;
 }
 @media (max-width: 760px) {
@@ -516,7 +556,7 @@
   }
   .pose-inspector {
     border-left: 0;
-    border-top: 1px solid #3e515c;
+    border-top: 1px solid var(--pose-border);
     overflow: visible;
     padding: 22px 20px;
   }
@@ -526,4 +566,64 @@
   .pose-correction-grid strong {
     font-size: 14px;
   }
+}
+.pose-workspace button[aria-pressed="true"] {
+  border-color: var(--pose-cyan);
+}
+.pose-status.aligned {
+  border-color: #24717d;
+}
+.pose-correction-grid strong,
+.pose-progress {
+  font-variant-numeric: tabular-nums;
+}
+.pose-correction-grid em {
+  color: var(--pose-secondary);
+  font-size: 9px;
+  margin-left: 2px;
+}
+.pose-workspace button:hover:not(:disabled) {
+  background: #293945;
+  border-color: #567484;
+  color: var(--pose-text);
+}
+.pose-workspace button[aria-pressed="true"]:hover:not(:disabled) {
+  background: #174c58;
+  border-color: var(--pose-cyan-hover);
+}
+.pose-workspace .pose-primary:hover:not(:disabled) {
+  background: var(--pose-cyan-hover);
+  border-color: var(--pose-cyan-hover);
+  color: #07242c;
+}
+.pose-workspace button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.pose-workspace button:disabled {
+  opacity: 0.45;
+}
+.pose-workspace input:focus-visible,
+.pose-workspace select:focus-visible,
+.pose-workspace summary:focus-visible {
+  outline: 2px solid var(--pose-cyan-hover);
+  outline-offset: 3px;
+}
+.pose-progress progress {
+  appearance: none;
+  border: 0;
+  border-radius: 1px;
+  background: var(--pose-input);
+}
+.pose-progress progress::-webkit-progress-bar {
+  background: var(--pose-raised);
+}
+.pose-progress progress::-webkit-progress-value {
+  background: var(--pose-cyan);
+}
+.pose-progress progress::-moz-progress-bar {
+  background: var(--pose-cyan);
+}
+.workspace-header.pose-active button:hover {
+  color: var(--pose-text);
+  background: var(--pose-input);
 }

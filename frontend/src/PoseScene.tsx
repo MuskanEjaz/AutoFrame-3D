@@ -4,6 +4,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { TransformControls } from "three/addons/controls/TransformControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
 import {
   type Pose,
   referencePose,
@@ -49,8 +50,8 @@ export default function PoseScene({
   useEffect(() => {
     const el = host.current!,
       scene = new T.Scene();
-    scene.background = new T.Color("#121b22");
-    scene.fog = new T.Fog("#121b22", 2.4, 3.8);
+    scene.background = new T.Color("#0d1217");
+    scene.fog = new T.Fog("#0d1217", 2.05, 3.5);
     const camera = new T.PerspectiveCamera(36, 1, 0.01, 10);
     camera.up.set(0, 0, 1);
     let renderer: T.WebGLRenderer;
@@ -65,14 +66,16 @@ export default function PoseScene({
     }
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = T.PCFSoftShadowMap;
+    renderer.shadowMap.type = T.PCFShadowMap;
     renderer.toneMapping = T.ACESFilmicToneMapping;
+    renderer.outputColorSpace = T.SRGBColorSpace;
+    renderer.toneMappingExposure = 1.0;
     el.appendChild(renderer.domElement);
     const orbit = new OrbitControls(camera, renderer.domElement);
     orbit.enableDamping = true;
     const reset = () => {
-      camera.position.set(1.02, -1.32, 1.01);
-      orbit.target.set(0.23, 0, 0.55);
+      camera.position.set(0.98, -1.24, 1.06);
+      orbit.target.set(0.31, 0, 0.64);
       orbit.update();
     };
     reset();
@@ -80,10 +83,24 @@ export default function PoseScene({
       room = new RoomEnvironment(),
       env = pm.fromScene(room, 0.04);
     scene.environment = env.texture;
+    scene.environmentIntensity = 0.85;
     room.dispose();
     pm.dispose();
-    scene.add(new T.HemisphereLight("#deefff", "#30303a", 0.9));
-    const light = new T.DirectionalLight("#fff0dd", 2.6);
+    RectAreaLightUniformsLib.init();
+    const key = new T.RectAreaLight("#fff0dc", 4.5, 1.2, 0.8);
+    key.position.set(0.2, -1.0, 1.45);
+    key.lookAt(0.25, 0, 0.65);
+    scene.add(key);
+    const fill = new T.RectAreaLight("#d3e4f2", 1.8, 0.8, 0.9);
+    fill.position.set(1.1, 0.5, 1.0);
+    fill.lookAt(0.25, 0, 0.6);
+    scene.add(fill);
+    const rim = new T.DirectionalLight("#b9d6e6", 0.7);
+    rim.position.set(-0.5, 0.6, 1.3);
+    scene.add(rim);
+    scene.add(new T.HemisphereLight("#d5e2eb", "#25272b", 0.45));
+    // Low-energy shadow key supplements the broad area lights.
+    const light = new T.DirectionalLight("#fff0dd", 0.85);
     light.position.set(0.2, -0.5, 1.8);
     light.castShadow = true;
     light.shadow.mapSize.set(2048, 2048);
@@ -92,23 +109,42 @@ export default function PoseScene({
     light.shadow.camera.top = 1;
     light.shadow.camera.bottom = -1;
     light.shadow.bias = -0.0002;
+    light.shadow.normalBias = 0.002;
+    light.shadow.radius = 4;
     scene.add(light);
     const paint = new T.MeshStandardMaterial({
-        color: "#cbc8bb",
-        metalness: 0.25,
-        roughness: 0.4,
+        color: "#d4d0c5",
+        metalness: 0.08,
+        roughness: 0.38,
+        envMapIntensity: 0.65,
       }),
       metal = new T.MeshStandardMaterial({
-        color: "#a8b3bd",
-        metalness: 0.85,
-        roughness: 0.32,
+        color: "#b8bdc2",
+        metalness: 0.94,
+        roughness: 0.34,
+        envMapIntensity: 1.15,
       }),
       dark = new T.MeshStandardMaterial({
-        color: "#252c32",
-        metalness: 0.6,
-        roughness: 0.34,
+        color: "#242a30",
+        metalness: 0.32,
+        roughness: 0.46,
       }),
-      black = new T.MeshStandardMaterial({ color: "#10161b", roughness: 0.5 });
+      black = new T.MeshStandardMaterial({
+        color: "#080d12",
+        metalness: 0,
+        roughness: 0.86,
+      }),
+      steel = new T.MeshStandardMaterial({
+        color: "#46505a",
+        metalness: 0.85,
+        roughness: 0.38,
+      }),
+      bench = new T.MeshStandardMaterial({
+        color: "#171e24",
+        metalness: 0.25,
+        roughness: 0.7,
+        envMapIntensity: 0.5,
+      });
     const fixture = new T.Group();
     fixture.applyMatrix4(fixtureParent);
     scene.add(fixture);
@@ -172,7 +208,7 @@ export default function PoseScene({
       );
       o.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), dir.normalize());
     };
-    box(fixture, [1.7, 1.1, 0.055], [0.1, 0, -0.03], dark);
+    box(fixture, [1.7, 1.1, 0.055], [0.1, 0, -0.03], bench);
     for (let x = -0.65; x < 0.9; x += 0.14)
       for (let y = -0.45; y < 0.5; y += 0.14)
         cyl(fixture, 0.004, 0.001, [x, y, -0.001], black);
@@ -197,7 +233,7 @@ export default function PoseScene({
           0.004,
           0.008,
           [x + Math.sin(a) * r, -0.104, z + Math.cos(a) * r],
-          dark,
+          steel,
           "y",
         );
       }
@@ -211,7 +247,7 @@ export default function PoseScene({
         0.006,
         0.008,
         [-0.28 + Math.sin(a) * 0.15, Math.cos(a) * 0.15, 0.061],
-        dark,
+        steel,
       );
     }
     for (const x of [0.19, 0.29])
@@ -275,7 +311,7 @@ export default function PoseScene({
             0.006,
             0.012,
             [x + 0.006, Math.sin(a) * 0.057, Math.cos(a) * 0.057],
-            dark,
+            steel,
             "x",
           );
         }
@@ -339,16 +375,18 @@ export default function PoseScene({
     );
     label.rotation.x = Math.PI / 2;
     const overlayMaterial = new T.LineBasicMaterial({
-      color: "#f3b545",
+      color: "#f5a623",
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.76,
       depthWrite: false,
       depthTest: false,
+      toneMapped: false,
     });
     const tintMaterial = new T.MeshBasicMaterial({
-      color: "#edaa35",
+      color: "#f5a623",
       transparent: true,
       opacity: 0.055,
+      toneMapped: false,
       depthWrite: false,
       polygonOffset: true,
       polygonOffsetFactor: -1,
@@ -382,10 +420,11 @@ export default function PoseScene({
     const part = makeOverlay(overlayMaterial, tintMaterial);
     const outline = makeOverlay(
       new T.LineBasicMaterial({
-        color: "#5bd4db",
+        color: "#06bdd2",
         transparent: true,
-        opacity: 0.38,
+        opacity: 0.48,
         depthWrite: false,
+        toneMapped: false,
       }),
     );
     outline.position.fromArray(referencePose().p);
@@ -404,9 +443,11 @@ export default function PoseScene({
       0.006,
       [0.041, 0, 0],
       new T.MeshStandardMaterial({
-        color: "#34cad7",
-        emissive: "#0d7b87",
-        emissiveIntensity: 0.5,
+        color: "#06bdd2",
+        emissive: "#008fa8",
+        emissiveIntensity: 0.3,
+        metalness: 0.3,
+        roughness: 0.35,
       }),
       "x",
     );
@@ -442,9 +483,10 @@ export default function PoseScene({
             new T.Line(
               new T.BufferGeometry().setFromPoints([origin, hits[0].point]),
               new T.LineBasicMaterial({
-                color: "#4adce4",
+                color: "#008fa8",
                 transparent: true,
-                opacity: 0.25,
+                opacity: 0.42,
+                toneMapped: false,
               }),
             ),
           );
@@ -545,7 +587,7 @@ export default function PoseScene({
       s.gizmo.enabled = editable && showEstimate;
       s.gizmo.getHelper().visible = editable && showEstimate;
       const aligned = difference(pose).aligned;
-      s.overlayMaterial.color.set(aligned ? "#5bd4db" : "#f3b545");
+      s.overlayMaterial.color.set(aligned ? "#06bdd2" : "#f5a623");
       s.tintMaterial.color.copy(s.overlayMaterial.color);
       s.part.updateMatrixWorld(true);
       s.observed.updateWorldMatrix(true, false);

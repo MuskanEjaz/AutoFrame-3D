@@ -99,3 +99,27 @@ hidden-document visibility event verifies that preview timing suspends. Recorded
 examples, methods, GT reveal, evidence download and copilot remain separate.
 No inference, research computation, dataset download, hardware control, push or
 deployment is part of this task.
+
+## Visual polish
+
+Pose-scoped CSS tokens provide neutral graphite surfaces, saturated cyan actions,
+amber status/edges, tabular correction values and consistent interaction states.
+The active pose header uses the same tokens; the benchmark's styles remain
+separate. Secondary explanations are collapsed, keeping playback, progress and
+reset visible at 1440×900; shorter inspectors can scroll.
+
+Ivory paint, satin aluminium, graphite, matte rubber and darker steel now have
+separate material responses. Broad key/fill area lights, restrained rim light,
+local RoomEnvironment reflections and a low-energy shadow light use only bundled
+Three.js capabilities. Explicit sRGB output and ACES exposure preserve controlled
+highlights; guidance lines bypass tone mapping to retain their amber/cyan hues.
+The camera focuses more closely on the wrist without changing physical objects
+or pose conventions. Geometry remains procedural rather than photographic.
+
+Actual Chrome screenshots were inspected at 1440×900 and 390×844. The local
+`artifacts/polish-browser/` directory contains `before-initial.png`,
+`after-initial.png`, `after-aligned.png`, `after-mobile.png`, `benchmark.png` and
+`results.json`. Playback, pause/resume/reset, overlay controls, stationary observed
+geometry, desktop button visibility, mobile overflow and benchmark opening passed
+with no console errors, remote requests or POST/inference calls. The production
+build passed with Vite's bundle-size advisory. No CSS-string tests were added.

@@ -5,7 +5,9 @@ export default function Workspace() {
   const [tab, setTab] = useState("pose");
   return (
     <>
-      <header className="workspace-header">
+      <header
+        className={`workspace-header ${tab === "pose" ? "pose-active" : ""}`}
+      >
         <a href="/">
           AutoFrame <b>3D</b>
         </a>
