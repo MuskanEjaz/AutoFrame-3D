@@ -1,0 +1,470 @@
+.workspace-header {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  padding: 0 24px;
+  border-bottom: 1px solid #36434b;
+  background: #151e25;
+  color: #e8eef3;
+  font-family: Arial, sans-serif;
+}
+.workspace-header a {
+  font-size: 25px;
+  font-weight: 700;
+  text-decoration: none;
+  color: inherit;
+}
+.workspace-header b {
+  color: #73b9ff;
+}
+.workspace-header nav {
+  display: flex;
+  height: 100%;
+  gap: 8px;
+}
+.workspace-header button,
+.assembly button,
+.assembly-preview button {
+  font: inherit;
+  cursor: pointer;
+  color: #c6d2da;
+  background: #202c34;
+  border: 1px solid #3c4c57;
+  border-radius: 5px;
+}
+.workspace-header nav button {
+  padding: 0 18px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.workspace-header nav button[aria-pressed="true"] {
+  color: #65d7df;
+  border-bottom: 2px solid #65d7df;
+}
+.workspace-header > span {
+  margin-left: auto;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #8fa4b2;
+}
+.assembly {
+  font-family: Arial, sans-serif;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  background: #121b22;
+  color: #e1e9ef;
+  min-height: calc(100vh - 64px);
+}
+.assembly-stage {
+  position: relative;
+  min-height: 720px;
+  overflow: hidden;
+}
+.assembly-canvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+.assembly-canvas canvas {
+  display: block;
+}
+.assembly-select {
+  position: absolute;
+  z-index: 1;
+  top: 16px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-size: 12px;
+  color: #96aab8;
+}
+.assembly select {
+  color: #e0eaf0;
+  background: #202c34;
+  border: 1px solid #3c4c57;
+  border-radius: 5px;
+  padding: 9px;
+}
+.assembly-select select {
+  margin-left: 10px;
+}
+.scene-caption {
+  position: absolute;
+  left: 28px;
+  top: 82px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.scene-caption small,
+.inspector-title small {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #78cbd4;
+}
+.scene-caption strong {
+  font-size: 23px;
+  letter-spacing: -0.5px;
+}
+.scene-caption span {
+  font-size: 12px;
+  color: #a1b3bf;
+}
+.scene-key {
+  position: absolute;
+  bottom: 80px;
+  left: 24px;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  font-size: 11px;
+  color: #79d7df;
+}
+.scene-key i {
+  width: 8px;
+  height: 8px;
+  border: 1px solid #79d7df;
+}
+.scene-key span {
+  color: #9caeb9;
+  margin-left: 20px;
+}
+.assembly-toolbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  min-height: 58px;
+  background: #18232bf2;
+  border-top: 1px solid #34434c;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+}
+.assembly-toolbar button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  padding: 10px;
+  background: transparent;
+  font-size: 12px;
+}
+.assembly button[aria-pressed="true"] {
+  color: #6de5ec;
+  background: #1b424c;
+}
+.assembly-inspector {
+  padding: 22px 20px;
+  border-left: 1px solid #3b4953;
+  background: linear-gradient(140deg, #1b262e, #141d24);
+}
+.inspector-title h2 {
+  font-size: 21px;
+  font-weight: 500;
+  margin: 8px 0 18px;
+}
+.alignment-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #f4bc53;
+  background: #3a3020;
+  padding: 13px;
+  border-radius: 6px;
+  font-size: 17px;
+}
+.alignment-status.good {
+  background: #193d36;
+  color: #6ee7b3;
+}
+.error-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 22px 0;
+  gap: 12px;
+}
+.error-metrics small {
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #94a8b6;
+}
+.error-metrics strong {
+  display: block;
+  font-size: 25px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+.error-metrics em {
+  font-size: 13px;
+  color: #9eafb9;
+  font-style: normal;
+}
+.assembly h3 {
+  font-size: 13px;
+  font-weight: 500;
+  margin: 20px 0 10px;
+}
+.corrections {
+  display: flex;
+  gap: 6px;
+}
+.corrections div {
+  border: 1px solid #3c4c57;
+  border-radius: 4px;
+  padding: 8px 6px;
+  flex: 1;
+  font-size: 10px;
+}
+.corrections span {
+  display: block;
+  color: #9eafb9;
+  margin-bottom: 5px;
+}
+.corrections strong {
+  color: #f4c875;
+  font-weight: 500;
+}
+.assembly-hint {
+  font-size: 11px;
+  color: #a1b3bf;
+  border-bottom: 1px solid #34434c;
+  padding-bottom: 16px;
+  line-height: 1.5;
+}
+.mode-switch {
+  display: flex;
+  margin-bottom: 12px;
+}
+.mode-switch button {
+  flex: 1;
+  padding: 9px;
+  font-size: 12px;
+}
+.pose-inputs {
+  display: flex;
+  gap: 8px;
+}
+.pose-inputs label {
+  min-width: 0;
+  flex: 1;
+}
+.pose-inputs label > span {
+  font-size: 12px;
+  display: block;
+  margin-bottom: 6px;
+}
+.pose-inputs small {
+  color: #8da3b2;
+}
+.pose-inputs input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #101a21;
+  border: 1px solid #3c4c57;
+  border-radius: 4px;
+  padding: 9px 5px;
+  color: #edf7fb;
+  font-size: 12px;
+}
+.pose-inputs label > div {
+  display: flex;
+  margin-top: 5px;
+  gap: 4px;
+}
+.pose-inputs button {
+  flex: 1;
+  padding: 4px;
+}
+.step-select {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #a1b3bf;
+  margin: 12px 0;
+}
+.alignment-button,
+.demo-button,
+.reset-button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px;
+}
+.assembly .alignment-button {
+  border-color: #62cbd4;
+  background: transparent;
+  color: #e5f7fa;
+}
+.check-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 11px;
+}
+.check-results span {
+  display: flex;
+  justify-content: space-between;
+  color: #a8bac5;
+}
+.check-results b {
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #d5dfe5;
+}
+.feedback {
+  min-height: 16px;
+  font-size: 11px;
+  color: #e6c786;
+}
+.assembly .demo-button {
+  background: #46c6d3;
+  color: #071e26;
+  font-size: 12px;
+  font-weight: 700;
+  border-color: #62dce5;
+}
+.reset-button {
+  margin-top: 9px;
+  font-size: 12px !important;
+}
+.assembly details {
+  margin-top: 20px;
+  font-size: 11px;
+  color: #a5bac7;
+  line-height: 1.6;
+}
+.simulation-note {
+  font-size: 10px;
+  line-height: 1.6;
+  color: #7d94a3;
+  margin-top: 16px;
+}
+.assembly button:focus-visible,
+.workspace-header button:focus-visible,
+.assembly input:focus-visible {
+  outline: 2px solid #8beef5;
+  outline-offset: 3px;
+}
+.assembly-preview {
+  width: min(900px, 90vw);
+  padding: 20px;
+  background: #17232b;
+  color: #dde9f0;
+  border: 1px solid #567180;
+  border-radius: 10px;
+  font-family: Arial, sans-serif;
+}
+.assembly-preview::backdrop {
+  background: #000b;
+}
+.assembly-preview header,
+.assembly-preview footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.assembly-preview h2 {
+  font-size: 20px;
+}
+.assembly-preview button {
+  padding: 10px 20px;
+}
+.preview-stage {
+  height: 460px;
+  position: relative;
+}
+.assembly-preview progress {
+  width: 100%;
+  accent-color: #46c6d3;
+}
+.assembly-preview p,
+.assembly-preview footer {
+  font-size: 12px;
+  color: #9eb4c2;
+}
+.assembly-preview small {
+  color: #5edbe3;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+@media (max-width: 760px) {
+  .workspace-header {
+    height: auto;
+    min-height: 80px;
+    padding: 12px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .workspace-header a {
+    font-size: 20px;
+  }
+  .workspace-header > span {
+    display: none;
+  }
+  .workspace-header nav {
+    height: 35px;
+    gap: 0;
+  }
+  .workspace-header nav button {
+    padding: 6px 9px;
+    font-size: 11px;
+  }
+  .assembly {
+    grid-template-columns: 1fr;
+  }
+  .assembly-stage {
+    min-height: 430px;
+  }
+  .assembly-select {
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .assembly-select select {
+    padding: 6px;
+    font-size: 11px;
+  }
+  .scene-caption {
+    left: 14px;
+    top: 80px;
+  }
+  .scene-caption strong {
+    font-size: 17px;
+  }
+  .scene-caption span {
+    font-size: 10px;
+  }
+  .assembly-toolbar {
+    gap: 0;
+  }
+  .assembly-toolbar button {
+    font-size: 10px;
+    padding: 8px;
+    gap: 4px;
+  }
+  .assembly-inspector {
+    border-left: 0;
+    border-top: 1px solid #3b4953;
+  }
+  .scene-key span {
+    display: none;
+  }
+  .preview-stage {
+    height: 330px;
+  }
+}
