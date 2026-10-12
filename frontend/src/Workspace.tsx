@@ -1,8 +1,8 @@
 import { useState } from "react";
-import AssemblyGuide from "./AssemblyGuide";
+import PoseInspection from "./PoseInspection";
 import RecordedDemo from "./RecordedDemo";
 export default function Workspace() {
-  const [tab, setTab] = useState("assembly");
+  const [tab, setTab] = useState("pose");
   return (
     <>
       <header className="workspace-header">
@@ -10,11 +10,8 @@ export default function Workspace() {
           AutoFrame <b>3D</b>
         </a>
         <nav aria-label="Workspace">
-          <button
-            aria-pressed={tab === "assembly"}
-            onClick={() => setTab("assembly")}
-          >
-            Assembly Guide
+          <button aria-pressed={tab === "pose"} onClick={() => setTab("pose")}>
+            Pose Inspection
           </button>
           <button
             aria-pressed={tab === "benchmark"}
@@ -23,9 +20,11 @@ export default function Workspace() {
             Recorded Benchmark
           </button>
         </nav>
-        <span>Assembly simulation</span>
+        <span>
+          {tab === "pose" ? "Synthetic pose demo" : "Recorded benchmark"}
+        </span>
       </header>
-      {tab === "assembly" ? <AssemblyGuide /> : <RecordedDemo />}
+      {tab === "pose" ? <PoseInspection /> : <RecordedDemo />}
     </>
   );
 }

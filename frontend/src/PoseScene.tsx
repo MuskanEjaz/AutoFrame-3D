@@ -4,26 +4,39 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { TransformControls } from "three/addons/controls/TransformControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { type Pose, targetPose, errors } from "./assemblyPose";
-export default function AssemblyScene({
+import {
+  type Pose,
+  referencePose,
+  fixtureParent,
+  poseFromMatrix,
+  difference,
+} from "./poseMath";
+export default function PoseScene({
   pose,
   onChange,
   mode,
   laser,
   resetView = 0,
-  preview = false,
+  editable = false,
+  showEstimate = true,
+  showReference = false,
 }: {
   pose: Pose;
   onChange?: (p: Pose) => void;
   mode: "translate" | "rotate";
   laser: boolean;
   resetView?: number;
-  preview?: boolean;
+  editable?: boolean;
+  showEstimate?: boolean;
+  showReference?: boolean;
 }) {
   const [failure, setFailure] = useState("");
   const host = useRef<HTMLDivElement>(null),
     state = useRef<{
       part: T.Group;
+      observed: T.Group;
+      overlayMaterial: T.LineBasicMaterial;
+      tintMaterial: T.MeshBasicMaterial;
       gizmo: TransformControls;
       guide: T.Group;
       outline: T.Group;
@@ -37,6 +50,7 @@ export default function AssemblyScene({
     const el = host.current!,
       scene = new T.Scene();
     scene.background = new T.Color("#121b22");
+    scene.fog = new T.Fog("#121b22", 2.4, 3.8);
     const camera = new T.PerspectiveCamera(36, 1, 0.01, 10);
     camera.up.set(0, 0, 1);
     let renderer: T.WebGLRenderer;
@@ -57,8 +71,8 @@ export default function AssemblyScene({
     const orbit = new OrbitControls(camera, renderer.domElement);
     orbit.enableDamping = true;
     const reset = () => {
-      camera.position.set(1.25, -1.65, 1.16);
-      orbit.target.set(0.15, 0, 0.46);
+      camera.position.set(1.02, -1.32, 1.01);
+      orbit.target.set(0.23, 0, 0.55);
       orbit.update();
     };
     reset();
@@ -68,8 +82,8 @@ export default function AssemblyScene({
     scene.environment = env.texture;
     room.dispose();
     pm.dispose();
-    scene.add(new T.HemisphereLight("#deefff", "#30303a", 1.4));
-    const light = new T.DirectionalLight("#fff0dd", 4);
+    scene.add(new T.HemisphereLight("#deefff", "#30303a", 0.9));
+    const light = new T.DirectionalLight("#fff0dd", 2.6);
     light.position.set(0.2, -0.5, 1.8);
     light.castShadow = true;
     light.shadow.mapSize.set(2048, 2048);
@@ -81,13 +95,13 @@ export default function AssemblyScene({
     scene.add(light);
     const paint = new T.MeshStandardMaterial({
         color: "#cbc8bb",
-        metalness: 0.3,
-        roughness: 0.32,
+        metalness: 0.25,
+        roughness: 0.4,
       }),
       metal = new T.MeshStandardMaterial({
         color: "#a8b3bd",
         metalness: 0.85,
-        roughness: 0.25,
+        roughness: 0.32,
       }),
       dark = new T.MeshStandardMaterial({
         color: "#252c32",
@@ -95,6 +109,9 @@ export default function AssemblyScene({
         roughness: 0.34,
       }),
       black = new T.MeshStandardMaterial({ color: "#10161b", roughness: 0.5 });
+    const fixture = new T.Group();
+    fixture.applyMatrix4(fixtureParent);
+    scene.add(fixture);
     const mesh = (
       g: T.BufferGeometry,
       m: T.Material,
@@ -114,6 +131,22 @@ export default function AssemblyScene({
       pos: number[],
       mat: T.Material,
     ) => mesh(new RoundedBoxGeometry(...size, 3, 0.003), mat, parent, pos);
+    const workshop = new T.MeshStandardMaterial({
+      color: "#0c151c",
+      metalness: 0,
+      roughness: 0.9,
+    });
+    const trim = new T.MeshStandardMaterial({
+      color: "#1c2932",
+      metalness: 0.1,
+      roughness: 0.8,
+    });
+    for (const x of [-0.63, -0.12, 0.39]) {
+      box(scene, [0.45, 0.12, 0.81], [x, 1.15, 0.4], workshop);
+      for (const z of [0.14, 0.39, 0.64])
+        box(scene, [0.4, 0.009, 0.005], [x, 1.083, z], trim);
+      box(scene, [0.014, 0.012, 0.085], [x + 0.13, 1.08, 0.49], trim);
+    }
     const cyl = (
       parent: T.Object3D,
       r: number,
@@ -134,25 +167,25 @@ export default function AssemblyScene({
       const o = mesh(
         new T.CapsuleGeometry(r, dir.length() - 2 * r, 12, 32),
         paint,
-        scene,
+        fixture,
         start.clone().add(end).multiplyScalar(0.5).toArray(),
       );
       o.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), dir.normalize());
     };
-    box(scene, [1.7, 1.1, 0.055], [0.1, 0, -0.03], dark);
-    for (let x = -0.65; x < 0.9; x += 0.1)
-      for (let y = -0.45; y < 0.5; y += 0.1)
-        cyl(scene, 0.006, 0.001, [x, y, -0.001], black);
-    cyl(scene, 0.18, 0.055, [-0.28, 0, 0.03], metal);
-    cyl(scene, 0.135, 0.16, [-0.28, 0, 0.12], paint);
-    cyl(scene, 0.112, 0.2, [-0.28, 0, 0.22], dark, "y");
+    box(fixture, [1.7, 1.1, 0.055], [0.1, 0, -0.03], dark);
+    for (let x = -0.65; x < 0.9; x += 0.14)
+      for (let y = -0.45; y < 0.5; y += 0.14)
+        cyl(fixture, 0.004, 0.001, [x, y, -0.001], black);
+    cyl(fixture, 0.18, 0.055, [-0.28, 0, 0.03], metal);
+    cyl(fixture, 0.135, 0.16, [-0.28, 0, 0.12], paint);
+    cyl(fixture, 0.112, 0.2, [-0.28, 0, 0.22], dark, "y");
     link([-0.28, 0, 0.23], [-0.4, 0, 0.54], 0.095);
-    cyl(scene, 0.105, 0.19, [-0.4, 0, 0.54], dark, "y");
-    cyl(scene, 0.081, 0.197, [-0.4, 0, 0.54], metal, "y");
+    cyl(fixture, 0.105, 0.19, [-0.4, 0, 0.54], dark, "y");
+    cyl(fixture, 0.081, 0.197, [-0.4, 0, 0.54], metal, "y");
     link([-0.4, 0, 0.54], [0.12, 0, 0.69], 0.09);
-    cyl(scene, 0.095, 0.18, [0.12, 0, 0.69], dark, "x");
-    cyl(scene, 0.085, 0.16, [0.24, 0, 0.69], paint, "x");
-    cyl(scene, 0.082, 0.04, [0.345, 0, 0.69], dark, "x");
+    cyl(fixture, 0.095, 0.18, [0.12, 0, 0.69], dark, "x");
+    cyl(fixture, 0.085, 0.16, [0.24, 0, 0.69], paint, "x");
+    cyl(fixture, 0.082, 0.04, [0.345, 0, 0.69], dark, "x");
     for (const [x, z, r] of [
       [-0.28, 0.22, 0.083],
       [-0.4, 0.54, 0.073],
@@ -160,7 +193,7 @@ export default function AssemblyScene({
       for (let i = 0; i < 8; i++) {
         const a = (i * Math.PI) / 4;
         cyl(
-          scene,
+          fixture,
           0.004,
           0.008,
           [x + Math.sin(a) * r, -0.104, z + Math.cos(a) * r],
@@ -168,13 +201,13 @@ export default function AssemblyScene({
           "y",
         );
       }
-      cyl(scene, 0.043, 0.012, [x, -0.106, z], paint, "y");
-      cyl(scene, 0.018, 0.014, [x, -0.115, z], dark, "y");
+      cyl(fixture, 0.043, 0.012, [x, -0.106, z], paint, "y");
+      cyl(fixture, 0.018, 0.014, [x, -0.115, z], dark, "y");
     }
     for (let i = 0; i < 8; i++) {
       const a = (i * Math.PI) / 4;
       cyl(
-        scene,
+        fixture,
         0.006,
         0.008,
         [-0.28 + Math.sin(a) * 0.15, Math.cos(a) * 0.15, 0.061],
@@ -182,7 +215,7 @@ export default function AssemblyScene({
       );
     }
     for (const x of [0.19, 0.29])
-      cyl(scene, 0.087, 0.009, [x, 0, 0.69], metal, "x");
+      cyl(fixture, 0.087, 0.009, [x, 0, 0.69], metal, "x");
     const cable = new T.CatmullRomCurve3([
       new T.Vector3(-0.28, 0.12, 0.12),
       new T.Vector3(-0.48, 0.12, 0.35),
@@ -193,7 +226,7 @@ export default function AssemblyScene({
     mesh(
       new T.TubeGeometry(cable, 70, 0.012, 10, false),
       black,
-      scene,
+      fixture,
       [0, 0, 0],
     );
     const flange = (parent: T.Object3D, x: number, female: boolean) => {
@@ -251,53 +284,125 @@ export default function AssemblyScene({
     };
     const wrist = new T.Group();
     wrist.position.set(0.39, 0, 0.69);
-    scene.add(wrist);
+    fixture.add(wrist);
     flange(wrist, 0, false);
-    const part = new T.Group();
-    scene.add(part);
-    flange(part, -0.055, true);
-    cyl(part, 0.07, 0.025, [-0.018, 0, 0], dark, "x");
-    box(part, [0.105, 0.11, 0.1], [0.045, 0, 0], metal);
-    box(part, [0.023, 0.118, 0.105], [0.105, 0, 0], dark);
+    const observed = new T.Group();
+    fixture.add(observed);
+    const localReference = poseFromMatrix(
+      fixtureParent
+        .clone()
+        .invert()
+        .multiply(
+          new T.Matrix4().compose(
+            new T.Vector3().fromArray(referencePose().p),
+            new T.Quaternion().fromArray(referencePose().q),
+            new T.Vector3(1, 1, 1),
+          ),
+        ),
+    );
+    observed.position.fromArray(localReference.p);
+    observed.quaternion.fromArray(localReference.q);
+    flange(observed, -0.055, true);
+    cyl(observed, 0.07, 0.025, [-0.018, 0, 0], dark, "x");
+    box(observed, [0.105, 0.11, 0.1], [0.045, 0, 0], metal);
+    box(observed, [0.023, 0.118, 0.105], [0.105, 0, 0], dark);
     for (const y of [-0.038, 0.038]) {
-      box(part, [0.08, 0.029, 0.076], [0.15, y, 0], dark);
-      box(part, [0.07, 0.019, 0.052], [0.217, y, 0], metal);
+      box(observed, [0.08, 0.029, 0.076], [0.15, y, 0], dark);
+      box(observed, [0.07, 0.019, 0.052], [0.217, y, 0], metal);
       for (const z of [-0.032, 0.032])
-        cyl(part, 0.004, 0.004, [0.06, y * 1.5, z], dark, "y");
+        cyl(observed, 0.004, 0.004, [0.06, y * 1.5, z], dark, "y");
     }
-    const outline = new T.Group(),
-      target = targetPose();
-    outline.position.fromArray(target.p);
-    outline.quaternion.fromArray(target.q);
-    scene.add(outline);
-    part.traverse((o) => {
-      if (o instanceof T.Mesh) {
-        const e = new T.LineSegments(
-          new T.EdgesGeometry(o.geometry, 30),
-          new T.LineBasicMaterial({
-            color: "#42d7df",
-            transparent: true,
-            opacity: 0.25,
-          }),
-        );
-        e.position.copy(o.position);
-        e.quaternion.copy(o.quaternion);
-        outline.add(e);
+    // Every instance uses the exact observed mesh buffers and local transforms.
+    for (const x of [0.012, 0.079])
+      for (const z of [-0.034, 0.034]) {
+        cyl(observed, 0.007, 0.002, [x, -0.056, z], black, "y");
+        cyl(observed, 0.0036, 0.003, [x, -0.058, z], metal, "y");
       }
+    const labelCanvas = document.createElement("canvas");
+    labelCanvas.width = 512;
+    labelCanvas.height = 128;
+    const ctx = labelCanvas.getContext("2d")!;
+    ctx.font = "bold 54px Arial";
+    ctx.fillStyle = "#18262d";
+    ctx.textAlign = "center";
+    ctx.fillText("AUTOFRAME", 256, 78);
+    const labelTexture = new T.CanvasTexture(labelCanvas);
+    const label = mesh(
+      new T.PlaneGeometry(0.074, 0.018),
+      new T.MeshBasicMaterial({
+        map: labelTexture,
+        transparent: true,
+        depthWrite: false,
+      }),
+      observed,
+      [0.045, -0.057, 0],
+    );
+    label.rotation.x = Math.PI / 2;
+    const overlayMaterial = new T.LineBasicMaterial({
+      color: "#f3b545",
+      transparent: true,
+      opacity: 0.8,
+      depthWrite: false,
+      depthTest: false,
     });
+    const tintMaterial = new T.MeshBasicMaterial({
+      color: "#edaa35",
+      transparent: true,
+      opacity: 0.055,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+    });
+    const makeOverlay = (
+      lineMaterial: T.LineBasicMaterial,
+      tint?: T.MeshBasicMaterial,
+    ) => {
+      const group = new T.Group();
+      observed.traverse((o) => {
+        if (o instanceof T.Mesh && o !== label) {
+          if (tint) {
+            const fill = new T.Mesh(o.geometry, tint);
+            fill.position.copy(o.position);
+            fill.quaternion.copy(o.quaternion);
+            group.add(fill);
+          }
+          const edge = new T.LineSegments(
+            new T.EdgesGeometry(o.geometry, 12),
+            lineMaterial,
+          );
+          edge.position.copy(o.position);
+          edge.quaternion.copy(o.quaternion);
+          edge.renderOrder = 2;
+          group.add(edge);
+        }
+      });
+      scene.add(group);
+      return group;
+    };
+    const part = makeOverlay(overlayMaterial, tintMaterial);
+    const outline = makeOverlay(
+      new T.LineBasicMaterial({
+        color: "#5bd4db",
+        transparent: true,
+        opacity: 0.38,
+        depthWrite: false,
+      }),
+    );
+    outline.position.fromArray(referencePose().p);
+    outline.quaternion.fromArray(referencePose().q);
     const scanner = new T.Group();
-    scanner.position.set(0.6, 0.3, 0.99);
+    scanner.position.set(0.6, 0.2, 0.88);
     scanner.quaternion.setFromUnitVectors(
       new T.Vector3(1, 0, 0),
-      new T.Vector3(0.39, 0, 0.69).sub(scanner.position).normalize(),
+      new T.Vector3(0.52, 0, 0.69).sub(scanner.position).normalize(),
     );
-    scene.add(scanner);
-    box(scanner, [0.1, 0.07, 0.07], [0, 0, 0], dark);
+    fixture.add(scanner);
+    box(scanner, [0.078, 0.052, 0.052], [0, 0, 0], dark);
     cyl(
       scanner,
-      0.018,
+      0.012,
       0.006,
-      [0.05, 0, 0],
+      [0.041, 0, 0],
       new T.MeshStandardMaterial({
         color: "#34cad7",
         emissive: "#0d7b87",
@@ -305,17 +410,17 @@ export default function AssemblyScene({
       }),
       "x",
     );
-    cyl(scene, 0.008, 0.98, [0.6, 0.3, 0.49], metal);
+    cyl(fixture, 0.006, 0.88, [0.6, 0.2, 0.44], dark);
     const guide = new T.Group();
-    scene.add(guide);
-    scene.updateMatrixWorld(true);
-    const origin = scanner.localToWorld(new T.Vector3(0.055, 0, 0)),
+    fixture.add(guide);
+    fixture.updateMatrixWorld(true);
+    const origin = scanner.localToWorld(new T.Vector3(0.045, 0, 0)),
       ray = new T.Raycaster();
-    const solids = scene.children.filter(
-      (o) => o instanceof T.Mesh || o === wrist || o === part,
+    const solids = fixture.children.filter(
+      (o) => o instanceof T.Mesh || o === wrist || o === observed,
     );
     const updateGuide = () => {
-      scene.updateMatrixWorld(true);
+      fixture.updateMatrixWorld(true);
       guide.children.forEach((o) => {
         if (o instanceof T.Line) {
           o.geometry.dispose();
@@ -323,14 +428,14 @@ export default function AssemblyScene({
         }
       });
       guide.clear();
-      for (let i = 0; i < 15; i++) {
-        const a = (i / 15) * Math.PI * 2,
+      for (let i = 0; i < 9; i++) {
+        const a = (i / 9) * Math.PI * 2,
           aim = new T.Vector3(
-            0.39,
-            Math.sin(a) * 0.052,
-            0.69 + Math.cos(a) * 0.052,
+            0.5,
+            Math.sin(a) * 0.045,
+            0.69 + Math.cos(a) * 0.035,
           );
-        ray.set(origin, aim.clone().sub(origin).normalize());
+        ray.set(origin, fixture.localToWorld(aim).sub(origin).normalize());
         const hits = ray.intersectObjects(solids, true);
         if (hits[0])
           guide.add(
@@ -345,9 +450,9 @@ export default function AssemblyScene({
           );
       }
     };
-    const axes = new T.AxesHelper(0.1);
-    axes.position.set(0.39, 0, 0.69);
-    scene.add(axes);
+    const axes = new T.AxesHelper(0.09);
+    axes.position.set(0.53, -0.07, 0.58);
+    fixture.add(axes);
     let dirty = true;
     const invalidate = () => {
       dirty = true;
@@ -357,8 +462,8 @@ export default function AssemblyScene({
     gizmo.setSize(0.7);
     gizmo.attach(part);
     scene.add(gizmo.getHelper());
-    gizmo.enabled = !preview;
-    gizmo.getHelper().visible = !preview;
+    gizmo.enabled = editable;
+    gizmo.getHelper().visible = editable && showEstimate;
     gizmo.addEventListener("dragging-changed", (e) => {
       orbit.enabled = !e.value;
     });
@@ -372,6 +477,9 @@ export default function AssemblyScene({
     );
     state.current = {
       part,
+      observed,
+      overlayMaterial,
+      tintMaterial,
       gizmo,
       guide,
       outline,
@@ -398,9 +506,15 @@ export default function AssemblyScene({
         }
       }
     };
-    draw();
+    const visibility = () => {
+      cancelAnimationFrame(id);
+      if (!document.hidden) draw();
+    };
+    document.addEventListener("visibilitychange", visibility);
+    visibility();
     return () => {
       cancelAnimationFrame(id);
+      document.removeEventListener("visibilitychange", visibility);
       resize.disconnect();
       gizmo.dispose();
       orbit.dispose();
@@ -412,12 +526,13 @@ export default function AssemblyScene({
           );
         }
       });
+      labelTexture.dispose();
       env.dispose();
       renderer.dispose();
       el.replaceChildren();
       state.current = null;
     };
-  }, [preview]);
+  }, []);
   useEffect(() => {
     const s = state.current;
     if (s) {
@@ -425,14 +540,30 @@ export default function AssemblyScene({
       s.part.quaternion.fromArray(pose.q);
       s.gizmo.setMode(mode);
       s.guide.visible = laser;
-      s.outline.visible = !errors(pose).ok;
+      s.outline.visible = showReference;
+      s.part.visible = showEstimate;
+      s.gizmo.enabled = editable && showEstimate;
+      s.gizmo.getHelper().visible = editable && showEstimate;
+      const aligned = difference(pose).aligned;
+      s.overlayMaterial.color.set(aligned ? "#5bd4db" : "#f3b545");
+      s.tintMaterial.color.copy(s.overlayMaterial.color);
+      s.part.updateMatrixWorld(true);
+      s.observed.updateWorldMatrix(true, false);
+      if (host.current) {
+        host.current.dataset.observedTransform = JSON.stringify(
+          s.observed.matrixWorld.toArray(),
+        );
+        host.current.dataset.estimateTransform = JSON.stringify(
+          s.part.matrixWorld.toArray(),
+        );
+      }
       if (laser) s.updateGuide();
       s.invalidate();
     }
-  }, [pose, mode, laser]);
+  }, [pose, mode, laser, editable, showEstimate, showReference]);
   useEffect(() => state.current?.reset(), [resetView]);
   return (
-    <div className="assembly-canvas" ref={host}>
+    <div className="pose-canvas" ref={host}>
       {failure && (
         <p
           role="alert"

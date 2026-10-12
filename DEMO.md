@@ -1,6 +1,6 @@
 # AutoFrame 3D — recorded benchmark demo
 
-The default page is a recorded benchmark stress-testing demo. Opening it, selecting examples, toggling benchmark ground truth, and downloading evidence do **not** run registration. The historical registration policy remains default; scan-to-model and reciprocal policies remain experimental.
+The **Recorded Benchmark** workspace is a recorded benchmark stress-testing demo, available through its top-level tab. The initial **Pose Inspection** workspace is a separate [synthetic pose demo](POSE_INSPECTION.md); its procedural robot is unrelated to T-LESS evidence. Opening the recorded workspace, selecting examples, toggling benchmark ground truth, and downloading evidence do **not** run registration. The historical registration policy remains default; scan-to-model and reciprocal policies remain experimental.
 
 From the repository root, use two PowerShell terminals with the existing environment:
 
