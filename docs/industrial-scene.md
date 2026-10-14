@@ -1,5 +1,8 @@
 # Industrial inspection scene
 
+This records the initial asset upgrade. For the current background, lighting and
+synchronized preview, see [the workcell report](workcell-lighting.md).
+
 The synthetic Pose Inspection viewport now uses a locally bundled Panda visual
 model instead of capsule arm links. The UI palette, synthetic disclosure, pose
 math, five-second playback and Recorded Benchmark implementation are unchanged.

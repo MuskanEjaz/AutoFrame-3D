@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -9,6 +9,8 @@ import {
   Play,
   RotateCcw,
   ScanLine,
+  Bot,
+  Crosshair,
 } from "lucide-react";
 import PoseScene from "./PoseScene";
 import {
@@ -23,6 +25,7 @@ import {
 import "./pose-inspection.css";
 type Playback = { original: Pose; elapsed: number; running: boolean };
 export default function PoseInspection() {
+  const previewCanvas=useRef<HTMLCanvasElement>(null);
   const [estimate, setEstimate] = useState(initialEstimate),
     [playback, setPlayback] = useState<Playback | null>(null);
   const [showEstimate, setShowEstimate] = useState(true),
@@ -83,6 +86,13 @@ export default function PoseInspection() {
     setEstimate(initialEstimate());
     setError("");
   };
+  const togglePlayback=()=>running
+    ? setPlayback(p=>p?{...p,running:false}:p) : play();
+  const seek=(seconds:number)=>{
+    setShowEstimate(true);setEdit(false);setError("");
+    setPlayback(p=>({original:p?.original??structuredClone(estimate),
+      elapsed:Math.max(0,Math.min(5,seconds)),running:false}));
+  };
   const change = (p: Pose) => {
     setPlayback(null);
     setEstimate(p);
@@ -119,15 +129,12 @@ export default function PoseInspection() {
         aria-label="Interactive synthetic pose scene"
       >
         <div className="pose-scene-heading">
-          <label>
-            Object{" "}
-            <select aria-label="Demo object">
-              <option>Robot gripper</option>
-            </select>
-          </label>
-          <span>
-            Frame: <b>Demo scan frame</b>
-          </span>
+          <div className="pose-context-box" role="group" aria-label="Demo object">
+            <Bot size={24}/><span><small>Object</small>Robot gripper</span>
+          </div>
+          <div className="pose-context-box" role="group" aria-label="Demo coordinate frame">
+            <Crosshair size={24}/><span><small>Frame</small>Demo scan frame</span>
+          </div>
         </div>
         <PoseScene
           pose={displayed}
@@ -138,6 +145,7 @@ export default function PoseInspection() {
           editable={edit && !playback}
           showEstimate={showEstimate}
           showReference={showReference}
+          previewCanvas={previewCanvas}
         />
         <div className="pose-labels">
           <span>
@@ -229,18 +237,11 @@ export default function PoseInspection() {
                 [{d.axis.map((v) => v.toFixed(2)).join(", ")}]
               </strong>
             </div>
-            <small>
-              Axis in Demo scan frame
-              <br />
-              {d.angle < 1e-8
-                ? "Zero rotation; axis undefined"
-                : "Shortest relative rotation"}
-            </small>
+            <small>Axis in Demo scan frame</small>
           </div>
         </div>
         <p className="pose-reference-note">
-          Reference: <b>Known synthetic reference</b>
-          <br />Δ values describe origin displacement.
+          Reference: <b>Known synthetic reference</b> · origin displacement
         </p>
         <hr />
         <h2>Inspect overlay</h2>
@@ -264,11 +265,7 @@ export default function PoseInspection() {
         </p>
         <button
           className="pose-primary"
-          onClick={() =>
-            running
-              ? setPlayback((p) => (p ? { ...p, running: false } : p))
-              : play()
-          }
+          onClick={togglePlayback}
         >
           {running ? <Pause size={19} /> : <Play size={19} />}
           <span>
@@ -279,32 +276,23 @@ export default function PoseInspection() {
                 : "Preview correction · 5 sec"}
           </span>
         </button>
-        <div className="pose-progress">
-          <progress
-            aria-label="Correction preview progress"
-            max={5}
-            value={playback?.elapsed ?? 0}
-          />
-          <div>
-            <span>
-              {(playback?.elapsed ?? 0).toFixed(1)} / 5.0 sec ·{" "}
-              {running
-                ? "Playing"
-                : playback?.elapsed === 5
-                  ? "Complete"
-                  : playback
-                    ? "Paused"
-                    : "Animation preview"}
-            </span>
-            <button onClick={() => play(true)}>
-              <RotateCcw size={13} />
-              Replay
+        <section className="pose-preview-card" aria-label="Correction preview"
+          data-elapsed={playback?.elapsed??0} data-running={running}>
+          <header><h2>Correction preview</h2><span>Synthetic animation</span></header>
+          <canvas ref={previewCanvas} width={320} height={176}
+            aria-label="Rendered synthetic gripper correction preview"/>
+          <div className="pose-preview-controls">
+            <button onClick={togglePlayback} aria-label={running?"Pause preview":"Play preview"}>
+              {running?<Pause size={18}/>:<Play size={18}/>}
             </button>
+            <input type="range" min={0} max={5} step={.01}
+              aria-label="Correction preview position in seconds"
+              value={playback?.elapsed??0} onChange={e=>seek(Number(e.target.value))}/>
+            <output aria-live="off">{(playback?.elapsed??0).toFixed(1)} / 5 sec</output>
+            <button onClick={()=>play(true)} aria-label="Replay"><RotateCcw size={16}/></button>
           </div>
-        </div>
-        <p className="pose-playback-note">
-          Animation preview · original estimate preserved.
-        </p>
+          <p>Known reference · original estimate preserved</p>
+        </section>
         <div className="pose-actions">
           <button onClick={reset}>
             <RotateCcw size={17} />

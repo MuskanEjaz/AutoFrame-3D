@@ -6,6 +6,7 @@ export type Finishes = { paint: T.MeshStandardMaterial; metal: T.MeshStandardMat
 
 // Original metre-scale geometry. +X is tool approach; mating face stays x=-0.055.
 export function industrialTools(materials: Finishes) {
+  const fastener=new T.MeshStandardMaterial({color:"#35414a",metalness:.75,roughness:.52});
   const cache = new Map<string, T.BufferGeometry>();
   const cached = (key: string, create: () => T.BufferGeometry) => {
     if (!cache.has(key)) cache.set(key, create());
@@ -39,7 +40,7 @@ export function industrialTools(materials: Finishes) {
     hole.closePath(); shape.holes.push(hole);
     const g = cached(`s${radius}`,()=> new T.ExtrudeGeometry(shape,{depth:.0015,bevelEnabled:true,
       bevelSize:.0002,bevelThickness:.0002,bevelSegments:1,curveSegments:16}));
-    const o = mesh(parent,g,materials.steel,position,false);
+    const o = mesh(parent,g,fastener,position,false);
     if (axis === "y") o.rotation.x = Math.PI/2;
     if (axis === "x") o.rotation.y = Math.PI/2;
     // Dark bottom is behind the open hex socket, rather than painted on its face.
@@ -49,8 +50,12 @@ export function industrialTools(materials: Finishes) {
   const cable = (parent: T.Object3D, points: number[][], radius = .004) => mesh(parent,
     new T.TubeGeometry(new T.CatmullRomCurve3(points.map(p=>new T.Vector3().fromArray(p))),32,radius,8,false),
     materials.black,[0,0,0],false);
-  const profile = (parent: T.Object3D, points: number[][], depth: number, position: number[], material: T.Material) => {
+  const profile = (parent: T.Object3D, points: number[][], depth: number, position: number[],
+    material: T.Material, holes: number[][] = []) => {
     const shape = new T.Shape(points.map(p=>new T.Vector2(p[0],p[1])));
+    for(const [x,z,r] of holes) {
+      const hole=new T.Path();hole.absarc(x,z,r,0,Math.PI*2,true);shape.holes.push(hole);
+    }
     const geometry = new T.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelSize:.002,
       bevelThickness:.002,bevelSegments:3,curveSegments:16});
     // Shape x/y -> tool x/z, extrusion goes toward the far side (+Y).
@@ -65,12 +70,15 @@ export function industrialTools(materials: Finishes) {
     // Separate machined side plates, seam and an inset actuator cover.
     for (const side of [-1,1]) {
       profile(parent,[[.007,-.034],[.019,-.043],[.08,-.043],[.093,-.03],
-        [.093,.03],[.08,.043],[.019,.043],[.007,.034]],.004,[0,side*.054,0],materials.metal);
+        [.093,.03],[.08,.043],[.019,.043],[.007,.034]],.004,[0,side*.054,0],materials.metal,
+        [[.02,-.029,.006],[.02,.029,.006],[.079,-.029,.006],[.079,.029,.006]]);
       for (const x of [.02,.079]) for (const z of [-.029,.029])
         socket(parent,[x,side*.057,z],"y");
       box(parent,[.041,.001,.019],[.051,side*.057,0],materials.dark,.0004);
     }
     box(parent,[.096,.084,.008],[.049,0,.049],materials.steel);
+    for(const x of [.032,.044,.056,.068])
+      box(parent,[.002,.038,.001],[x,0,.0535],materials.black,.0003,false);
     for (const x of [.016,.083]) for (const y of [-.029,.029]) socket(parent,[x,y,.054],"z",.003);
     // Twin linear guide rods, end retainers and independently visible jaw carriages.
     for (const z of [-.028,.028]) {
@@ -80,9 +88,13 @@ export function industrialTools(materials: Finishes) {
     for (const side of [-1,1]) {
       const y=side*.037;
       box(parent,[.035,.032,.081],[.121,y,0],materials.steel,.002);
-      profile(parent,[[.132,-.031],[.17,-.031],[.198,-.022],[.25,-.022],
-        [.256,-.016],[.256,.016],[.25,.022],[.198,.022],[.17,.031],[.132,.031]],
-        .022,[0,y,0],materials.metal);
+      profile(parent,[[.132,-.031],[.158,-.031],[.18,-.025],[.198,-.02],[.25,-.02],
+        [.256,-.014],[.256,.014],[.25,.02],[.198,.02],[.18,.025],[.158,.031],[.132,.031]],
+        .022,[0,y,0],materials.metal,[[.151,0,.005],[.176,0,.005]]);
+      for(const x of [.151,.176]) {
+        cylinder(parent,.0045,.002,[x,y-side*.0115,0],materials.dark,"y",false);
+        socket(parent,[x,y-side*.014,0],"y",.0027);
+      }
       box(parent,[.058,.008,.031],[.224,y-side*.014,0],materials.black,.001);
       for (const x of [.15,.18]) socket(parent,[x,y-side*.013,-.013],"y",.003);
       // Grip grooves are only surface detail and excluded from the CAD feature edges.
@@ -123,7 +135,8 @@ export function surfaceTexture(kind: "paint" | "metal" | "bench") {
   for (let y=0;y<size;y++) for (let x=0;x<size;x++) {
     seed=(Math.imul(seed,1664525)+1013904223)>>>0;
     const noise=(seed>>>24)/255;
-    const value=Math.round(kind==="paint" ? 185+noise*13 : 170+noise*18+Math.sin(y*2.7)*12);
+    const value=Math.round(kind==="paint" ? 185+noise*14+Math.sin(x*.025)*Math.cos(y*.03)*9
+      : 175+noise*18+Math.sin(y*2.7)*12+Math.sin(x*.02)*5);
     const i=(y*size+x)*4; data[i]=data[i+1]=data[i+2]=value;data[i+3]=255;
   }
   const texture=new T.DataTexture(data,size,size);texture.wrapS=texture.wrapT=T.RepeatWrapping;
