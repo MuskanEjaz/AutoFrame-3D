@@ -1,0 +1,63 @@
+{
+  "meshes": [
+    {
+      "material": "paint",
+      "position": {
+        "offset": 0,
+        "count": 200748
+      },
+      "normal": {
+        "offset": 802992,
+        "count": 200748
+      },
+      "index": {
+        "offset": 1605984,
+        "count": 327204
+      }
+    },
+    {
+      "material": "dark",
+      "position": {
+        "offset": 2914800,
+        "count": 44847
+      },
+      "normal": {
+        "offset": 3094188,
+        "count": 44847
+      },
+      "index": {
+        "offset": 3273576,
+        "count": 52266
+      }
+    },
+    {
+      "material": "steel",
+      "position": {
+        "offset": 3482640,
+        "count": 228
+      },
+      "normal": {
+        "offset": 3483552,
+        "count": 228
+      },
+      "index": {
+        "offset": 3484464,
+        "count": 216
+      }
+    }
+  ],
+  "triangles": 126562,
+  "bytes": 3485328,
+  "sourceDownloadBytes": 32248371,
+  "revision": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+  "scale": 1.08,
+  "jointAngles": [
+    -1.2296813470250174,
+    0.12113700547173976,
+    1.3229494254145227,
+    -2.123818058173587,
+    0.16150059221678703,
+    3.7413070424471337,
+    2.889998417939137
+  ]
+}

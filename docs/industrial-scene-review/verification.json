@@ -1,0 +1,216 @@
+{
+  "browser": "154.0.8037.100",
+  "renderer": "ANGLE (Intel, Intel(R) UHD Graphics 620 (0x00005917) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "initial": {
+    "asset": {
+      "meshes": [
+        {
+          "material": "paint",
+          "position": {
+            "offset": 0,
+            "count": 200748
+          },
+          "normal": {
+            "offset": 802992,
+            "count": 200748
+          },
+          "index": {
+            "offset": 1605984,
+            "count": 327204
+          }
+        },
+        {
+          "material": "dark",
+          "position": {
+            "offset": 2914800,
+            "count": 44847
+          },
+          "normal": {
+            "offset": 3094188,
+            "count": 44847
+          },
+          "index": {
+            "offset": 3273576,
+            "count": 52266
+          }
+        },
+        {
+          "material": "steel",
+          "position": {
+            "offset": 3482640,
+            "count": 228
+          },
+          "normal": {
+            "offset": 3483552,
+            "count": 228
+          },
+          "index": {
+            "offset": 3484464,
+            "count": 216
+          }
+        }
+      ],
+      "triangles": 126562,
+      "bytes": 3485328,
+      "sourceDownloadBytes": 32248371,
+      "revision": "71f066ad0be9cd271f7ed58c030243ef157af9f4",
+      "scale": 1.08,
+      "jointAngles": [
+        -1.2296813470250174,
+        0.12113700547173976,
+        1.3229494254145227,
+        -2.123818058173587,
+        0.16150059221678703,
+        3.7413070424471337,
+        2.889998417939137
+      ]
+    },
+    "render": {
+      "frame": 3,
+      "triangles": 219372,
+      "calls": 69,
+      "geometries": 55,
+      "textures": 8,
+      "lastRenderMs": 6.7000000001862645,
+      "cameraPosition": [
+        0.8899999999999999,
+        -1.2299999999999982,
+        1.009999999999999
+      ],
+      "orbitTarget": [
+        0.25,
+        0,
+        0.57
+      ]
+    },
+    "observed": [
+      0.9968017063026194,
+      -0.07991469396917268,
+      0,
+      0,
+      0.07991469396917268,
+      0.9968017063026194,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0.4635767593046657,
+      -0.025562038816281843,
+      0.69,
+      1
+    ],
+    "estimate": [
+      0.9397394592234107,
+      -0.0799146939691727,
+      0.33242050247586274,
+      0,
+      0.07533995058370754,
+      0.9968017063026194,
+      0.026650518911102483,
+      0,
+      -0.3334870921408145,
+      1.734723475976807e-18,
+      0.9427546655283462,
+      0,
+      0.5005767593046657,
+      -0.044562038816281846,
+      0.733,
+      1
+    ]
+  },
+  "aligned": {
+    "observed": [
+      0.9968017063026194,
+      -0.07991469396917268,
+      0,
+      0,
+      0.07991469396917268,
+      0.9968017063026194,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0.4635767593046657,
+      -0.025562038816281843,
+      0.69,
+      1
+    ],
+    "estimate": [
+      0.9968017063026194,
+      -0.07991469396917268,
+      0,
+      0,
+      0.07991469396917268,
+      0.9968017063026194,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0.4635767593046657,
+      -0.025562038816281843,
+      0.69,
+      1
+    ],
+    "render": {
+      "frame": 216,
+      "triangles": 219372,
+      "calls": 69,
+      "geometries": 56,
+      "textures": 8,
+      "lastRenderMs": 3.5,
+      "cameraPosition": [
+        0.8899999999999997,
+        -1.2299999999999713,
+        1.009999999999986
+      ],
+      "orbitTarget": [
+        0.25,
+        0,
+        0.57
+      ]
+    }
+  },
+  "maxTransformError": 0,
+  "resetVerified": true,
+  "cameraResetVerified": true,
+  "observedStationary": true,
+  "idleRenderingStopped": true,
+  "perf": {
+    "samples": 184,
+    "medianFrameMs": 28,
+    "p95FrameMs": 34.80000000000291,
+    "meanFrameMs": 27.703804347826086,
+    "renderedFrames": 167,
+    "wallSeconds": 5.103600000000093,
+    "renderedFramesPerSecond": 32.7220001567515
+  },
+  "interaction": {
+    "renderedFrames": 105,
+    "wallSeconds": 2.459899999999907
+  },
+  "mobileOverflow": false,
+  "evidence": {
+    "filename": "autoframe3d-accepted-wrong-recorded-evidence.json",
+    "downloaded": true
+  },
+  "errors": [],
+  "externalRequests": [],
+  "requests": [
+    "http://127.0.0.1:5175/",
+    "http://127.0.0.1:5175/assets/index-Cw94GXuR.js",
+    "http://127.0.0.1:5175/assets/index-BUMH5Hkh.css",
+    "http://127.0.0.1:5175/assets/industrial/robot.json",
+    "http://127.0.0.1:5175/assets/industrial/robot.bin",
+    "http://127.0.0.1:5175/favicon.svg",
+    "http://127.0.0.1:5175/api/investigation/status",
+    "http://127.0.0.1:5175/api/demo",
+    "http://127.0.0.1:5175/api/demo/cases/accepted-wrong/geometry?variant=baseline",
+    "http://127.0.0.1:5175/api/demo/cases/accepted-wrong/evidence"
+  ]
+}

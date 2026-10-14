@@ -4,7 +4,9 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { TransformControls } from "three/addons/controls/TransformControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
+import { industrialTools, loadRobot, surfaceTexture } from "./industrialDetails";
 import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import {
   type Pose,
   referencePose,
@@ -66,7 +68,7 @@ export default function PoseScene({
     }
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = T.PCFShadowMap;
+    renderer.shadowMap.type = T.PCFSoftShadowMap;
     renderer.toneMapping = T.ACESFilmicToneMapping;
     renderer.outputColorSpace = T.SRGBColorSpace;
     renderer.toneMappingExposure = 1.0;
@@ -74,36 +76,41 @@ export default function PoseScene({
     const orbit = new OrbitControls(camera, renderer.domElement);
     orbit.enableDamping = true;
     const reset = () => {
-      camera.position.set(0.98, -1.24, 1.06);
-      orbit.target.set(0.31, 0, 0.64);
+      // Flush residual pan/rotation inertia before restoring the inspection view.
+      const damping = orbit.enableDamping;
+      orbit.enableDamping = false;
       orbit.update();
+      camera.position.set(0.89, -1.23, 1.01);
+      orbit.target.set(0.25, 0, 0.57);
+      orbit.update();
+      orbit.enableDamping = damping;
     };
     reset();
     const pm = new T.PMREMGenerator(renderer),
       room = new RoomEnvironment(),
       env = pm.fromScene(room, 0.04);
     scene.environment = env.texture;
-    scene.environmentIntensity = 0.85;
+    scene.environmentIntensity = 0.48;
     room.dispose();
     pm.dispose();
     RectAreaLightUniformsLib.init();
-    const key = new T.RectAreaLight("#fff0dc", 4.5, 1.2, 0.8);
+    const key = new T.RectAreaLight("#fff0dc", 3.0, 1.2, 0.8);
     key.position.set(0.2, -1.0, 1.45);
     key.lookAt(0.25, 0, 0.65);
     scene.add(key);
-    const fill = new T.RectAreaLight("#d3e4f2", 1.8, 0.8, 0.9);
+    const fill = new T.RectAreaLight("#d3e4f2", 1.3, 0.8, 0.9);
     fill.position.set(1.1, 0.5, 1.0);
     fill.lookAt(0.25, 0, 0.6);
     scene.add(fill);
     const rim = new T.DirectionalLight("#b9d6e6", 0.7);
     rim.position.set(-0.5, 0.6, 1.3);
     scene.add(rim);
-    scene.add(new T.HemisphereLight("#d5e2eb", "#25272b", 0.45));
+    scene.add(new T.HemisphereLight("#d5e2eb", "#25272b", 0.25));
     // Low-energy shadow key supplements the broad area lights.
-    const light = new T.DirectionalLight("#fff0dd", 0.85);
+    const light = new T.DirectionalLight("#fff0dd", 2.2);
     light.position.set(0.2, -0.5, 1.8);
     light.castShadow = true;
-    light.shadow.mapSize.set(2048, 2048);
+    light.shadow.mapSize.set(1024, 1024);
     light.shadow.camera.left = -1;
     light.shadow.camera.right = 1;
     light.shadow.camera.top = 1;
@@ -167,6 +174,12 @@ export default function PoseScene({
       pos: number[],
       mat: T.Material,
     ) => mesh(new RoundedBoxGeometry(...size, 3, 0.003), mat, parent, pos);
+    const tools = industrialTools({paint, metal, dark, black, steel});
+    const textures = [surfaceTexture("paint"), surfaceTexture("metal"), surfaceTexture("bench")];
+    paint.roughnessMap = textures[0]; paint.bumpMap = textures[0]; paint.bumpScale = 0.00006;
+    metal.roughnessMap = textures[1]; metal.bumpMap = textures[1]; metal.bumpScale = 0.000025;
+    bench.color.set("#646c73"); bench.metalness = 0.8; bench.roughness = 0.48;
+    bench.roughnessMap = textures[2]; bench.bumpMap = textures[2]; bench.bumpScale = 0.00003;
     const workshop = new T.MeshStandardMaterial({
       color: "#0c151c",
       metalness: 0,
@@ -177,12 +190,12 @@ export default function PoseScene({
       metalness: 0.1,
       roughness: 0.8,
     });
-    for (const x of [-0.63, -0.12, 0.39]) {
-      box(scene, [0.45, 0.12, 0.81], [x, 1.15, 0.4], workshop);
-      for (const z of [0.14, 0.39, 0.64])
-        box(scene, [0.4, 0.009, 0.005], [x, 1.083, z], trim);
-      box(scene, [0.014, 0.012, 0.085], [x + 0.13, 1.08, 0.49], trim);
-    }
+    // Distant workshop structure, no large foreground cabinet slabs.
+    box(scene, [3.4, 0.035, 1.8], [0, 2.1, 0.7], workshop);
+    for (const x of [-1.3, -.7, .05, .8, 1.5])
+      box(scene, [.035, .045, 1.6], [x, 1.9, .7], trim);
+    for (const z of [.15, .65, 1.15])
+      box(scene, [3.2, .08, .025], [0, 1.85, z], trim);
     const cyl = (
       parent: T.Object3D,
       r: number,
@@ -196,75 +209,17 @@ export default function PoseScene({
       o.rotation.x = axis === "z" ? Math.PI / 2 : 0;
       return o;
     };
-    const link = (a: number[], b: number[], r: number) => {
-      const start = new T.Vector3().fromArray(a),
-        end = new T.Vector3().fromArray(b),
-        dir = end.clone().sub(start);
-      const o = mesh(
-        new T.CapsuleGeometry(r, dir.length() - 2 * r, 12, 32),
-        paint,
-        fixture,
-        start.clone().add(end).multiplyScalar(0.5).toArray(),
-      );
-      o.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), dir.normalize());
-    };
-    box(fixture, [1.7, 1.1, 0.055], [0.1, 0, -0.03], bench);
-    for (let x = -0.65; x < 0.9; x += 0.14)
-      for (let y = -0.45; y < 0.5; y += 0.14)
-        cyl(fixture, 0.004, 0.001, [x, y, -0.001], black);
-    cyl(fixture, 0.18, 0.055, [-0.28, 0, 0.03], metal);
-    cyl(fixture, 0.135, 0.16, [-0.28, 0, 0.12], paint);
-    cyl(fixture, 0.112, 0.2, [-0.28, 0, 0.22], dark, "y");
-    link([-0.28, 0, 0.23], [-0.4, 0, 0.54], 0.095);
-    cyl(fixture, 0.105, 0.19, [-0.4, 0, 0.54], dark, "y");
-    cyl(fixture, 0.081, 0.197, [-0.4, 0, 0.54], metal, "y");
-    link([-0.4, 0, 0.54], [0.12, 0, 0.69], 0.09);
-    cyl(fixture, 0.095, 0.18, [0.12, 0, 0.69], dark, "x");
-    cyl(fixture, 0.085, 0.16, [0.24, 0, 0.69], paint, "x");
-    cyl(fixture, 0.082, 0.04, [0.345, 0, 0.69], dark, "x");
-    for (const [x, z, r] of [
-      [-0.28, 0.22, 0.083],
-      [-0.4, 0.54, 0.073],
-    ]) {
-      for (let i = 0; i < 8; i++) {
-        const a = (i * Math.PI) / 4;
-        cyl(
-          fixture,
-          0.004,
-          0.008,
-          [x + Math.sin(a) * r, -0.104, z + Math.cos(a) * r],
-          steel,
-          "y",
-        );
-      }
-      cyl(fixture, 0.043, 0.012, [x, -0.106, z], paint, "y");
-      cyl(fixture, 0.018, 0.014, [x, -0.115, z], dark, "y");
+    // Through-holes with bevelled openings and visible dark bore walls.
+    const plate = new T.Shape();
+    plate.moveTo(-.75,-.55);plate.lineTo(.95,-.55);plate.lineTo(.95,.55);plate.lineTo(-.75,.55);plate.closePath();
+    for (let x=-.65;x<.9;x+=.12) for(let y=-.45;y<.5;y+=.12) {
+      const hole = new T.Path();hole.absarc(x,y,.007,0,Math.PI*2,true);plate.holes.push(hole);
     }
-    for (let i = 0; i < 8; i++) {
-      const a = (i * Math.PI) / 4;
-      cyl(
-        fixture,
-        0.006,
-        0.008,
-        [-0.28 + Math.sin(a) * 0.15, Math.cos(a) * 0.15, 0.061],
-        steel,
-      );
-    }
-    for (const x of [0.19, 0.29])
-      cyl(fixture, 0.087, 0.009, [x, 0, 0.69], metal, "x");
-    const cable = new T.CatmullRomCurve3([
-      new T.Vector3(-0.28, 0.12, 0.12),
-      new T.Vector3(-0.48, 0.12, 0.35),
-      new T.Vector3(-0.48, 0.12, 0.6),
-      new T.Vector3(-0.2, 0.12, 0.72),
-      new T.Vector3(0.2, 0.07, 0.75),
-    ]);
-    mesh(
-      new T.TubeGeometry(cable, 70, 0.012, 10, false),
-      black,
-      fixture,
-      [0, 0, 0],
-    );
+    mesh(new T.ExtrudeGeometry(plate,{depth:.045,bevelEnabled:true,bevelSize:.001,
+      bevelThickness:.001,bevelSegments:2,curveSegments:8}),bench,fixture,[0,0,-.047]);
+    box(fixture,[1.7,1.1,.012],[.1,0,-.063],black);
+    box(fixture,[.39,.29,.018],[-.22,0,.007],steel);
+    for(const x of [-.38,-.06]) for(const y of [-.11,.11]) tools.socket(fixture,[x,y,.018],"z",.006);
     const flange = (parent: T.Object3D, x: number, female: boolean) => {
       const ring = new T.Shape();
       ring.absarc(0, 0, 0.078, 0, Math.PI * 2, false);
@@ -322,6 +277,7 @@ export default function PoseScene({
     wrist.position.set(0.39, 0, 0.69);
     fixture.add(wrist);
     flange(wrist, 0, false);
+    tools.cable(fixture,[[.37,.065,.745],[.31,.11,.78],[.16,.12,.78],[-.1,.1,.83],[-.23,.1,.72]],.007);
     const observed = new T.Group();
     fixture.add(observed);
     const localReference = poseFromMatrix(
@@ -339,21 +295,7 @@ export default function PoseScene({
     observed.position.fromArray(localReference.p);
     observed.quaternion.fromArray(localReference.q);
     flange(observed, -0.055, true);
-    cyl(observed, 0.07, 0.025, [-0.018, 0, 0], dark, "x");
-    box(observed, [0.105, 0.11, 0.1], [0.045, 0, 0], metal);
-    box(observed, [0.023, 0.118, 0.105], [0.105, 0, 0], dark);
-    for (const y of [-0.038, 0.038]) {
-      box(observed, [0.08, 0.029, 0.076], [0.15, y, 0], dark);
-      box(observed, [0.07, 0.019, 0.052], [0.217, y, 0], metal);
-      for (const z of [-0.032, 0.032])
-        cyl(observed, 0.004, 0.004, [0.06, y * 1.5, z], dark, "y");
-    }
-    // Every instance uses the exact observed mesh buffers and local transforms.
-    for (const x of [0.012, 0.079])
-      for (const z of [-0.034, 0.034]) {
-        cyl(observed, 0.007, 0.002, [x, -0.056, z], black, "y");
-        cyl(observed, 0.0036, 0.003, [x, -0.058, z], metal, "y");
-      }
+    tools.gripper(observed);
     const labelCanvas = document.createElement("canvas");
     labelCanvas.width = 512;
     labelCanvas.height = 128;
@@ -363,15 +305,16 @@ export default function PoseScene({
     ctx.textAlign = "center";
     ctx.fillText("AUTOFRAME", 256, 78);
     const labelTexture = new T.CanvasTexture(labelCanvas);
+    labelTexture.colorSpace = T.SRGBColorSpace;
     const label = mesh(
-      new T.PlaneGeometry(0.074, 0.018),
+      new T.PlaneGeometry(0.039, 0.009),
       new T.MeshBasicMaterial({
         map: labelTexture,
         transparent: true,
         depthWrite: false,
       }),
       observed,
-      [0.045, -0.057, 0],
+      [0.051, -0.0586, 0],
     );
     label.rotation.x = Math.PI / 2;
     const overlayMaterial = new T.LineBasicMaterial({
@@ -391,29 +334,45 @@ export default function PoseScene({
       polygonOffset: true,
       polygonOffsetFactor: -1,
     });
+    // Bake only asset-local transforms; pose remains exclusively on the instance group.
+    // Two shared buffers replace per-fastener overlay draw calls.
+    const fills: T.BufferGeometry[] = [], edges: T.BufferGeometry[] = [];
+    observed.traverse(o=>{
+      if (!(o instanceof T.Mesh) || o === label) return;
+      o.updateMatrix();
+      const fill = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
+      for (const name of Object.keys(fill.attributes)) if(name !== "position") fill.deleteAttribute(name);
+      fill.applyMatrix4(o.matrix); fills.push(fill);
+      if(o.userData.featureEdge !== false)
+        edges.push(new T.EdgesGeometry(o.geometry,28).applyMatrix4(o.matrix));
+    });
+    const fillGeometry = mergeGeometries(fills), edgeGeometry = mergeGeometries(edges);
+    fills.forEach(g=>g.dispose()); edges.forEach(g=>g.dispose());
+    // Consolidate stationary detail by finish. Socket heads and jaw grooves retain
+    // their exact vertices, but no longer require separate visible draw calls.
+    const replacedGeometries = new Set<T.BufferGeometry>();
+    const finishBuckets = new Map<T.Material,T.BufferGeometry[]>();
+    for (const o of [...observed.children]) {
+      if (!(o instanceof T.Mesh) || o === label || Array.isArray(o.material)) continue;
+      replacedGeometries.add(o.geometry);
+      const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
+      g.applyMatrix4(o.matrix);
+      if(!finishBuckets.has(o.material)) finishBuckets.set(o.material,[]);
+      finishBuckets.get(o.material)!.push(g); observed.remove(o);
+    }
+    for(const [material,geometries] of finishBuckets) {
+      const o = new T.Mesh(mergeGeometries(geometries),material);
+      o.castShadow=o.receiveShadow=true;observed.add(o);
+      geometries.forEach(g=>g.dispose());
+    }
     const makeOverlay = (
       lineMaterial: T.LineBasicMaterial,
       tint?: T.MeshBasicMaterial,
     ) => {
       const group = new T.Group();
-      observed.traverse((o) => {
-        if (o instanceof T.Mesh && o !== label) {
-          if (tint) {
-            const fill = new T.Mesh(o.geometry, tint);
-            fill.position.copy(o.position);
-            fill.quaternion.copy(o.quaternion);
-            group.add(fill);
-          }
-          const edge = new T.LineSegments(
-            new T.EdgesGeometry(o.geometry, 12),
-            lineMaterial,
-          );
-          edge.position.copy(o.position);
-          edge.quaternion.copy(o.quaternion);
-          edge.renderOrder = 2;
-          group.add(edge);
-        }
-      });
+      if(tint) group.add(new T.Mesh(fillGeometry,tint));
+      const edge = new T.LineSegments(edgeGeometry,lineMaterial);
+      edge.renderOrder = 2; group.add(edge);
       scene.add(group);
       return group;
     };
@@ -430,32 +389,19 @@ export default function PoseScene({
     outline.position.fromArray(referencePose().p);
     outline.quaternion.fromArray(referencePose().q);
     const scanner = new T.Group();
-    scanner.position.set(0.6, 0.2, 0.88);
-    scanner.quaternion.setFromUnitVectors(
-      new T.Vector3(1, 0, 0),
-      new T.Vector3(0.52, 0, 0.69).sub(scanner.position).normalize(),
-    );
+    scanner.position.set(-.35, -.08, .87);
+    scanner.quaternion.setFromUnitVectors(new T.Vector3(1,0,0),
+      new T.Vector3(.52,0,.69).sub(scanner.position).normalize());
     fixture.add(scanner);
-    box(scanner, [0.078, 0.052, 0.052], [0, 0, 0], dark);
-    cyl(
-      scanner,
-      0.012,
-      0.006,
-      [0.041, 0, 0],
-      new T.MeshStandardMaterial({
-        color: "#06bdd2",
-        emissive: "#008fa8",
-        emissiveIntensity: 0.3,
-        metalness: 0.3,
-        roughness: 0.35,
-      }),
-      "x",
-    );
-    cyl(fixture, 0.006, 0.88, [0.6, 0.2, 0.44], dark);
+    tools.scanner(scanner);
+    tools.cylinder(fixture,.008,.8,[-.38,.005,.4],steel,"z");
+    tools.box(fixture,[.09,.09,.022],[-.38,.005,.012],dark);
+    tools.box(fixture,[.07,.045,.055],[-.38,.005,.825],steel);
+    tools.cable(fixture,[[-.42,.005,.85],[-.48,.01,.78],[-.43,.01,.42],[-.44,.01,.04]],.004);
     const guide = new T.Group();
     fixture.add(guide);
     fixture.updateMatrixWorld(true);
-    const origin = scanner.localToWorld(new T.Vector3(0.045, 0, 0)),
+    const origin = scanner.localToWorld(new T.Vector3(0.056, 0, 0)),
       ray = new T.Raycaster();
     const solids = fixture.children.filter(
       (o) => o instanceof T.Mesh || o === wrist || o === observed,
@@ -469,8 +415,8 @@ export default function PoseScene({
         }
       });
       guide.clear();
-      for (let i = 0; i < 9; i++) {
-        const a = (i / 9) * Math.PI * 2,
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * Math.PI * 2,
           aim = new T.Vector3(
             0.5,
             Math.sin(a) * 0.045,
@@ -481,11 +427,13 @@ export default function PoseScene({
         if (hits[0])
           guide.add(
             new T.Line(
-              new T.BufferGeometry().setFromPoints([origin, hits[0].point]),
+              new T.BufferGeometry().setFromPoints([
+                fixture.worldToLocal(origin.clone()), fixture.worldToLocal(hits[0].point.clone()),
+              ]),
               new T.LineBasicMaterial({
                 color: "#008fa8",
                 transparent: true,
-                opacity: 0.42,
+                opacity: 0.25,
                 toneMapped: false,
               }),
             ),
@@ -495,9 +443,10 @@ export default function PoseScene({
     const axes = new T.AxesHelper(0.09);
     axes.position.set(0.53, -0.07, 0.58);
     fixture.add(axes);
-    let dirty = true;
+    let dirty = true, id = 0, disposed = false, renderCount = 0;
     const invalidate = () => {
       dirty = true;
+      if (!id && !document.hidden && !disposed) id = requestAnimationFrame(draw);
     };
     const gizmo = new TransformControls(camera, renderer.domElement);
     gizmo.setSpace("world");
@@ -537,37 +486,53 @@ export default function PoseScene({
       invalidate();
     });
     resize.observe(el);
-    let id = 0;
     const draw = () => {
-      id = requestAnimationFrame(draw);
-      if (!document.hidden) {
-        orbit.update();
-        if (dirty) {
-          renderer.render(scene, camera);
-          dirty = false;
-        }
+      id = 0;
+      if (document.hidden || disposed) return;
+      const changed = orbit.update();
+      if (dirty) {
+        const start = performance.now();
+        renderer.render(scene, camera);
+        el.dataset.renderStats = JSON.stringify({frame:++renderCount,triangles:renderer.info.render.triangles,
+          calls:renderer.info.render.calls,geometries:renderer.info.memory.geometries,
+          textures:renderer.info.memory.textures,lastRenderMs:performance.now()-start,
+          cameraPosition:camera.position.toArray(),orbitTarget:orbit.target.toArray()});
+        dirty = false;
       }
+      if (changed && !id) id = requestAnimationFrame(draw);
     };
     const visibility = () => {
-      cancelAnimationFrame(id);
-      if (!document.hidden) draw();
+      cancelAnimationFrame(id); id = 0;
+      if (!document.hidden) invalidate();
     };
+    const abort = new AbortController();
+    loadRobot({paint,metal,dark,black,steel},abort.signal).then(robot=>{
+      if(disposed) {robot.traverse(o=>{if(o instanceof T.Mesh)o.geometry.dispose();});return;}
+      fixture.add(robot); solids.push(robot);
+      el.dataset.robotAsset = JSON.stringify(robot.userData.asset);
+      updateGuide(); invalidate();
+    }).catch(error=>{
+      if(!abort.signal.aborted) setFailure(`Industrial robot asset could not load: ${String(error)}`);
+    });
     document.addEventListener("visibilitychange", visibility);
     visibility();
     return () => {
+      disposed = true; abort.abort();
       cancelAnimationFrame(id);
       document.removeEventListener("visibilitychange", visibility);
       resize.disconnect();
       gizmo.dispose();
       orbit.dispose();
-      scene.traverse((o) => {
-        if (o instanceof T.Mesh || o instanceof T.Line) {
-          o.geometry.dispose();
-          (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) =>
-            m.dispose(),
-          );
+      const geometries = new Set<T.BufferGeometry>(), materials = new Set<T.Material>();
+      replacedGeometries.forEach(g=>geometries.add(g));
+      scene.traverse(o=>{
+        if(o instanceof T.Mesh || o instanceof T.Line) {
+          geometries.add(o.geometry);
+          (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>materials.add(m));
         }
       });
+      geometries.forEach(g=>g.dispose()); materials.forEach(m=>m.dispose());
+      textures.forEach(t=>t.dispose());
       labelTexture.dispose();
       env.dispose();
       renderer.dispose();
@@ -599,7 +564,7 @@ export default function PoseScene({
           s.part.matrixWorld.toArray(),
         );
       }
-      if (laser) s.updateGuide();
+      // Stationary scanner and observed geometry: pose playback never rebuilds the guide.
       s.invalidate();
     }
   }, [pose, mode, laser, editable, showEstimate, showReference]);
