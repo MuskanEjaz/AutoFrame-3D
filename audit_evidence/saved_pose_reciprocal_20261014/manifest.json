@@ -1,0 +1,419 @@
+{
+  "prepared_at_utc": "2026-10-14T07:36:47.455422+00:00",
+  "base_commit": "1d51354482b11087be8b28ee6899463055e4394e",
+  "existing_evidence_review": "Saved reciprocal results use six PCA starts, not saved baseline initialization. Diagnostic GT starts and synthetic fixtures also do not match. No matching saved experiment found in reviewed local refinement/diagnosis evidence.",
+  "initialization": "Exactly one saved baseline camera-from-object pose per case; no candidate selection/PCA",
+  "method": {
+    "icp_correspondence_policy": "reciprocal",
+    "max_iterations": 8,
+    "correspondence_distance_m": 0.015,
+    "model_registration_points_max": 3000,
+    "sampling": "np.linspace(0, len(evaluation_model)-1, min(3000,len(model)), dtype=int64)",
+    "minimum_correspondences": 20,
+    "translation_stop_m": 1e-05,
+    "random_seed": null,
+    "randomness": "None; deterministic vertex subsampling and nearest neighbors"
+  },
+  "scoring": {
+    "pose_correctness": {
+      "metric": "BOP MSSD / object diameter",
+      "maximum_normalized_mssd": 0.1,
+      "continuous_symmetry_max_vertex_travel_over_diameter": 0.01
+    },
+    "geometric_acceptance": {
+      "minimum_fitness": 0.7,
+      "maximum_inlier_rmse_m": 0.01,
+      "maximum_correspondence_distance_m": 0.015
+    },
+    "units": "transforms/distances metres; fitness and MSSD/diameter dimensionless",
+    "baseline_verification_tolerance": 1e-09
+  },
+  "per_case_hard_timeout_seconds": 30,
+  "attempts_per_case": 1,
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "gt_dependency": "GT instance masks and known object identities; target GT pose and symmetry scoring only after refinement",
+  "cases": [
+    {
+      "case": {
+        "case_id": "tless-s000001-i000001-g00-o02",
+        "scene_id": 1,
+        "image_id": 1,
+        "gt_index": 0,
+        "object_id": 2
+      },
+      "input_files": [
+        "data/tless/bop/test_primesense/000001/scene_camera.json",
+        "data/tless/bop/test_primesense/000001/depth/000001.png",
+        "data/tless/bop/test_primesense/000001/mask_visib/000001_000000.png",
+        "data/tless/bop/models_cad/obj_000002.ply",
+        "data/tless/bop/models_eval/obj_000002.ply",
+        "data/tless/bop/models_cad/models_info.json",
+        "data/tless/bop/test_primesense/000001/scene_gt.json"
+      ],
+      "initial_camera_from_object": [
+        [
+          -0.9420434860105634,
+          0.15970511461397158,
+          -0.2950395682467046,
+          -0.048509956762149246
+        ],
+        [
+          -0.05807759358253542,
+          -0.9437805777507866,
+          -0.32543081320620715,
+          0.08301115606619423
+        ],
+        [
+          -0.3304255795012335,
+          -0.28943478959263025,
+          0.8983576342330181,
+          0.7049428069090315
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "initial_pose_sha256": "ea581c7d4b82369164dbb0e32e2c3e83e31a707d02bd43c729ebc3569ae98035",
+      "baseline_record_sha256": "b8a865c1c2c5f971ba264493d34647e7a69e0e874c42b14bdfbef29576f196fb",
+      "saved_baseline": {
+        "alignment_quality_metrics": {
+          "fitness": 0.9217443249701314,
+          "inlier_rmse_m": 0.0017946198167643791,
+          "inlier_count": 3086,
+          "scan_point_count": 3348,
+          "max_correspondence_distance_m": 0.015
+        },
+        "pose_metrics": {
+          "mssd_m": 0.09276596536055867,
+          "mssd_over_diameter": 1.4023323138591388
+        },
+        "correct": false,
+        "accepted": true
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g00-o05",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 0,
+        "object_id": 5
+      },
+      "input_files": [
+        "data/tless/bop/test_primesense/000002/scene_camera.json",
+        "data/tless/bop/test_primesense/000002/depth/000003.png",
+        "data/tless/bop/test_primesense/000002/mask_visib/000003_000000.png",
+        "data/tless/bop/models_cad/obj_000005.ply",
+        "data/tless/bop/models_eval/obj_000005.ply",
+        "data/tless/bop/models_cad/models_info.json",
+        "data/tless/bop/test_primesense/000002/scene_gt.json"
+      ],
+      "initial_camera_from_object": [
+        [
+          -0.44239069571300205,
+          -0.46745735577837777,
+          -0.765358800090032,
+          0.007233732830704819
+        ],
+        [
+          -0.8570399183532575,
+          0.47172160730655827,
+          0.207271087103723,
+          -0.05978411767005422
+        ],
+        [
+          0.26414588903787234,
+          0.7476378439651141,
+          -0.6093148640691343,
+          0.764122948191854
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "initial_pose_sha256": "f1378a9f10de62a8079964f7652012d2218490b7f84b73e0cc928aed200c7525",
+      "baseline_record_sha256": "fad793c07f713187f2eacaaf088d4401edae4c15d910c0b9ea34ea1d97ceda39",
+      "saved_baseline": {
+        "alignment_quality_metrics": {
+          "fitness": 0.9429206103921189,
+          "inlier_rmse_m": 0.006155853568434697,
+          "inlier_count": 9763,
+          "scan_point_count": 10354,
+          "max_correspondence_distance_m": 0.015
+        },
+        "pose_metrics": {
+          "mssd_m": 0.05457646545374417,
+          "mssd_over_diameter": 0.5021295929132779
+        },
+        "correct": false,
+        "accepted": true
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000003-g01-o06",
+        "scene_id": 2,
+        "image_id": 3,
+        "gt_index": 1,
+        "object_id": 6
+      },
+      "input_files": [
+        "data/tless/bop/test_primesense/000002/scene_camera.json",
+        "data/tless/bop/test_primesense/000002/depth/000003.png",
+        "data/tless/bop/test_primesense/000002/mask_visib/000003_000001.png",
+        "data/tless/bop/models_cad/obj_000006.ply",
+        "data/tless/bop/models_eval/obj_000006.ply",
+        "data/tless/bop/models_cad/models_info.json",
+        "data/tless/bop/test_primesense/000002/scene_gt.json"
+      ],
+      "initial_camera_from_object": [
+        [
+          0.8690558354358346,
+          -0.05661178394268791,
+          -0.4914642009482988,
+          -0.08577306959181182
+        ],
+        [
+          0.4636671953272048,
+          -0.25317881346257,
+          0.8490660871752497,
+          -0.020896685973925157
+        ],
+        [
+          -0.17249546913564934,
+          -0.9657616653877455,
+          -0.19377749816519058,
+          0.7698193254547644
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "initial_pose_sha256": "77634e46b4033ae7ec877b1eb23195edc9e19f52c84fa8fcb0f7cc1ffdfacc9e",
+      "baseline_record_sha256": "336c70950bf8e9778ebd54bf43d45cfac4a23a196f7b6beaab2a8a4a3db305f0",
+      "saved_baseline": {
+        "alignment_quality_metrics": {
+          "fitness": 0.9802540186544949,
+          "inlier_rmse_m": 0.003665724672800957,
+          "inlier_count": 9879,
+          "scan_point_count": 10078,
+          "max_correspondence_distance_m": 0.015
+        },
+        "pose_metrics": {
+          "mssd_m": 0.05871946665427228,
+          "mssd_over_diameter": 0.5423679550572418
+        },
+        "correct": false,
+        "accepted": true
+      }
+    },
+    {
+      "case": {
+        "case_id": "tless-s000002-i000024-g02-o07",
+        "scene_id": 2,
+        "image_id": 24,
+        "gt_index": 2,
+        "object_id": 7
+      },
+      "input_files": [
+        "data/tless/bop/test_primesense/000002/scene_camera.json",
+        "data/tless/bop/test_primesense/000002/depth/000024.png",
+        "data/tless/bop/test_primesense/000002/mask_visib/000024_000002.png",
+        "data/tless/bop/models_cad/obj_000007.ply",
+        "data/tless/bop/models_eval/obj_000007.ply",
+        "data/tless/bop/models_cad/models_info.json",
+        "data/tless/bop/test_primesense/000002/scene_gt.json"
+      ],
+      "initial_camera_from_object": [
+        [
+          -0.056587952205245234,
+          -0.9981344223368098,
+          -0.022923320256452086,
+          -0.0789589842436678
+        ],
+        [
+          -0.9639045180907702,
+          0.06060153025160985,
+          -0.25925958909047386,
+          0.00825649226793261
+        ],
+        [
+          0.2601651084780867,
+          0.007424922728632746,
+          -0.965535595849816,
+          0.7470334807884046
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "initial_pose_sha256": "1b97e7804e2273749082802792d4a1918a1f85f9b6e64fee2621707458b4f2ab",
+      "baseline_record_sha256": "a90259f46f17419e37ae0391335f0b10a1672cafab905c3719ebc5a9a7860c87",
+      "saved_baseline": {
+        "alignment_quality_metrics": {
+          "fitness": 0.9963842788444155,
+          "inlier_rmse_m": 0.004371645156121867,
+          "inlier_count": 27557,
+          "scan_point_count": 27657,
+          "max_correspondence_distance_m": 0.015
+        },
+        "pose_metrics": {
+          "mssd_m": 0.015236641729172808,
+          "mssd_over_diameter": 0.08530437941479051
+        },
+        "correct": true,
+        "accepted": true
+      }
+    }
+  ],
+  "input_inventory": {
+    "data/tless/bop/test_primesense/000001/scene_camera.json": {
+      "sha256": "0f4e972b56ef220fe2d4efbbd4767f77ca0e54fe76093d46f952d515700f1ce1",
+      "bytes": 15113
+    },
+    "data/tless/bop/test_primesense/000001/depth/000001.png": {
+      "sha256": "9d32acb46ad00d08ee2cb28c27c0042e29e13585daccec768ba735c541199535",
+      "bytes": 55437
+    },
+    "data/tless/bop/test_primesense/000001/mask_visib/000001_000000.png": {
+      "sha256": "ad94caf3cbe67179d3ca8d5ce7b1ac6ac88b71528fc4a44a03395e3d4dd1cd21",
+      "bytes": 684
+    },
+    "data/tless/bop/models_cad/obj_000002.ply": {
+      "sha256": "354d8969694176aa65d4d470badd304532bead5aa8e96bdecaa0ae41620f81b2",
+      "bytes": 3563656
+    },
+    "data/tless/bop/models_eval/obj_000002.ply": {
+      "sha256": "f09eeb95cf1e3231485e0f89f69671331cbb40ed30f2e87f4507722660dd8441",
+      "bytes": 771455
+    },
+    "data/tless/bop/models_cad/models_info.json": {
+      "sha256": "48a13b6e4532c20954dbe014a082439b05984d12ff13da1da62635a8dee59925",
+      "bytes": 7047
+    },
+    "data/tless/bop/test_primesense/000001/scene_gt.json": {
+      "sha256": "742c77860d984760a67b352159007b04dd260b8a27b7029574be7d845fcda1b2",
+      "bytes": 39820
+    },
+    "data/tless/bop/test_primesense/000002/scene_camera.json": {
+      "sha256": "84d4a7b2106ed19c59d11da0fa406a763bd408c8585a77b8f44e5d3d7b300d9b",
+      "bytes": 15101
+    },
+    "data/tless/bop/test_primesense/000002/depth/000003.png": {
+      "sha256": "9540ddfbc5eb52c705b0599743602f401d9490ad1334c59d34364c674712f275",
+      "bytes": 59509
+    },
+    "data/tless/bop/test_primesense/000002/mask_visib/000003_000000.png": {
+      "sha256": "c689b39d8ac08ffb815f4364034e0a0a7539768422bf34443169efedf5ef5b45",
+      "bytes": 1202
+    },
+    "data/tless/bop/models_cad/obj_000005.ply": {
+      "sha256": "cbe7ccaa74c74ba40fe64bfac62808a391f6e389a93e8c4f5d8b00157b9930ab",
+      "bytes": 1075517
+    },
+    "data/tless/bop/models_eval/obj_000005.ply": {
+      "sha256": "c1ca79f0e2eee0e5f23ae69156fcfa4d7195df210c315b960fbe53226c8af39f",
+      "bytes": 421139
+    },
+    "data/tless/bop/test_primesense/000002/scene_gt.json": {
+      "sha256": "a04b5aabc88dab06280670270b4954e5e353e490f5e661a92b42aa730726316f",
+      "bytes": 29501
+    },
+    "data/tless/bop/test_primesense/000002/mask_visib/000003_000001.png": {
+      "sha256": "b51f83d1d8bf99dd0493cefa1006d23d60cc5dfe0f1f5228b435e6b98e72b005",
+      "bytes": 1229
+    },
+    "data/tless/bop/models_cad/obj_000006.ply": {
+      "sha256": "f1227fe15e046bc18c1686bd5fb3b849a9996c2de2ca3fc16d34b9ec348f94df",
+      "bytes": 229687
+    },
+    "data/tless/bop/models_eval/obj_000006.ply": {
+      "sha256": "4e606c54f0f0b81844bdefd77097f6d88fdb22755e91d0669d89f98b61dddbd9",
+      "bytes": 254343
+    },
+    "data/tless/bop/test_primesense/000002/depth/000024.png": {
+      "sha256": "aa091e3d7274b21ef274186b8935ede1932d1aa0efcb8d01e4f2ada21b65c097",
+      "bytes": 60356
+    },
+    "data/tless/bop/test_primesense/000002/mask_visib/000024_000002.png": {
+      "sha256": "a611a43947c358d1d5729c7e9446dbf8944468b4c18b5ae9f318015ae98a4631",
+      "bytes": 1180
+    },
+    "data/tless/bop/models_cad/obj_000007.ply": {
+      "sha256": "da526fe974d4184986022ad353c559019cb4bd98a0b20b3219d59b9e8b2935c7",
+      "bytes": 704309
+    },
+    "data/tless/bop/models_eval/obj_000007.ply": {
+      "sha256": "fdac88ebf5334d552d343652dceacb2bec4ec28400e9a8202f1e0f73bd3c2c27",
+      "bytes": 502318
+    }
+  },
+  "evidence_inventory": {
+    "audit_evidence/development_eligibility_audit_20261011T053002Z_963a0a93/plan.json": {
+      "sha256": "ae1545b69c6b697280769c1ed19fb85dafb684cdead96144f5f5b62c60d12799",
+      "bytes": 26948
+    },
+    "audit_evidence/development_eligibility_audit_20261011T053002Z_963a0a93/results.jsonl": {
+      "sha256": "56d85181c19de95ecfa54834cc530a90d4d64ba6955ec39ed98ed873d7e10bd8",
+      "bytes": 42794
+    },
+    "audit_evidence/recorded_benchmark_demo/reciprocal_results.jsonl": {
+      "sha256": "0843567aa68d7d31a826647ed5e2a3f0f987f3de7200d1f4b3f40df550c0a51e",
+      "bytes": 4454
+    },
+    "configs/tless_frozen.json": {
+      "sha256": "ca60a2fe5c667bce40c85c75f11fc0e65d0f8db36281945f94b6dd422155577a",
+      "bytes": 1181
+    }
+  },
+  "code_identity": {
+    "autoframe3d/tless_adapter.py": {
+      "sha256": "0ff26092dc0739d1e4f51345d28a894f6142ae9bd9d45a95edb45e999622ae5e",
+      "bytes": 20578,
+      "head_blob": "e97c9fec7f6869823e6d91b2b0dcbd63b48ae234",
+      "uncommitted": true
+    },
+    "autoframe3d/tless_metrics.py": {
+      "sha256": "b8f833c7c8051854521bc26fbeae4a38d51534f54a525b3d2b605a7cd280743c",
+      "bytes": 3496,
+      "head_blob": "796d534b87ee6547d94215f2f7d20256069b7406",
+      "uncommitted": false
+    },
+    "autoframe3d/geometry.py": {
+      "sha256": "16f43ec402ab6ef9f01785cb32618ff3155dd8bbb1bea3ae09de7265de9c3fdf",
+      "bytes": 7276,
+      "head_blob": "3022b49d86be72acac67db05683400442381cc4e",
+      "uncommitted": false
+    },
+    "scripts/evaluate_saved_pose_reciprocal.py": {
+      "sha256": "d5b20194f0c58e45b7034daa0d68ab1a564fe9cb3b07e27861776307a67f99f0",
+      "bytes": 14735,
+      "head_blob": null,
+      "uncommitted": true
+    }
+  },
+  "existing_refinement_source": "def _refine_icp(\n    scan: FloatArray, model_fit: FloatArray, model: FloatArray, estimate: FloatArray,\n    *, correspondence_distance_m: float, max_iterations: int,\n    icp_correspondence_policy: str = \"model_to_scan\", deadline: float | None = None,\n    scan_tree: cKDTree | None = None, model_tree: cKDTree | None = None,\n    model_fit_tree: cKDTree | None = None, iteration_trace: list[dict[str, Any]] | None = None,\n) -> FloatArray:\n    \"\"\"Refine a supplied geometry-only pose; no annotations or GT are read.\"\"\"\n    scan_tree = scan_tree if scan_tree is not None else cKDTree(scan)\n    model_tree = model_tree if model_tree is not None else cKDTree(model)\n    if icp_correspondence_policy == \"reciprocal\":\n        model_fit_tree = model_fit_tree if model_fit_tree is not None else cKDTree(model_fit)\n    estimate = estimate.copy()\n    for _ in range(max_iterations):\n        if deadline is not None and time.monotonic() > deadline:\n            raise TimeoutError(\"Per-instance registration deadline exceeded\")\n        if icp_correspondence_policy == \"scan_to_model\":\n            distances, nearest = model_tree.query(\n                transform_points(scan, invert_transform(estimate)), k=1, workers=1,\n            )\n            moved = transform_points(model[nearest], estimate)\n        else:\n            moved = transform_points(model_fit, estimate)\n            distances, nearest = scan_tree.query(moved, k=1, workers=1)\n        inliers = distances <= correspondence_distance_m\n        if icp_correspondence_policy == \"reciprocal\":\n            # Reject unseen/many-to-one model matches unless the observation's\n            # nearest fitted model point is the same point. No overlap fraction\n            # or visibility label is supplied; this assumes a nearby start and\n            # sufficiently dense, mutually supported observed geometry.\n            _, reverse = model_fit_tree.query(\n                transform_points(scan, invert_transform(estimate)), k=1, workers=1,\n            )\n            inliers &= reverse[nearest] == np.arange(len(model_fit))\n        if inliers.sum() < 20:\n            break\n        target = scan[inliers] if icp_correspondence_policy == \"scan_to_model\" else scan[nearest[inliers]]\n        update = _rigid_fit(moved[inliers], target)\n        estimate = update @ estimate\n        if iteration_trace is not None:\n            iteration_trace.append({\"camera_from_object\": estimate.copy(), \"correspondence_count\": int(inliers.sum())})\n        if np.linalg.norm(update[:3, 3]) < 1e-5:\n            break\n    return estimate\n",
+  "research_adapter_diff_sha256": "ad2572ff6c2f99cb05b83715b7c1e3fc6d6bf3629254f5fce16243dea547b3ea",
+  "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "dependencies": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "Pillow": "12.3.0"
+  }
+}

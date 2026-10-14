@@ -1,0 +1,18 @@
+{
+  "manifest_sha256": "93fcc666b31446b72bcdd28badfa21bca1cfbb59e0cefad40cbe15ce1065a0f6",
+  "attempted": 4,
+  "reused_baselines": 4,
+  "reused_refinements": 0,
+  "initially_wrong": 3,
+  "initially_correct": 1,
+  "recoveries": 0,
+  "regressions": 0,
+  "incomplete": [],
+  "source_and_inputs_unchanged": true,
+  "result_sha256": {
+    "case-1.json": "abfe0dd5966d9036e150b99dfaf5cb7a7c482d50f381a589e50269da834ba049",
+    "case-2.json": "180be8b57448701a7c2b75c10652318a10ece81a48538ddb34f180f62d9c47f6",
+    "case-3.json": "35b1c9b7cfb3c20d50a45ef35b4871534003f2ea81815eb555c1dc67785f7f44",
+    "case-4.json": "76cb5c47cf679cd2d7af8dc2d7cfa92f3fbb23448629ffe18c3b4ddd1e635a88"
+  }
+}

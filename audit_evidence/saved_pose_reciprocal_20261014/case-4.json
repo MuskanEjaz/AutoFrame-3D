@@ -1,0 +1,95 @@
+{
+  "case_id": "tless-s000002-i000024-g02-o07",
+  "status": "completed",
+  "outcome": "remained_correct",
+  "initial_camera_from_object": [
+    [
+      -0.056587952205245234,
+      -0.9981344223368098,
+      -0.022923320256452086,
+      -0.0789589842436678
+    ],
+    [
+      -0.9639045180907702,
+      0.06060153025160985,
+      -0.25925958909047386,
+      0.00825649226793261
+    ],
+    [
+      0.2601651084780867,
+      0.007424922728632746,
+      -0.965535595849816,
+      0.7470334807884046
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "refined_camera_from_object": [
+    [
+      -0.053174926047585204,
+      -0.9977572571436708,
+      0.0406556645127046,
+      -0.07915242549725128
+    ],
+    [
+      -0.9763359820205844,
+      0.04340064264407662,
+      -0.2118594685870348,
+      0.009635714701677707
+    ],
+    [
+      0.2096198403103421,
+      -0.05095919971130712,
+      -0.9764541374345488,
+      0.7501666760495863
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "baseline": {
+    "fitness": 0.9963842788444155,
+    "inlier_rmse_m": 0.004371645156121867,
+    "inlier_rmse_mm": 4.3716451561218665,
+    "mssd_m": 0.015236641729172808,
+    "mssd_over_diameter": 0.08530437941479051,
+    "accepted": true,
+    "correct": true,
+    "category": "accepted_and_correct"
+  },
+  "refined": {
+    "fitness": 0.9965650649021948,
+    "inlier_rmse_m": 0.0042825881157254764,
+    "inlier_rmse_mm": 4.282588115725477,
+    "mssd_m": 0.015431598857739521,
+    "mssd_over_diameter": 0.08639587301032679,
+    "accepted": true,
+    "correct": true,
+    "category": "accepted_and_correct"
+  },
+  "baseline_metrics_verified": true,
+  "gt_access_guard": "Passed: no annotation access/PCA permitted until refinement returned",
+  "termination": "iteration_limit",
+  "iterations": 8,
+  "correspondence_counts": [
+    403,
+    403,
+    411,
+    423,
+    433,
+    442,
+    461,
+    469
+  ],
+  "refinement_seconds": 0.6126346000019112,
+  "worker_seconds": 1.4173934999998892,
+  "manifest_sha256": "93fcc666b31446b72bcdd28badfa21bca1cfbb59e0cefad40cbe15ce1065a0f6",
+  "wall_seconds": 5.918656800000463
+}

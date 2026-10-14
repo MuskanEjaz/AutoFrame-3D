@@ -1,0 +1,19 @@
+{
+  "focused_tests": {
+    "command": ".\\.venv\\Scripts\\python.exe -B -m pytest -q -p no:cacheprovider tests/test_saved_pose_reciprocal.py tests/test_tless_partial_icp.py tests/test_tless_metrics.py",
+    "passed": 14,
+    "seconds": 2.04,
+    "sandbox_retry": "Initial run: 11 passed, 3 temporary-directory permission errors. Same tests passed outside sandbox; no evaluation retry."
+  },
+  "result_validation": {
+    "all_four_present": true,
+    "result_hashes_match": true,
+    "source_inputs_and_evidence_unchanged": true,
+    "initial_transforms_exact": true,
+    "rigid_transforms_valid": true,
+    "units_and_existing_classifications_consistent": true,
+    "all_hard_timeouts_respected": true,
+    "all_iteration_caps_visible": true
+  },
+  "manifest_sha256": "93fcc666b31446b72bcdd28badfa21bca1cfbb59e0cefad40cbe15ce1065a0f6"
+}
