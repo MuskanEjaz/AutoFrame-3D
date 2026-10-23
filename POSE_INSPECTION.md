@@ -66,10 +66,13 @@ nonfinite and invalid values without changing the estimate.
 
 ## Assets and visual limitations
 
-Robot, gripper, flanges, recessed bolts, cable, scanner, workshop cabinets,
-workbench, nameplate and favicon are original local procedural assets.
-Reflections use Three.js's bundled RoomEnvironment. There are no downloaded
-models, remote runtime assets, paid services or model calls. The scanner is
+The stationary arm uses locally bundled Panda visual meshes converted from
+MuJoCo Menagerie (Apache-2.0). Gripper, scanner, workcell and surface patterns
+are original local assets. Reflections use the bundled Poly Haven Industrial
+Workshop Foundry HDR environment (CC0), with a local fallback. See the current
+[asset notices](frontend/public/assets/industrial/NOTICE.md) for authors,
+source revisions, modifications and licenses. Runtime assets load locally;
+this workspace makes no paid-service or model calls. The scanner is
 decorative: nine bounded rays aimed at the solid gripper terminate at first
 surface intersections and never produce measurements or affect pose errors.
 
