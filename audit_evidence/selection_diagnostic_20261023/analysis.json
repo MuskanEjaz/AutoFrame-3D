@@ -1,0 +1,221 @@
+{
+  "scope": "Four saved pairs only; current ranking applied hypothetically baseline first; no fitting or GT in selection",
+  "ranking_expression": "best is None or (fitness, -rmse) > (best['fitness'], -best['inlier_rmse_m'])",
+  "acceptance_expression": "fitness >= minimum_fitness and rmse_m <= maximum_rmse_m",
+  "evidence_sha256": {
+    "manifest.json": "93fcc666b31446b72bcdd28badfa21bca1cfbb59e0cefad40cbe15ce1065a0f6",
+    "case-1.json": "abfe0dd5966d9036e150b99dfaf5cb7a7c482d50f381a589e50269da834ba049",
+    "case-2.json": "180be8b57448701a7c2b75c10652318a10ece81a48538ddb34f180f62d9c47f6",
+    "case-3.json": "35b1c9b7cfb3c20d50a45ef35b4871534003f2ea81815eb555c1dc67785f7f44",
+    "case-4.json": "76cb5c47cf679cd2d7af8dc2d7cfa92f3fbb23448629ffe18c3b4ddd1e635a88"
+  },
+  "source_sha256": {
+    "autoframe3d/tless_adapter.py": "116132f4c77c6783b0f31406fb04736e31d1bd74a7aeebdaf3df78c47c781e6b",
+    "autoframe3d/tless_metrics.py": "b8f833c7c8051854521bc26fbeae4a38d51534f54a525b3d2b605a7cd280743c",
+    "autoframe3d/tless_benchmark.py": "d4146c21bf0323a0c1f0179420ebc8d738171ed09b70aea94c71bfba2ae45cda",
+    "configs/tless_frozen.json": "ca60a2fe5c667bce40c85c75f11fc0e65d0f8db36281945f94b6dd422155577a",
+    "scripts/evaluate_saved_pose_reciprocal.py": "d5b20194f0c58e45b7034daa0d68ab1a564fe9cb3b07e27861776307a67f99f0",
+    "scripts/diagnose_saved_pose_selection.py": "1d7825fc9b95d40c4dd1be731b298592312a7040e59f17cd88117e6f6a2d5b63"
+  },
+  "cases": [
+    {
+      "case_id": "tless-s000001-i000001-g00-o02",
+      "baseline": {
+        "fitness": 0.9217443249701314,
+        "inlier_rmse_m": 0.0017946198167643791,
+        "inlier_rmse_mm": 1.7946198167643792,
+        "mssd_m": 0.09276596536055867,
+        "mssd_over_diameter": 1.4023323138591388,
+        "accepted": true,
+        "correct": false,
+        "category": "accepted_but_wrong"
+      },
+      "refined": {
+        "fitness": 0.9217443249701314,
+        "inlier_rmse_m": 0.0017566260622115186,
+        "inlier_rmse_mm": 1.7566260622115186,
+        "mssd_m": 0.09320979433581064,
+        "mssd_over_diameter": 1.4090416248807374,
+        "accepted": true,
+        "correct": false,
+        "category": "accepted_but_wrong"
+      },
+      "fitness_delta": 0.0,
+      "rmse_delta_mm": -0.03799375455286057,
+      "mssd_delta_mm": 0.44382897525196974,
+      "normalized_mssd_delta": 0.006709311021598552,
+      "hypothetical_ranked_choice": "refined",
+      "reason": "tied fitness; lower RMSE",
+      "both_geometrically_accepted": true,
+      "selected_gt_error_worsens": true,
+      "correctness_transition": "False -> False",
+      "termination": "iteration_limit",
+      "iterations": 8,
+      "reciprocal_correspondence_counts": [
+        266,
+        264,
+        267,
+        273,
+        272,
+        270,
+        269,
+        267
+      ],
+      "saved_baseline_inlier_count": 3086,
+      "saved_scan_point_count": 3348,
+      "origin_shift_mm": 0.5952362812115052,
+      "relative_rotation_degrees": 2.426389994738439
+    },
+    {
+      "case_id": "tless-s000002-i000003-g00-o05",
+      "baseline": {
+        "fitness": 0.9429206103921189,
+        "inlier_rmse_m": 0.006155853568434697,
+        "inlier_rmse_mm": 6.155853568434697,
+        "mssd_m": 0.05457646545374417,
+        "mssd_over_diameter": 0.5021295929132779,
+        "accepted": true,
+        "correct": false,
+        "category": "accepted_but_wrong"
+      },
+      "refined": {
+        "fitness": 0.9455282982422252,
+        "inlier_rmse_m": 0.006140492511016261,
+        "inlier_rmse_mm": 6.140492511016261,
+        "mssd_m": 0.05531583256422024,
+        "mssd_over_diameter": 0.5089321240612774,
+        "accepted": true,
+        "correct": false,
+        "category": "accepted_but_wrong"
+      },
+      "fitness_delta": 0.002607687850106233,
+      "rmse_delta_mm": -0.015361057418435652,
+      "mssd_delta_mm": 0.7393671104760704,
+      "normalized_mssd_delta": 0.006802531147999558,
+      "hypothetical_ranked_choice": "refined",
+      "reason": "higher fitness",
+      "both_geometrically_accepted": true,
+      "selected_gt_error_worsens": true,
+      "correctness_transition": "False -> False",
+      "termination": "iteration_limit",
+      "iterations": 8,
+      "reciprocal_correspondence_counts": [
+        228,
+        238,
+        230,
+        235,
+        231,
+        229,
+        228,
+        234
+      ],
+      "saved_baseline_inlier_count": 9763,
+      "saved_scan_point_count": 10354,
+      "origin_shift_mm": 1.8855180048749562,
+      "relative_rotation_degrees": 4.058274661214296
+    },
+    {
+      "case_id": "tless-s000002-i000003-g01-o06",
+      "baseline": {
+        "fitness": 0.9802540186544949,
+        "inlier_rmse_m": 0.003665724672800957,
+        "inlier_rmse_mm": 3.6657246728009567,
+        "mssd_m": 0.05871946665427228,
+        "mssd_over_diameter": 0.5423679550572418,
+        "accepted": true,
+        "correct": false,
+        "category": "accepted_but_wrong"
+      },
+      "refined": {
+        "fitness": 0.984917642389363,
+        "inlier_rmse_m": 0.0034782991914872304,
+        "inlier_rmse_mm": 3.4782991914872303,
+        "mssd_m": 0.05855413835074858,
+        "mssd_over_diameter": 0.540840884410923,
+        "accepted": true,
+        "correct": false,
+        "category": "accepted_but_wrong"
+      },
+      "fitness_delta": 0.004663623734868061,
+      "rmse_delta_mm": -0.18742548131372647,
+      "mssd_delta_mm": -0.16532830352369854,
+      "normalized_mssd_delta": -0.00152707064631874,
+      "hypothetical_ranked_choice": "refined",
+      "reason": "higher fitness",
+      "both_geometrically_accepted": true,
+      "selected_gt_error_worsens": false,
+      "correctness_transition": "False -> False",
+      "termination": "iteration_limit",
+      "iterations": 8,
+      "reciprocal_correspondence_counts": [
+        358,
+        363,
+        367,
+        376,
+        385,
+        397,
+        394,
+        396
+      ],
+      "saved_baseline_inlier_count": 9879,
+      "saved_scan_point_count": 10078,
+      "origin_shift_mm": 2.771101351395318,
+      "relative_rotation_degrees": 0.946579397174487
+    },
+    {
+      "case_id": "tless-s000002-i000024-g02-o07",
+      "baseline": {
+        "fitness": 0.9963842788444155,
+        "inlier_rmse_m": 0.004371645156121867,
+        "inlier_rmse_mm": 4.3716451561218665,
+        "mssd_m": 0.015236641729172808,
+        "mssd_over_diameter": 0.08530437941479051,
+        "accepted": true,
+        "correct": true,
+        "category": "accepted_and_correct"
+      },
+      "refined": {
+        "fitness": 0.9965650649021948,
+        "inlier_rmse_m": 0.0042825881157254764,
+        "inlier_rmse_mm": 4.282588115725477,
+        "mssd_m": 0.015431598857739521,
+        "mssd_over_diameter": 0.08639587301032679,
+        "accepted": true,
+        "correct": true,
+        "category": "accepted_and_correct"
+      },
+      "fitness_delta": 0.0001807860577792697,
+      "rmse_delta_mm": -0.08905704039639026,
+      "mssd_delta_mm": 0.19495712856671366,
+      "normalized_mssd_delta": 0.0010914935955362859,
+      "hypothetical_ranked_choice": "refined",
+      "reason": "higher fitness",
+      "both_geometrically_accepted": true,
+      "selected_gt_error_worsens": true,
+      "correctness_transition": "True -> True",
+      "termination": "iteration_limit",
+      "iterations": 8,
+      "reciprocal_correspondence_counts": [
+        403,
+        403,
+        411,
+        423,
+        433,
+        442,
+        461,
+        469
+      ],
+      "saved_baseline_inlier_count": 27557,
+      "saved_scan_point_count": 27657,
+      "origin_shift_mm": 3.428787917767047,
+      "relative_rotation_degrees": 4.590975143619745
+    }
+  ],
+  "counts": {
+    "pairs": 4,
+    "refined_selected": 4,
+    "selected_error_worsens": 3,
+    "recoveries": 0,
+    "regressions": 0
+  }
+}
