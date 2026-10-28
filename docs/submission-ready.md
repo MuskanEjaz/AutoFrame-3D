@@ -2,6 +2,9 @@
 
 Prepared 2026-10-28. Local review candidate; no deployment, push or submission.
 
+Latest implementation, checks, tool feedback and requirements/status matrix:
+[recovery record](recovery-20261028.md). Check tables below remain historical.
+
 Grounding review and separate run records: [validation history](evidence-grounding-validation.md).
 In the original three-item run, dev-01 has two numerically supported findings
 and no correspondence-gate claim; it omits GT qualifications and does not label
@@ -48,8 +51,8 @@ The successful run used **88a3e73 plus an uncommitted named-envelope patch**,
 not this later release commit. The original answer omitted the RMSE acceptance
 criterion and GT-mask/GT-scoring dependence. The later [two-item run](../audit_evidence/grounding_two_20261028/capture.jsonl)
 attempted dev-02 and dev-13 once each; both returned status=error after one
-request, zero tools, at trace stage http_rejection. No HTTP status, provider
-validation detail or token counters were captured. No findings were generated.
+request, zero tools, at trace stage http_rejection. The preserved traces include HTTP 401 and validation type
+`invalid_request_error`; no rejected field or token counters were captured. No findings were generated.
 The rejected field/cause is unknown. Updated prompt quality remains
 **UNVERIFIED**; evaluation expectations are unchanged.
 

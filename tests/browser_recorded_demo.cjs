@@ -23,7 +23,7 @@ const assert=(value,message)=>{if(!value)throw Error(message)};
     posts++;const q=JSON.parse(request.postData);
     const response={...fixture,question:q.question,selected_case_id:q.selected_case_id};
     if(mode==='timeout')Object.assign(response,{status:'incomplete',message:'TEST FIXTURE: Provider timeout; no fallback response was generated',findings:[],evidence:[]});
-    if(mode==='provider-error')Object.assign(response,{status:'error',message:'TEST FIXTURE: Provider, tool arguments, evidence references, or response validation failed; no fallback was generated',findings:[],evidence:[]});
+    if(mode==='provider-error')Object.assign(response,{status:'error',message:'TEST FIXTURE: Provider, tool arguments, evidence references, or response validation failed; no fallback was generated',findings:[],evidence:[],operational_error:{stage:'http_rejection',http_status:422,validation_details:[{location:['body','response_format'],reason:'invalid schema'}]}});
     setTimeout(()=>fulfill(requestId,mode==='http-error'?{detail:'TEST FIXTURE HTTP failure'}:response,mode==='http-error'?503:200),mode==='success'?1200:100);
    }
   }
@@ -36,6 +36,8 @@ const assert=(value,message)=>{if(!value)throw Error(message)};
  await send('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:downloads});
  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
  await send('Page.navigate',{url:process.env.AUTOFRAME_BROWSER_URL||'http://127.0.0.1:5180/'});
+ await wait("[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Recorded Benchmark'))");
+ await click('Recorded Benchmark');
  await wait("Boolean(document.querySelector('canvas')) && document.body.innerText.includes('Live analysis unavailable')");
  assert(await evaluate("document.querySelector('.investigation-panel .button-export').disabled"),'Missing credential must disable inference');
  assert(await evaluate("document.body.innerText.includes('1.4023')"),'Recorded A metadata');
@@ -55,6 +57,8 @@ const assert=(value,message)=>{if(!value)throw Error(message)};
  assert(!requests.some(r=>r.method==='POST'),'No production inference/registration requests');
  await send('Fetch.enable',{patterns:[{urlPattern:'*/api/investigation*',requestStage:'Request'}]});
  mode='success';await send('Page.reload');
+ await wait("[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Recorded Benchmark'))");
+ await click('Recorded Benchmark');
  await wait("document.body.innerText.includes('TEST FIXTURE availability')&&Boolean(document.querySelector('canvas'))");
  assert(await evaluate("document.querySelectorAll('.investigation-examples button').length===4"),'Four example controls');
  for(let i=0;i<4;i++){
@@ -73,6 +77,10 @@ const assert=(value,message)=>{if(!value)throw Error(message)};
  for(const failure of ['timeout','provider-error','http-error']){
   mode=failure;await click('Ask Nemotron');
   await wait(failure==='http-error'?"Boolean(document.querySelector('[role=alert]'))":`document.body.innerText.includes(${JSON.stringify(failure==='timeout'?'TEST FIXTURE: Provider timeout':'TEST FIXTURE: Provider, tool arguments')})`);
+  if(failure==='provider-error'){
+   assert(await evaluate("document.body.innerText.includes('HTTP status: 422')&&document.body.innerText.includes('Stage: http_rejection')&&document.body.innerText.includes('invalid schema')"),'Sanitized diagnostic visible');
+   assert(await evaluate("!document.querySelector('.investigation-panel').innerText.includes('Model-generated explanation')"),'Operational error has no explanation heading');
+  }
   assert(await evaluate("!document.querySelector('.investigation-panel .button-export').disabled"),'Recovery control available');
  }
  mode='success';await click('Ask Nemotron');await wait("document.body.innerText.includes('MOCKED ANALYSIS · complete')");

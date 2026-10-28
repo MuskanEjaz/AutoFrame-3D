@@ -67,7 +67,6 @@ def test_known_comparison_and_acceptance_are_deterministic():
     ("get_case_evidence", {"case_id": WRONG, "method_id": "reciprocal"}),
     ("get_case_evidence", {"case_id": WRONG, "method_id": "invented"}),
     ("get_benchmark_summary", {"path": ".env"}),
-    ("compare_recorded_methods", {"case_id": WRONG}),
 ])
 def test_tool_arguments_reject_unknowns(name, args):
     with pytest.raises((ValueError, ValidationError)):
@@ -358,27 +357,40 @@ def test_prompt_distinguishes_recorded_metrics_acceptance_and_configuration():
     assert exported["computation"] == "recorded"
 
 
-def test_single_method_comparison_is_precondition_failure_not_schema_mismatch():
-    # Exact call captured on dev-02 turn 3: JSON/argument shape is valid.
+def test_single_method_comparison_returns_unavailability_without_metrics():
     call = inv.ToolCall(name="compare_recorded_methods", arguments={"case_id": WRONG})
-    assert inv.CompareArgs.model_validate(call.arguments).case_id == WRONG
-    catalogue = inv.EvidenceTools().execute(inv.ToolCall(name="list_available_cases", arguments={}))
-    assert next(c for c in catalogue["cases"] if c["case_id"] == WRONG)["methods"] == ["baseline"]
-    with pytest.raises(ValueError, match="No recorded method comparison for case") as caught:
-        inv.EvidenceTools().execute(call)
-    assert not isinstance(caught.value, ValidationError)
-    # Preserve strict argument validation as well as the method precondition.
+    source = inv.EvidenceTools()
+    evidence = source.execute(call)
+    assert evidence == {"id": f"comparison-unavailable:{WRONG}", "case_id": WRONG,
+        "computation": "recorded_catalogue", "status": "unavailable",
+        "reason_code": "requires_two_recorded_methods", "available_methods": ["baseline"],
+        "required_method_count": 2}
     with pytest.raises(ValidationError):
-        inv.CompareArgs.model_validate({"case_id": WRONG, "method_id": "baseline"})
-    provider, calls = scripted([tools(("list_available_cases", {})),
-        tools(("get_case_evidence", {"case_id": WRONG, "method_id": "baseline"})),
-        tools((call.name, call.arguments))])
-    trace = []
-    result = inv.investigate(inv.InvestigationRequest(question="Comparison failure replay"), provider=provider, trace=trace)
-    assert result["status"] == "error" and result["findings"] == []
-    assert result["model_turns"] == result["tool_executions"] == len(calls) == 3
-    assert trace[-1] == {"event": "failure", "turn": 3, "stage": "tool_validation"}
-    assert all(not e["id"].startswith("comparison:") for e in result["evidence"])
+        source.execute(inv.ToolCall(name=call.name, arguments={"case_id": WRONG, "method_id": "baseline"}))
+    with pytest.raises(ValueError):
+        source.execute(inv.ToolCall(name=call.name, arguments={"case_id": "unknown"}))
+    provider, calls = scripted([tools((call.name, call.arguments)), final(evidence["id"], kind="insufficient")])
+    result = inv.investigate(inv.InvestigationRequest(question="Unavailable comparison"), provider=provider)
+    assert result["status"] == "insufficient" and result["tool_executions"] == 1
+    assert result["evidence"] == [evidence] and len(calls) == 2
+    assert "not citeable until retrieved" in calls[0][0]["messages"][0]["content"]
+
+
+def test_public_operational_diagnostics_are_bounded_and_do_not_echo_provider_prose():
+    diagnostic = {"stage": "http_rejection", "http_status": 422, "provider_code": "invalid_request_error",
+        "validation_details": [{"location": ["body", "response_format", "json_schema", "name"],
+            "reason": "required field missing", "input": "PRIVATE", "message": "PRIVATE"},
+            {"location": ["PRIVATE"], "reason": "PRIVATE", "code": "PRIVATE"}], "body": "PRIVATE"}
+    def reject(*a, **k):
+        raise nebius.ProviderError(**diagnostic)
+    result = inv.investigate(inv.InvestigationRequest(question="Diagnostic contract"), provider=reject)
+    assert result["status"] == "error" and result["model_turns"] == 1 and result["tool_executions"] == 0
+    assert result["operational_error"] == {"stage": "http_rejection", "http_status": 422,
+        "provider_code": "invalid_request_error", "validation_details": [{
+            "location": ["body", "response_format", "json_schema", "name"], "reason": "required field missing"}]}
+    assert "PRIVATE" not in json.dumps(result)
+    assert inv._public_operational_error({"stage": "PRIVATE", "http_status": True}) == {"stage": "provider_error"}
+    assert inv._public_operational_error(None) == {"stage": "provider_error"}
 
 
 @pytest.mark.parametrize("usage,expected", [

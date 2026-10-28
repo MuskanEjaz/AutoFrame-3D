@@ -106,14 +106,16 @@ Its exact rubric questions are:
 Each response has `status=error`, one model turn/request, zero tool executions,
 no findings/evidence, and the generic public message: “Provider, tool arguments,
 evidence references, or response validation failed; no fallback was generated.”
-The saved trace for each contains only:
+The saved trace for each contains (corrected from earlier incomplete prose):
 
 ```json
-{"event":"provider_start","turn":1}
-{"event":"failure","turn":1,"stage":"http_rejection"}
+{"event":"provider_start","turn":1,"timeout_seconds":20.0}
+{"event":"failure","turn":1,"stage":"http_rejection","http_status":401,"provider_code":null,"validation_details":[{"type":"invalid_request_error"}]}
 ```
 
-The failure event contains no HTTP status or provider validation detail.
+The failure event records HTTP 401 and validation type invalid_request_error.
+This is an authorization rejection; the underlying cause and rejected field
+remain unknown. The original capture is unchanged.
 Runtime was 0.6215 s for dev-02 and 0.4481 s for dev-13. The report records
 one request and matching latency for each, but `token_usage` is null. Both have
 report `task_completion=fail`, `schema=pass`, and `tool_trace=fail`. Dev-02 also

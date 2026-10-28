@@ -27,6 +27,14 @@ class SavedResponse(investigation.Strict):
     tool_executions: int = Field(ge=0, le=investigation.MAX_TOOLS)
     runtime_seconds: float = Field(ge=0, allow_inf_nan=False)
     prose_verification: str
+    operational_error: dict | None = None
+
+    @field_validator("operational_error")
+    @classmethod
+    def safe_operational_error(cls, value):
+        if value is not None and value != investigation._public_operational_error(value):
+            raise ValueError("Operational diagnostics must use bounded public vocabulary")
+        return value
 
     @field_validator("evidence")
     @classmethod
@@ -45,8 +53,7 @@ def corpus():
         for method in case["variants"]:
             calls.append(investigation.ToolCall(name="get_case_evidence", arguments={
                 "case_id": case["case_id"], "method_id": method["id"]}))
-        if len(case["variants"]) > 1:
-            calls.append(investigation.ToolCall(name="compare_recorded_methods", arguments={"case_id": case["case_id"]}))
+        calls.append(investigation.ToolCall(name="compare_recorded_methods", arguments={"case_id": case["case_id"]}))
     for call in calls:
         result = tools.execute(call)
         records[result["id"]] = result

@@ -167,3 +167,21 @@ def test_failed_injected_provider_still_captures_request(failure):
     result = score({"item_id": "dev-01", "response": response, "trace": trace})
     assert result["task_completion"] == "fail"
     assert result["telemetry"]["requests"] == 1
+
+
+def test_operational_diagnostics_preserve_strict_saved_response_validation():
+    from autoframe3d.answer_evaluation import SavedResponse
+    from pydantic import ValidationError
+    source = fixture("supported")["response"]
+    safe = {**source, "operational_error": {"stage": "http_rejection", "http_status": 401}}
+    assert SavedResponse.model_validate(safe).operational_error["http_status"] == 401
+    with pytest.raises(ValidationError):
+        SavedResponse.model_validate({**source, "operational_error": {"stage": "http_rejection", "body": "PRIVATE"}})
+
+
+def test_unavailable_comparison_is_authoritative_but_does_not_satisfy_required_comparison():
+    from autoframe3d.answer_evaluation import corpus
+    _, records = corpus()
+    unavailable = records["comparison-unavailable:tless-s000001-i000001-g00-o02"]
+    assert unavailable["status"] == "unavailable" and "baseline" not in unavailable
+    assert "comparison:tless-s000001-i000001-g00-o02" not in records
