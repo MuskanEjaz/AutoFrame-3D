@@ -356,3 +356,55 @@ def test_prompt_distinguishes_recorded_metrics_acceptance_and_configuration():
     assert exported["gt_instance_masks_used"] is True
     assert exported["correctness_uses_benchmark_gt"] is True
     assert exported["computation"] == "recorded"
+
+
+def test_single_method_comparison_is_precondition_failure_not_schema_mismatch():
+    # Exact call captured on dev-02 turn 3: JSON/argument shape is valid.
+    call = inv.ToolCall(name="compare_recorded_methods", arguments={"case_id": WRONG})
+    assert inv.CompareArgs.model_validate(call.arguments).case_id == WRONG
+    catalogue = inv.EvidenceTools().execute(inv.ToolCall(name="list_available_cases", arguments={}))
+    assert next(c for c in catalogue["cases"] if c["case_id"] == WRONG)["methods"] == ["baseline"]
+    with pytest.raises(ValueError, match="No recorded method comparison for case") as caught:
+        inv.EvidenceTools().execute(call)
+    assert not isinstance(caught.value, ValidationError)
+    # Preserve strict argument validation as well as the method precondition.
+    with pytest.raises(ValidationError):
+        inv.CompareArgs.model_validate({"case_id": WRONG, "method_id": "baseline"})
+    provider, calls = scripted([tools(("list_available_cases", {})),
+        tools(("get_case_evidence", {"case_id": WRONG, "method_id": "baseline"})),
+        tools((call.name, call.arguments))])
+    trace = []
+    result = inv.investigate(inv.InvestigationRequest(question="Comparison failure replay"), provider=provider, trace=trace)
+    assert result["status"] == "error" and result["findings"] == []
+    assert result["model_turns"] == result["tool_executions"] == len(calls) == 3
+    assert trace[-1] == {"event": "failure", "turn": 3, "stage": "tool_validation"}
+    assert all(not e["id"].startswith("comparison:") for e in result["evidence"])
+
+
+@pytest.mark.parametrize("usage,expected", [
+    ({"prompt_tokens": 2300, "completion_tokens": 1200, "total_tokens": 3500,
+      "reasoning": "PRIVATE", "other": {"input": "PRIVATE"}},
+     {"prompt_tokens": 2300, "completion_tokens": 1200, "total_tokens": 3500}),
+    ({"prompt_tokens": "PRIVATE", "completion_tokens": True, "total_tokens": -1}, None),
+    ({"prompt_tokens": 2**64, "completion_tokens": 0.5, "total_tokens": {"input": "PRIVATE"}}, None),
+    (None, None),
+])
+def test_nonstop_usage_survives_transport_without_accepting_partial_output(monkeypatch, usage, expected):
+    monkeypatch.setenv("NEBIUS_API_KEY", "mock-credential-not-real")
+    attempts = []
+    def truncated(request, **limits):
+        attempts.append(1)
+        body = {"choices": [{"finish_reason": "length", "message": {"content": "PRIVATE partial JSON"}}],
+                "usage": usage}
+        return io.BytesIO(json.dumps(body).encode())
+    monkeypatch.setattr(nebius.urllib.request, "urlopen", truncated)
+    trace = []
+    result = inv.investigate(inv.InvestigationRequest(question="Length failure"), provider=nebius.chat_completion, trace=trace)
+    assert result["status"] == "error" and result["findings"] == []
+    assert result["model_turns"] == len(attempts) == 1 and result["tool_executions"] == 0
+    failure = {"event": "failure", "turn": 1, "stage": "finish_reason", "finish_reason": "length"}
+    if expected is not None:
+        failure["usage"] = expected
+    assert trace[-1] == failure
+    assert not any(e["event"] == "provider_result" for e in trace)
+    assert "PRIVATE" not in json.dumps(trace) + json.dumps(result)

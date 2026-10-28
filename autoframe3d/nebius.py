@@ -97,8 +97,17 @@ def validate_response(body):
     except (KeyError, TypeError, IndexError):
         raise ProviderError("response_shape") from None
     if finish != "stop":
-        raise ProviderError("finish_reason", finish_reason=finish if isinstance(finish, str) and finish in (
-            "length", "tool_calls", "content_filter", "function_call") else "other")
+        fields = {"finish_reason": finish if isinstance(finish, str) and finish in (
+            "length", "tool_calls", "content_filter", "function_call") else "other"}
+        # Retain only bounded token counters on rejected completions. Never
+        # expose partial content, reasoning, request data, or other usage fields.
+        usage = body.get("usage")
+        if isinstance(usage, dict):
+            safe_usage = {k: usage[k] for k in ("prompt_tokens", "completion_tokens", "total_tokens")
+                          if k in usage and type(usage[k]) is int and 0 <= usage[k] <= 2**63 - 1}
+            if safe_usage:
+                fields["usage"] = safe_usage
+        raise ProviderError("finish_reason", **fields)
     if not isinstance(content, str):
         raise ProviderError("response_shape")
     if not content.strip():
