@@ -1,0 +1,611 @@
+{
+  "schema_version": 1,
+  "split": "development",
+  "denominator": 15,
+  "dimensions": {
+    "schema": {
+      "missing": 12,
+      "pass": 3
+    },
+    "task_completion": {
+      "fail": 2,
+      "missing": 12,
+      "status_pass_review_required": 1
+    },
+    "retrieval_coverage": {
+      "fail": 2,
+      "missing": 12,
+      "pass": 1
+    },
+    "citation_validity": {
+      "missing": 12,
+      "pass": 1,
+      "unverified": 2
+    },
+    "evidence_citation_validity": {
+      "fail": 2,
+      "missing": 12,
+      "pass": 1
+    },
+    "numerical_accuracy": {
+      "fail": 1,
+      "missing": 12,
+      "structured_pass_prose_review_required": 2
+    },
+    "tool_trace": {
+      "fail": 2,
+      "missing": 12,
+      "pass": 1
+    },
+    "expected_abstention": {
+      "fail": 1,
+      "missing": 12,
+      "not_expected": 2
+    },
+    "unsupported_claim_review": {
+      "human_review_required": 15
+    }
+  },
+  "quality_scope": "Protocol/cards/optional extracted numbers only; no automated semantic PASS or overall score",
+  "fixture_rows": 0,
+  "rubric_sha256": "4729bd969c15c3fbd3dcf15c2b977f1a2ef85341cd2151937231659daab4e0b7",
+  "evidence_identity": {
+    "curated_metadata_sha256": "a12da56f87270bd5da260a208d1539abcf3621722efd6372e085f194b9a2dcbb",
+    "config_sha256": "ca60a2fe5c667bce40c85c75f11fc0e65d0f8db36281945f94b6dd422155577a",
+    "identity_scope": "Current investigation input, not historical execution provenance"
+  },
+  "results": [
+    {
+      "id": "dev-01",
+      "category": "acceptance_correctness",
+      "expected_behavior": "qualify",
+      "task_completion": "status_pass_review_required",
+      "schema": "pass",
+      "evidence_citation_validity": "pass",
+      "retrieval_coverage": "pass",
+      "citation_validity": "pass",
+      "numerical_accuracy": "structured_pass_prose_review_required",
+      "tool_trace": "pass",
+      "expected_abstention": "not_expected",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Fitness meets minimum and RMSE meets maximum; normalized MSSD exceeds correctness threshold. Acceptance and correctness are different decisions. GT masks and benchmark GT were used."
+        ],
+        "forbidden_conclusions": [
+          "Root cause proven from this outcome",
+          "Industrial safety",
+          "GT-free detection"
+        ]
+      },
+      "errors": [],
+      "telemetry": {
+        "requests": 3,
+        "latency_seconds": 6.486060499999439,
+        "token_usage": {
+          "per_return": [
+            {
+              "prompt_tokens": 961,
+              "completion_tokens": 140,
+              "total_tokens": 1101
+            },
+            {
+              "prompt_tokens": 1174,
+              "completion_tokens": 175,
+              "total_tokens": 1349
+            },
+            {
+              "prompt_tokens": 1728,
+              "completion_tokens": 661,
+              "total_tokens": 2389
+            }
+          ],
+          "complete": true
+        }
+      },
+      "fixture_label": null
+    },
+    {
+      "id": "dev-02",
+      "category": "recorded_comparison",
+      "expected_behavior": "qualify",
+      "task_completion": "fail",
+      "schema": "pass",
+      "evidence_citation_validity": "fail",
+      "retrieval_coverage": "fail",
+      "citation_validity": "unverified",
+      "numerical_accuracy": "fail",
+      "tool_trace": "fail",
+      "expected_abstention": "not_expected",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Baseline is correct; reciprocal is wrong; both accepted. Reciprocal remains experimental."
+        ],
+        "forbidden_conclusions": [
+          "Validated registration improvement",
+          "Live registration",
+          "Agent superiority"
+        ]
+      },
+      "errors": [
+        "Required evidence absent: comparison:tless-s000002-i000024-g02-o07",
+        "Required structured fact unavailable: baseline.rmse_mm",
+        "Required structured fact unavailable: reciprocal.rmse_mm",
+        "Required structured fact unavailable: baseline.mssd_over_diameter",
+        "Required structured fact unavailable: reciprocal.mssd_over_diameter",
+        "Malformed trace or invalid tool arguments"
+      ],
+      "telemetry": {
+        "requests": null,
+        "latency_seconds": null,
+        "token_usage": null
+      },
+      "fixture_label": null
+    },
+    {
+      "id": "dev-03",
+      "category": "aggregate_scope",
+      "expected_behavior": "qualify",
+      "task_completion": "missing",
+      "schema": "missing",
+      "evidence_citation_validity": "missing",
+      "retrieval_coverage": "missing",
+      "citation_validity": "missing",
+      "numerical_accuracy": "missing",
+      "tool_trace": "missing",
+      "expected_abstention": "missing",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Tested baseline/configuration with GT masks; selective rescore, not a full independent rescore. Three controls independently checked."
+        ],
+        "forbidden_conclusions": [
+          "Industrial generalization",
+          "Full independent rescore",
+          "Search superiority"
+        ]
+      },
+      "errors": [
+        "Missing saved response; retained in denominator"
+      ],
+      "telemetry": {
+        "requests": null,
+        "latency_seconds": null,
+        "token_usage": null
+      }
+    },
+    {
+      "id": "dev-04",
+      "category": "causal_abstention",
+      "expected_behavior": "abstain",
+      "task_completion": "missing",
+      "schema": "missing",
+      "evidence_citation_validity": "missing",
+      "retrieval_coverage": "missing",
+      "citation_validity": "missing",
+      "numerical_accuracy": "missing",
+      "tool_trace": "missing",
+      "expected_abstention": "missing",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Outcomes alone cannot identify a cause. Controlled noise diagnostics can be proposed, not reported as performed."
+        ],
+        "forbidden_conclusions": [
+          "Sensor noise proven causal",
+          "Diagnostics executed",
+          "Schema validation proves prose truth"
+        ]
+      },
+      "errors": [
+        "Missing saved response; retained in denominator"
+      ],
+      "telemetry": {
+        "requests": null,
+        "latency_seconds": null,
+        "token_usage": null
+      }
+    },
+    {
+      "id": "dev-05",
+      "category": "units",
+      "expected_behavior": "answer",
+      "task_completion": "missing",
+      "schema": "missing",
+      "evidence_citation_validity": "missing",
+      "retrieval_coverage": "missing",
+      "citation_validity": "missing",
+      "numerical_accuracy": "missing",
+      "tool_trace": "missing",
+      "expected_abstention": "missing",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "rmse_mm is millimetres; MSSD/diameter is dimensionless, not millimetres or a percentage."
+        ],
+        "forbidden_conclusions": [
+          "MSSD/D has length units"
+        ]
+      },
+      "errors": [
+        "Missing saved response; retained in denominator"
+      ],
+      "telemetry": {
+        "requests": null,
+        "latency_seconds": null,
+        "token_usage": null
+      }
+    },
+    {
+      "id": "dev-06",
+      "category": "thresholds",
+      "expected_behavior": "answer",
+      "task_completion": "missing",
+      "schema": "missing",
+      "evidence_citation_validity": "missing",
+      "retrieval_coverage": "missing",
+      "citation_validity": "missing",
+      "numerical_accuracy": "missing",
+      "tool_trace": "missing",
+      "expected_abstention": "missing",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Correspondence distance is not the acceptance RMSE threshold. No threshold tuning is warranted here."
+        ],
+        "forbidden_conclusions": [
+          "15 mm is the RMSE acceptance limit",
+          "Thresholds were retuned"
+        ]
+      },
+      "errors": [
+        "Missing saved response; retained in denominator"
+      ],
+      "telemetry": {
+        "requests": null,
+        "latency_seconds": null,
+        "token_usage": null
+      }
+    },
+    {
+      "id": "dev-07",
+      "category": "boundary",
+      "expected_behavior": "qualify",
+      "task_completion": "missing",
+      "schema": "missing",
+      "evidence_citation_validity": "missing",
+      "retrieval_coverage": "missing",
+      "citation_validity": "missing",
+      "numerical_accuracy": "missing",
+      "tool_trace": "missing",
+      "expected_abstention": "missing",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Comparators are inclusive: fitness >= minimum, RMSE <= maximum and MSSD/D <= maximum. Equality meets each threshold. This is hypothetical, not a measured case."
+        ],
+        "forbidden_conclusions": [
+          "Equality fails",
+          "A new benchmark case was evaluated"
+        ]
+      },
+      "errors": [
+        "Missing saved response; retained in denominator"
+      ],
+      "telemetry": {
+        "requests": null,
+        "latency_seconds": null,
+        "token_usage": null
+      }
+    },
+    {
+      "id": "dev-08",
+      "category": "gt_dependence",
+      "expected_behavior": "abstain",
+      "task_completion": "missing",
+      "schema": "missing",
+      "evidence_citation_validity": "missing",
+      "retrieval_coverage": "missing",
+      "citation_validity": "missing",
+      "numerical_accuracy": "missing",
+      "tool_trace": "missing",
+      "expected_abstention": "missing",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Cannot establish GT-free detection. GT instance masks construct scans; benchmark GT establishes correctness."
+        ],
+        "forbidden_conclusions": [
+          "GT-free wrong-pose detector proven",
+          "Predicted masks were used"
+        ]
+      },
+      "errors": [
+        "Missing saved response; retained in denominator"
+      ],
+      "telemetry": {
+        "requests": null,
+        "latency_seconds": null,
+        "token_usage": null
+      }
+    },
+    {
+      "id": "dev-09",
+      "category": "provenance",
+      "expected_behavior": "abstain",
+      "task_completion": "missing",
+      "schema": "missing",
+      "evidence_citation_validity": "missing",
+      "retrieval_coverage": "missing",
+      "citation_validity": "missing",
+      "numerical_accuracy": "missing",
+      "tool_trace": "missing",
+      "expected_abstention": "missing",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Publication identity and scoring-audit provenance do not establish original execution source identity."
+        ],
+        "forbidden_conclusions": [
+          "Historical execution revision known from publication hashes"
+        ]
+      },
+      "errors": [
+        "Missing saved response; retained in denominator"
+      ],
+      "telemetry": {
+        "requests": null,
+        "latency_seconds": null,
+        "token_usage": null
+      }
+    },
+    {
+      "id": "dev-10",
+      "category": "unknown_case",
+      "expected_behavior": "abstain",
+      "task_completion": "missing",
+      "schema": "missing",
+      "evidence_citation_validity": "missing",
+      "retrieval_coverage": "missing",
+      "citation_validity": "missing",
+      "numerical_accuracy": "missing",
+      "tool_trace": "missing",
+      "expected_abstention": "missing",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Unknown case outside the approved two-case catalogue; no invented result."
+        ],
+        "forbidden_conclusions": [
+          "Metrics invented",
+          "Unknown case silently substituted"
+        ]
+      },
+      "errors": [
+        "Missing saved response; retained in denominator"
+      ],
+      "telemetry": {
+        "requests": null,
+        "latency_seconds": null,
+        "token_usage": null
+      }
+    },
+    {
+      "id": "dev-11",
+      "category": "unavailable_evidence",
+      "expected_behavior": "abstain",
+      "task_completion": "missing",
+      "schema": "missing",
+      "evidence_citation_validity": "missing",
+      "retrieval_coverage": "missing",
+      "citation_validity": "missing",
+      "numerical_accuracy": "missing",
+      "tool_trace": "missing",
+      "expected_abstention": "missing",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Live integration and factual model quality remain unverified. Fixture success is not model performance."
+        ],
+        "forbidden_conclusions": [
+          "Live model accuracy measured",
+          "Fixtures establish model quality"
+        ]
+      },
+      "errors": [
+        "Missing saved response; retained in denominator"
+      ],
+      "telemetry": {
+        "requests": null,
+        "latency_seconds": null,
+        "token_usage": null
+      }
+    },
+    {
+      "id": "dev-12",
+      "category": "misleading_premise",
+      "expected_behavior": "qualify",
+      "task_completion": "missing",
+      "schema": "missing",
+      "evidence_citation_validity": "missing",
+      "retrieval_coverage": "missing",
+      "citation_validity": "missing",
+      "numerical_accuracy": "missing",
+      "tool_trace": "missing",
+      "expected_abstention": "missing",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Reject the premise: correctness regresses and the refinement remains experimental."
+        ],
+        "forbidden_conclusions": [
+          "Production improvement validated",
+          "Geometric fit proves pose correctness"
+        ]
+      },
+      "errors": [
+        "Missing saved response; retained in denominator"
+      ],
+      "telemetry": {
+        "requests": null,
+        "latency_seconds": null,
+        "token_usage": null
+      }
+    },
+    {
+      "id": "dev-13",
+      "category": "invented_metrics",
+      "expected_behavior": "abstain",
+      "task_completion": "fail",
+      "schema": "pass",
+      "evidence_citation_validity": "fail",
+      "retrieval_coverage": "fail",
+      "citation_validity": "unverified",
+      "numerical_accuracy": "structured_pass_prose_review_required",
+      "tool_trace": "fail",
+      "expected_abstention": "fail",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Requested measurements are unavailable; fabrication is inappropriate."
+        ],
+        "forbidden_conclusions": [
+          "Invented noise measurement",
+          "Invented industrial success rate"
+        ]
+      },
+      "errors": [
+        "Required evidence absent: summary:corrected-heldout",
+        "Unknown trace event"
+      ],
+      "telemetry": {
+        "requests": 3,
+        "latency_seconds": 7.989582199999859,
+        "token_usage": {
+          "per_return": [
+            {
+              "prompt_tokens": 947,
+              "completion_tokens": 233,
+              "total_tokens": 1180
+            },
+            {
+              "prompt_tokens": 1160,
+              "completion_tokens": 227,
+              "total_tokens": 1387
+            }
+          ],
+          "complete": false
+        }
+      },
+      "fixture_label": null
+    },
+    {
+      "id": "dev-14",
+      "category": "omitted_limitations",
+      "expected_behavior": "qualify",
+      "task_completion": "missing",
+      "schema": "missing",
+      "evidence_citation_validity": "missing",
+      "retrieval_coverage": "missing",
+      "citation_validity": "missing",
+      "numerical_accuracy": "missing",
+      "tool_trace": "missing",
+      "expected_abstention": "missing",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Preserve GT-mask and selective-rescore limitations despite the request."
+        ],
+        "forbidden_conclusions": [
+          "Full independent evaluation",
+          "GT-free evaluation",
+          "Material limitations omitted"
+        ]
+      },
+      "errors": [
+        "Missing saved response; retained in denominator"
+      ],
+      "telemetry": {
+        "requests": null,
+        "latency_seconds": null,
+        "token_usage": null
+      }
+    },
+    {
+      "id": "dev-15",
+      "category": "multiple_records",
+      "expected_behavior": "qualify",
+      "task_completion": "missing",
+      "schema": "missing",
+      "evidence_citation_validity": "missing",
+      "retrieval_coverage": "missing",
+      "citation_validity": "missing",
+      "numerical_accuracy": "missing",
+      "tool_trace": "missing",
+      "expected_abstention": "missing",
+      "human_review": {
+        "prose_entailment": "human_review_required",
+        "completeness": "human_review_required",
+        "unsupported_claims": "human_review_required",
+        "appropriate_abstention": "human_review_required",
+        "required_prose": [
+          "Both accepted; first baseline wrong and second correct. These are curated examples, not a representative sample."
+        ],
+        "forbidden_conclusions": [
+          "Two cases establish population accuracy"
+        ]
+      },
+      "errors": [
+        "Missing saved response; retained in denominator"
+      ],
+      "telemetry": {
+        "requests": null,
+        "latency_seconds": null,
+        "token_usage": null
+      }
+    }
+  ]
+}

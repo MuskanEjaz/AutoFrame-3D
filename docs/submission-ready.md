@@ -1,177 +1,140 @@
-# AutoFrame 3D submission brief
+# AutoFrame 3D submission package
 
-Prepared 2026-10-28. Local review candidate; no deployment, push or submission.
+Prepared 2026-10-28. Local review candidate; no push, deployment, upload or
+submission. [Current requirements](hackathon-requirements.md) and
+[actual verification](final-release-verification.md) govern this package.
+Public YouTube URL: **pending**. Judge access/test-build URL: **pending**.
+Approved public repository URL/visibility: **owner confirmation pending**.
 
-Latest implementation, checks, tool feedback and requirements/status matrix:
-[recovery record](recovery-20261028.md). Check tables below remain historical.
-
-Grounding review and separate run records: [validation history](evidence-grounding-validation.md).
-In the original three-item run, dev-01 has two numerically supported findings
-and no correspondence-gate claim; it omits GT qualifications and does not label
-the values as recorded metrics ([capture](../artifacts/grounding-three-3255ed5d22cf47ab8f12374d819210ff/capture.jsonl)).
-A separate earlier response reports the configured 0.015 m gate as measured
-([capture](../artifacts/prompt-dev01-317e6b5b948f48a2b9bc8ae9cc5500e4/capture.jsonl)).
-The later dev-02/dev-13 run failed on the first turn at `http_rejection`, with
-zero tools and no findings; its cause is unknown. These are operational task
-failures and do not test revised prompt quality. The deterministic panel scope
-note remains separate from model prose.
-
-## Project and contributions
-
-AutoFrame 3D demonstrates inspection of two curated, recorded T-LESS CAD-to-scan
-cases where geometric acceptance and benchmark-GT correctness differ. The viewer
-compares saved methods and exports evidence; it does not run fitting when opened.
-Separate reproducible synthetic experiments and a synthetic animation are
-additional workflows. The live Nebius explanation is experimental. The project
-does not demonstrate automatic pose recovery, GT-free error detection, or
-industrial reliability.
-
-Team contributions and submission-period attribution: [TEAM MEMBERS, ROLES,
-AND CONTRIBUTIONS — confirm with the team]. Historical repository work spans
-research, engineering, recorded-data inspection and release preparation; final
-individual attribution and coding-assistance disclosure require owner review.
-
-## Three distinct demonstrations
-
-| Surface | What actually happens | Limits |
-| --- | --- | --- |
-| Recorded Benchmark | Loads saved geometry, poses and metric cards; compares recorded methods and exports evidence | Opening it runs no fitting; GT instance masks and known object identity were inputs; correctness uses benchmark GT |
-| Pose Inspection | Synthetic five-second interpolation toward a known reference | Visualization, not pose recovery or robot hardware control |
-| Experimental live copilot | When provider calls complete, Nemotron may select read-only evidence tools and cite saved cards | No pose changes or registration; the latest dev-02/dev-13 attempt stopped at HTTP-rejection stages before evidence tools. Citations/schema do not prove prose correctness |
-
-## Verified state and remaining blockers
-
-The [reviewed earlier live capture and verification](../audit_evidence/live_integration_20261028/verification.json)
-record dev-01 as complete: three model requests, two evidence tools,
-12.3736 seconds; retrieval, citations, schema and structured numbers passed.
-This is one item only, and its prose was incomplete.
-At the time of that run, fourteen development items were unattempted; the
-later two-item attempt is reported separately below. No overall model-quality pass.
-The successful run used **88a3e73 plus an uncommitted named-envelope patch**,
-not this later release commit. The original answer omitted the RMSE acceptance
-criterion and GT-mask/GT-scoring dependence. The later [two-item run](../audit_evidence/grounding_two_20261028/capture.jsonl)
-attempted dev-02 and dev-13 once each; both returned status=error after one
-request, zero tools, at trace stage http_rejection. The preserved traces include HTTP 401 and validation type
-`invalid_request_error`; no rejected field or token counters were captured. No findings were generated.
-The rejected field/cause is unknown. Updated prompt quality remains
-**UNVERIFIED**; evaluation expectations are unchanged.
-
-Earlier failures remain local and hash-listed in that verification file.
-Operator-confirmed diagnosis: malformed credentials contained control characters;
-the named name/schema envelope resolved HTTP 422. Sanitized failure captures
-alone do not identify the first HTTP-400 rejected field. Credentials now fail
-locally before request construction and are never repaired or printed.
-Budgets remain three model turns, six tools, 60 seconds total, 20 seconds per
-request, 1200 output tokens per request; no retries or fallback answers.
-
-Previously recorded implementation checks (not rerun for this documentation-only package):
-
-| Check | Result |
-| --- | --- |
-| Focused investigation/shared transport/evaluator/recorded evidence/asset tests | 112 passed, 1 skipped (optional raw-dataset rebuild unavailable) |
-| Production build (TypeScript + Vite 7.3.7) | Passed; existing >500 kB bundle warning remains |
-| npm audit after compatible Vite 7.3.6 to 7.3.7 patch | Zero vulnerabilities reported |
-| Prior diff whitespace validation | Passed |
-| This offline package: JSON integrity, saved-file hashes, secret scan, local Markdown links, and `git diff --check` | Passed |
-| New inference, registration, browser smoke, deployment or push | None |
-
-The compatible Vite patch addresses the reported development-server advisories;
-see [GHSA-587h-7wmj-h5pm](https://github.com/advisories/GHSA-587h-7wmj-h5pm),
-which lists 7.3.7 as patched. Only Vite and its manifest/lockfile entry changed.
-
- Earlier Windows
-setup/browser evidence remains historical in [setup verification](setup-verification.md)
-and [live integration](live-integration.md); no new browser test or live run
-was performed for this release follow-up. Standalone wheels, other operating
-systems and historical fitting reproduction remain unverified/incomplete.
-
-## Draft submission description
+## Submission description
 
 A geometrically accepted CAD-to-scan fit can still have the wrong pose.
 AutoFrame 3D helps reviewers inspect that discrepancy: open two curated,
 recorded T-LESS cases, compare saved methods and metrics, reveal benchmark
 truth, and export the evidence. Registration inputs used GT instance masks;
 correctness is scored against benchmark GT. Opening the viewer runs no fitting.
-A separate synthetic preview interpolates toward a known reference and does
-not demonstrate pose recovery or hardware control. The experimental live
-copilot is configured by default for NVIDIA `nvidia/Nemotron-3_5-Lightning`;
-Nebius Token Factory supplies its server-side inference endpoint. When calls
-complete, the model can select bounded read-only evidence tools and explain
-saved cards; it cannot change registration. Current successful inference is
-not established: preserved earlier answers had scope omissions and later
-attempts stopped at HTTP rejection before evidence retrieval. No validated
-recovery or broad model-quality claim is made.
 
-Submission fields: [TEAM CONTRIBUTIONS — pending confirmation]; [PROJECT LICENSE — MIT for original project code; owner-approved]; [VIDEO LINK — pending]; [HOSTED/JUDGE ACCESS LINK — pending];
-[OFFICIAL TRACK/FORMAT REQUIREMENTS — pending confirmation].
+The experimental evidence copilot uses NVIDIA `nvidia/Nemotron-3_5-Lightning`
+by default through Nebius Token Factory's server-side inference API. Nemotron
+selects bounded read-only tools and explains retrieved cards; deterministic
+application code validates IDs, citations, metrics, thresholds and provenance.
+The model cannot modify registration. Scope notes remain separate from prose.
+A synthetic gripper preview illustrates interpolation to a known reference,
+with pause/reset/export; it is not learned pose recovery or hardware control.
 
-## Demo script (2 minutes 45 seconds)
+The demonstrated value is reviewable evidence: an accepted-but-wrong pose,
+a saved method whose RMSE improves while benchmark correctness worsens, and
+exports that retain the distinction. Current inference is not verified without
+a securely configured credential. Historical model results include omissions,
+a separate unsupported gate claim, truncation and HTTP 401 failures. No broad
+quality, industrial reliability or autonomous recovery claim is made.
 
-| Time | Action and narration |
+## Track and tool role
+
+Proposed track: **Best Apps and Agents**; final owner choice pending.
+Physical AI is an alternative only if the team represents its inspection and
+synthetic scope accurately. It has no physical hardware component. The script
+below includes more than one minute of key inspection modules operating.
+Token Factory provides actual optional inference, not frontend hosting.
+NVIDIA Nemotron chooses tools/synthesizes; application logic supplies recorded
+facts and rejects unsupported citations. Current runtime success remains a
+submission dependency, not a box checked by installing the code.
+
+## Demo script — 2 minutes 45 seconds
+
+| Time | On-screen action and narration |
 | --- | --- |
-| 0:00–0:15 | Open Recorded Benchmark: “A good geometric fit can still be the wrong pose.” |
-| 0:15–0:50 | Show example A: fitness >=0.70 and inlier RMSE <=10 mm define acceptance; normalized MSSD <=0.10 defines GT-scored correctness. Reveal GT; disclose GT instance masks and benchmark scoring. |
-| 0:50–1:20 | Show example B baseline/reciprocal and export evidence: lower RMSE can accompany worse GT pose error. This experimental method is not promoted as a recovery. |
-| 1:20–1:45 | Show synthetic preview, pause/reset: known-reference interpolation only; no automatic recovery or physical robot. |
-| 1:45–2:20 | Show dev-01 from the original three-item capture, clearly labelled recorded live output. Explain its two numerically supported findings, correct RMSE comparison, valid citations and missing recorded-evidence and GT-mask/benchmark-GT qualifications. Do not present an improved answer as tested. |
-| 2:20–2:45 | Show setup, evidence/source notices and remaining limits. State no validated GT-free detector or demonstrated wrong-to-correct recovery. |
+| 0:00–0:15 | Open Recorded Benchmark. “A low geometric residual can still hide a wrong pose. We make the evidence inspectable.” |
+| 0:15–0:50 | Select A, orbit geometry, reveal Benchmark ground truth. “Fitness >=0.70 and RMSE <=10 mm define acceptance. MSSD/diameter <=0.10 defines benchmark correctness. GT instance masks were inputs and benchmark GT scores the pose.” |
+| 0:50–1:25 | Select B; switch historical baseline/reciprocal; show comparison and download JSON. “Recorded RMSE falls from 4.37 to 3.73 mm while MSSD/diameter crosses 0.10. Both fits are accepted. This refinement is experimental, not promoted as a recovery.” |
+| 1:25–1:45 | Open Pose Inspection; preview, pause, reset. “Known-reference synthetic interpolation only; no scanner acquisition, learned correction or physical robot control.” |
+| 1:45–2:20 | Show preserved original three-item dev-01 capture clearly labelled recorded live output. “Nemotron through Token Factory selected read-only tools: three requests, two tools. Numerical RMSE comparison was correct; missing recorded-evidence and GT-mask/benchmark-GT qualifications remain defects. Other runs include a separate unsupported gate claim, truncation and later HTTP 401 failures. Current live validation remains unperformed.” Do not show offline fixtures as live. |
+| 2:20–2:45 | Show key-free setup, exports, source/asset notices and limitations. “The contribution is evidence inspection and bounded explanation. We have not validated GT-free detection or autonomous recovery.” |
 
-## Setup and judge access
+If an authorized new live run later succeeds, review its actual prose/cards and
+label it separately before replacing the historical-output segment. Do not
+substitute improved hand-authored text or omit a failed attempted item.
 
-From the approved source checkout on Windows (keep demo_assets/, audit_evidence/
-and frontend/public/assets/):
+## Reproducible judge setup
+
+From an approved checkout root, keep `demo_assets/`, `audit_evidence/` and
+`frontend/public/assets/`. Windows PowerShell:
 
 ```powershell
 python -m venv .venv
-.venv\Scripts\python.exe -m pip install -e '.[test]'
+.venv/Scripts/python.exe -m pip install -e '.[test]'
 npm.cmd ci --prefix frontend
 ```
 
-In separate terminals, start the backend and frontend:
+Backend terminal, with port 8000 free:
 
 ```powershell
 $env:AUTOFRAME3D_SKIP_DOTENV='1'
-.venv\Scripts\python.exe -m uvicorn autoframe3d.api:app --host 127.0.0.1 --port 8000
+Remove-Item Env:NEBIUS_API_KEY -ErrorAction SilentlyContinue
+.venv/Scripts/python.exe -m uvicorn autoframe3d.api:app --host 127.0.0.1 --port 8000
 ```
+
+Frontend terminal:
 
 ```powershell
 npm.cmd run dev --prefix frontend -- --port 5173 --strictPort
 ```
 
-Open http://127.0.0.1:5173 (local only). Recorded/synthetic views require no
-key or full dataset. For live explanation, the operator must securely configure
-a valid NEBIUS_API_KEY in the backend process environment before launch; never
-put it in frontend configuration, recordings, commands committed to Git or
-judge instructions. Stop servers with Ctrl+C. Optional registration replay
-requires raw inputs and performs new computation; omit it from this demo.
-See [setup verification](setup-verification.md) for interpreter/npm workarounds.
+Open <http://127.0.0.1:5173>. Recorded/synthetic views need no key or full dataset.
+Use the [README walkthrough](../README.md#judge-walkthrough). Choose free ports
+and a matching proxy if defaults conflict; never stop another checkout's service.
+The [secure direct launcher](../scripts/run_release_validation.ps1) runs only the
+approved diagnostic/three-item sequence, with no secret-file loading or retries.
+Its captures need manual review, not merely an exit-code check. Do not distribute
+a provider credential to judges; owners must arrange managed free access/test
+instructions through the required judging period. A hosted plan is not yet established.
 
-Hosted demo: [HOSTED DEMO URL — pending]. Video: [VIDEO URL — pending].
-Official requirements: [CONFIRMED TRACK, FORMAT, AND ACCESS REQUIREMENTS — pending].
-No hosted URL, public repository availability or free judge-access arrangement
-is established here. Before submission, the lead must confirm eligibility,
-track, required access duration and an approved judge-access plan. Judges can
-reproduce the key-free views from an approved checkout; supplying managed live
-access/credits remains an owner task. Account access does not prove eligibility.
+## Concrete tool feedback — prepared, not sent
 
-## Outstanding submission tasks
+- Nebius's named schema envelope worked in an earlier preserved integration;
+  official structured-output examples mix bare schemas and named envelopes.
+  Consistent examples and safe field-location errors would simplify diagnosis.
+- The later two-item captures retain HTTP 401 and invalid_request_error, but
+  provide no rejected parameter; no underlying authorization cause is proven.
+  Status/category are useful without logging raw bodies or credentials.
+- Nemotron selected evidence tools and produced supported numerical comparisons
+  on one original dev-01 result. That answer omitted required recorded/GT scope.
+  A separate answer treated configuration as measurement, so citations and
+  schema validity must not be presented as factual verification.
+- The fixed 1,200-token output budget produced a third-turn truncation on dev-13.
+  We reject partial output and keep the failure, rather than calling it abstention.
+  Model benchmarks do not establish this application's quality or latency.
 
-- Both owners approved MIT for original project code; see the [root license](../LICENSE).
-  Third-party assets/data/dependencies retain their own terms and notices.
-  Preserve the [T-LESS attribution](../demo_assets/ATTRIBUTION.md), including its
-  unresolved source-license discrepancy; MIT approval does not resolve it.
-- No further live calls are planned. Copilot quality remains unverified; this
-  is a limitation, not a blocker unless organizers require a working live demo.
-  The official requirements are not yet confirmed; if live demonstration is
-  mandatory, the current validation does not establish that capability.
-- Confirm eligibility, team attribution, repository visibility and judge access.
-- Record/edit the final 2–3 minute video, check for secrets, upload it, and fill
-  submission fields with real links. Final lead review/approval is pending.
-- Confirm official requirements and replace pending link/team
-  placeholders with owner-approved information.
-- No deployment, publication, push or submission has been performed here.
+## Submission-period contribution summary
 
-## Validation status
+Verified history includes saved-pose/Windows engineering handoff `8e539ac`,
+transport diagnostics `02983c6`/`88a3e73`, named-envelope integration `588f514`,
+recorded-scope/grounding work `8ea46fb`/`445444d`, recovered workflow/UI repairs
+`61191f4`, and owner-approved MIT/submission wording `cf8b960`.
+This release repairs completion scoring, uses the configured model in the
+probe, rejects redirects, supplies bounded validation orchestration and expands
+actual product verification and reproducible documentation.
+Repository author names are Muskan Ejaz and Juwairiya-Haroon. Handoff records
+identify Muskan as lead and Juwairiya as engineering contributor. Exact personal
+contributions, eligibility and representative authorization need owner confirmation;
+Git attribution alone is not proof. AI coding assistance was used in release
+repair, tests and documentation. No invented individual contribution is assigned.
 
-No prompt rerun is planned in this package. Updated prompt quality remains
-unverified; both items in the later run failed before evidence retrieval.
+## License, evidence and owner actions
+
+Original code: [MIT](../LICENSE), approved by both owners. Third-party licenses
+and attribution remain separate. [Data permission review](data-permissions.md)
+identifies the two T-LESS geometry bundles and unresolved governing-grant
+question; no manufacturer/data permissions are inferred from project MIT.
+
+Original histories: [three-item run](../audit_evidence/grounding_three_20261028/capture.jsonl),
+[earlier standalone dev-01](../audit_evidence/evidence_grounding_20261028/capture.jsonl),
+[later HTTP-401 run](../audit_evidence/grounding_two_20261028/capture.jsonl).
+No capture, GT value, dataset identity or rubric was rewritten.
+
+Priority owner actions: securely run the single bounded validation launcher
+once and review all attempted answers; confirm data-distribution decision,
+track/eligibility/representative and contribution disclosure; arrange approved
+public repository/judge access; record/review/upload the 2:45 video and fill its
+actual public YouTube URL; perform final owner submission review before the
+verified deadline. None of those external actions was performed here.
