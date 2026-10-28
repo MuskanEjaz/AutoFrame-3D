@@ -1,10 +1,10 @@
 # AutoFrame 3D
 
-The default workspace is **Pose Inspection**, a clearly labelled synthetic robot/gripper demo showing an incorrect CAD overlay and a reference-guided correction animation. It performs no registration or automatic pose recovery. See [POSE_INSPECTION.md](POSE_INSPECTION.md) for coordinate conventions, synthetic provenance and UI verification.
+The demonstrated core is **Recorded Benchmark**: inspect saved T-LESS CAD-to-scan cases, compare recorded methods, reveal benchmark ground truth, and export evidence. This is recorded inspection, not a new registration run. Registration used GT instance masks, and correctness is scored against benchmark GT. See [DEMO.md](DEMO.md) for the recorded results and limits.
 
-The separate **Recorded Benchmark** tab uses actual saved T-LESS geometry, poses and metrics, benchmark GT reveal, method comparison, copilot and evidence export. The two display geometries are bundled with T-LESS attribution; no full dataset or Nebius key is required. See [DEMO.md](DEMO.md) for launch commands, asset regeneration, current verification and limits. No registration is run by opening the recorded flow. Live Nebius/NVIDIA explanation completed for **dev-01 only**; the original answer was incomplete and updated prompt quality remains **UNVERIFIED**. See [submission brief](docs/submission-ready.md) for evidence, scope and remaining release tasks.
+The default **Pose Inspection** workspace is a clearly labelled synthetic robot/gripper preview showing an incorrect CAD overlay and a reference-guided correction animation. It performs no registration or automatic pose recovery. See [POSE_INSPECTION.md](POSE_INSPECTION.md) for provenance. The live Nebius/NVIDIA copilot is experimental: an earlier dev-01 response completed with prose limitations, while the later dev-02/dev-13 run failed before evidence tools executed. The updated prompt remains unverified. The two display geometries retain T-LESS attribution; no full dataset or key is required for recorded/synthetic views. See [submission brief](docs/submission-ready.md) for exact evidence and remaining tasks.
 
-**Break the pose before it breaks the robot.** AutoFrame 3D generates seeded synthetic CAD-to-scan registration experiments, measures alignment quality separately from true pose error, searches for accepted-but-wrong alignments, and exports cases that can be recomputed and replayed.
+Additional research workflows generate seeded synthetic CAD-to-scan experiments, measure alignment quality separately from true pose error, search for accepted-but-wrong alignments, and export cases that can be recomputed and replayed. Those experiments are distinct from the saved recorded benchmark demonstration.
 
 ## Windows setup
 
@@ -38,7 +38,7 @@ These commands use the environment executable directly; activation is unnecessar
 
 Fresh setup of commit `40937c9698a4e579694bb3415b7d7413ceb17ddf` was verified on 2026-10-11 with **Windows 11 x64 (build 26200.0), Python 3.12.7, Node.js 24.14.1, npm 11.11.0, pip 26.2.1, and PowerShell 7.5.3**. A new isolated virtual environment and `npm ci` were used; no existing environment, `node_modules`, credentials or dataset was copied. `pip check`, frontend production build and offline browser checks passed. Other Python versions and Linux compatibility remain unverified. See [DEMO.md](DEMO.md) for the checks and dependency snapshot.
 
-## Core experiment
+## Reproducible synthetic experiment workflow
 
 Run the successful full-visibility control:
 
@@ -114,9 +114,9 @@ python -m pytest -q -p no:cacheprovider
 npm run build --prefix frontend
 ```
 
-## Optional live Nemotron mode
+## Experimental live Nemotron copilot
 
-The deterministic mode works without credentials and is identified as such in the API/UI. To enable live model proposals, copy `.env.example` to `.env` and set `NEBIUS_API_KEY` there. Keep `.env` private; it is git-ignored. `NEBIUS_MODEL` defaults to `nvidia/Nemotron-3_5-Lightning` and can be overridden server-side. Restart the API after changing environment values. The credential was not available during this implementation, so live requests and model usage remain unverified. The backend validates strict JSON-schema output, permits at most four model calls and 12 total campaign registrations, and never executes generated code or shell commands.
+The deterministic mode works without credentials and is identified as such in the API/UI. The optional live copilot requires a securely configured provider credential and remains experimental. One earlier dev-01 explanation completed, but omitted required GT limitations; the later two-item validation ended in HTTP-rejection stages before any tool execution, with no provider status/detail or token counters retained. Updated-prompt quality is unverified. The backend validates strict JSON-schema output, permits at most four model calls and 12 total campaign registrations, and never executes generated code or shell commands.
 
 Official references checked 2026-09-27:
 

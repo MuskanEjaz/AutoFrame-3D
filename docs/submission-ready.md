@@ -2,28 +2,27 @@
 
 Prepared 2026-10-28. Local review candidate; no deployment, push or submission.
 
-Latest grounding review: [review and three-item validation plan](evidence-grounding-validation.md).
-The subsequent dev-01 run against 588f514 correctly compared metrics but omitted
-GT limitations and misreported a configured matching gate as a measurement.
-The panel now supplies a separate deterministic scope note; revised grounding
-prompt quality remains unverified. Earlier verification below is historical.
+Grounding review and separate run records: [validation history](evidence-grounding-validation.md).
+An earlier dev-01 completion compared metrics correctly but omitted GT limitations
+and treated a configured matching gate as a measurement. A later run attempted
+dev-02 and dev-13; both stopped at HTTP-rejection stages before evidence tools.
+The deterministic panel scope note is separate from model prose. Updated prompt
+quality remains unverified.
 
 ## Project and contributions
 
-AutoFrame 3D investigates why a good geometric CAD-to-scan fit can still be a
-wrong pose. It combines reproducible registration research, a viewer for two
-curated recorded T-LESS examples, evidence export, and a bounded NVIDIA
-Nemotron explanation through Nebius Token Factory. It does not demonstrate
-automatic pose recovery, GT-free error detection, or industrial reliability.
+AutoFrame 3D demonstrates inspection of two curated, recorded T-LESS CAD-to-scan
+cases where geometric acceptance and benchmark-GT correctness differ. The viewer
+compares saved methods and exports evidence; it does not run fitting when opened.
+Separate reproducible synthetic experiments and a synthetic animation are
+additional workflows. The live Nebius explanation is experimental. The project
+does not demonstrate automatic pose recovery, GT-free error detection, or
+industrial reliability.
 
-Documented contribution split: Muskan is project lead and owns research/product
-review, final narration/recording and submission approval. Juwairiya's documented
-work covers Windows reproduction, offline saved-pair selection diagnosis,
-engineering handoff and release/demo preparation. This release follow-up adds
-transport/envelope fixes, credential guards, prompt instructions, focused tests,
-a Vite patch and evidence/submission documentation with coding-agent assistance.
-Team members should confirm final authorship and submission-period attribution;
-this brief does not assign all historical implementation to one person.
+Team contributions and submission-period attribution: [TEAM MEMBERS, ROLES,
+AND CONTRIBUTIONS — confirm with the team]. Historical repository work spans
+research, engineering, recorded-data inspection and release preparation; final
+individual attribution and coding-assistance disclosure require owner review.
 
 ## Three distinct demonstrations
 
@@ -31,18 +30,24 @@ this brief does not assign all historical implementation to one person.
 | --- | --- | --- |
 | Recorded Benchmark | Loads saved geometry, poses and metric cards; compares recorded methods and exports evidence | Opening it runs no fitting; GT instance masks and known object identity were inputs; correctness uses benchmark GT |
 | Pose Inspection | Synthetic five-second interpolation toward a known reference | Visualization, not pose recovery or robot hardware control |
-| Live explanation | Nemotron selects read-only evidence tools and cites saved cards | Does not change poses or run registration; citations/schema do not prove prose correctness |
+| Experimental live copilot | When provider calls complete, Nemotron may select read-only evidence tools and cite saved cards | No pose changes or registration; the latest dev-02/dev-13 attempt stopped at HTTP-rejection stages before evidence tools. Citations/schema do not prove prose correctness |
 
 ## Verified state and remaining blockers
 
-The [reviewed live capture and verification](../audit_evidence/live_integration_20261028/verification.json)
-record dev-01 only: complete, three model requests, two evidence tools,
+The [reviewed earlier live capture and verification](../audit_evidence/live_integration_20261028/verification.json)
+record dev-01 as complete: three model requests, two evidence tools,
 12.3736 seconds; retrieval, citations, schema and structured numbers passed.
-Fourteen development items were unattempted; no overall model-quality pass.
+This is one item only, and its prose was incomplete.
+At the time of that run, fourteen development items were unattempted; the
+later two-item attempt is reported separately below. No overall model-quality pass.
 The successful run used **88a3e73 plus an uncommitted named-envelope patch**,
 not this later release commit. The original answer omitted the RMSE acceptance
-criterion and GT-mask/GT-scoring dependence. Updated general prompt instructions
-are **UNVERIFIED until rerun**; evaluation expectations are unchanged.
+criterion and GT-mask/GT-scoring dependence. The later [two-item run](../audit_evidence/grounding_two_20261028/capture.jsonl)
+attempted dev-02 and dev-13 once each; both returned status=error after one
+request, zero tools, at trace stage http_rejection. No HTTP status, provider
+validation detail or token counters were captured. No findings were generated.
+The rejected field/cause is unknown. Updated prompt quality remains
+**UNVERIFIED**; evaluation expectations are unchanged.
 
 Earlier failures remain local and hash-listed in that verification file.
 Operator-confirmed diagnosis: malformed credentials contained control characters;
@@ -52,14 +57,15 @@ locally before request construction and are never repaired or printed.
 Budgets remain three model turns, six tools, 60 seconds total, 20 seconds per
 request, 1200 output tokens per request; no retries or fallback answers.
 
-Current release checks:
+Previously recorded implementation checks (not rerun for this documentation-only package):
 
 | Check | Result |
 | --- | --- |
 | Focused investigation/shared transport/evaluator/recorded evidence/asset tests | 112 passed, 1 skipped (optional raw-dataset rebuild unavailable) |
 | Production build (TypeScript + Vite 7.3.7) | Passed; existing >500 kB bundle warning remains |
 | npm audit after compatible Vite 7.3.6 to 7.3.7 patch | Zero vulnerabilities reported |
-| Diff whitespace validation | Passed |
+| Prior diff whitespace validation | Passed |
+| This offline package: JSON integrity, saved-file hashes, secret scan, local Markdown links, and `git diff --check` | Passed |
 | New inference, registration, browser smoke, deployment or push | None |
 
 The compatible Vite patch addresses the reported development-server advisories;
@@ -71,6 +77,21 @@ setup/browser evidence remains historical in [setup verification](setup-verifica
 and [live integration](live-integration.md); no new browser test or live run
 was performed for this release follow-up. Standalone wheels, other operating
 systems and historical fitting reproduction remain unverified/incomplete.
+
+## Draft submission description
+
+AutoFrame 3D demonstrates recorded inspection of curated T-LESS CAD-to-scan
+cases where geometric acceptance and benchmark-GT pose correctness can differ.
+The recorded viewer compares saved methods, exposes the GT-dependent evaluation
+scope, and exports evidence. Separate reproducible synthetic workflows support
+registration experiments. The animated robot view is a synthetic known-reference
+preview, not pose recovery or hardware control. The live evidence copilot is
+experimental; one dev-01 answer had prose omissions, and the latest dev-02/dev-13
+attempts failed before evidence retrieval. No broad model-quality claim is made.
+
+Submission fields: [TEAM CONTRIBUTIONS — pending confirmation]; [PROJECT LICENSE —
+team decision pending]; [VIDEO LINK — pending]; [HOSTED/JUDGE ACCESS LINK — pending];
+[OFFICIAL TRACK/FORMAT REQUIREMENTS — pending confirmation].
 
 ## Demo script (2 minutes 45 seconds)
 
@@ -113,6 +134,8 @@ judge instructions. Stop servers with Ctrl+C. Optional registration replay
 requires raw inputs and performs new computation; omit it from this demo.
 See [setup verification](setup-verification.md) for interpreter/npm workarounds.
 
+Hosted demo: [HOSTED DEMO URL — pending]. Video: [VIDEO URL — pending].
+Official requirements: [CONFIRMED TRACK, FORMAT, AND ACCESS REQUIREMENTS — pending].
 No hosted URL, public repository availability or free judge-access arrangement
 is established here. Before submission, the lead must confirm eligibility,
 track, required access duration and an approved judge-access plan. Judges can
@@ -123,21 +146,16 @@ access/credits remains an owner task. Account access does not prove eligibility.
 
 - Team/owner chooses and authorizes the project-level open-source license;
   third-party asset notices do not license application code. Preserve notices.
-- Validate updated prompt on dev-01 and review completeness manually; broader
-  quality remains untested. Do not silently revise the original capture.
+- Updated-prompt quality remains unverified; live validation stopped at HTTP
+  rejection for dev-02/dev-13. No further calls are planned in this package.
 - Confirm eligibility, team attribution, repository visibility and judge access.
 - Record/edit the final 2–3 minute video, check for secrets, upload it, and fill
   submission fields with real links. Final lead review/approval is pending.
+- Confirm official requirements and replace pending link/team/license
+  placeholders with owner-approved information.
 - No deployment, publication, push or submission has been performed here.
 
-## One-item updated-prompt validation (not run here)
+## Validation status
 
-With a valid key already configured in the environment, from the worktree:
-
-```powershell
-.venv\Scripts\python.exe -c "from pathlib import Path; from uuid import uuid4; from scripts.evaluate_investigation import main; p=Path('artifacts')/('prompt-dev01-'+uuid4().hex); p.mkdir(parents=True, exist_ok=False); main(['--live','--split','development','--item','dev-01','--capture',str(p/'capture.jsonl'),'--report',str(p/'report.json')])"
-```
-
-One investigation, at most three requests, no retries; new output directory.
-Review the prose for all acceptance criteria/units and GT limitations even if
-automated retrieval/citation/structured-number checks pass.
+No prompt rerun is planned in this package. Updated prompt quality remains
+unverified; both items in the later run failed before evidence retrieval.

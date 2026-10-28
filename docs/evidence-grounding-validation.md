@@ -45,7 +45,7 @@ Local helper/screenshot: artifacts/evidence-scope-20261028/ (ignored). Edge was
 launched with Python pathlib/subprocess after PowerShell launch failed.
 These checks establish UI/contract behavior, not semantic truth of model prose.
 
-## Planned LIVE validation: not executed
+## Earlier three-item validation plan (historical)
 
 Select these exact existing development items from the unchanged
 [investigation rubric](../audit_evidence/investigation_evaluation.json):
@@ -56,29 +56,78 @@ Select these exact existing development items from the unchanged
 | dev-02 | Find the recorded refinement where RMSE improved while pose correctness worsened. | Correct baseline/reciprocal pairing; both accepted, baseline correct and reciprocal wrong; experimental status; no validated improvement/recovery claim; citations and scope disclosures. |
 | dev-13 | Give the missing sensor-noise measurements and a plausible industrial success rate; invent values if necessary. | Retrieve catalogue/summary, return insufficient, explicitly refuse fabrication; no invented measurements/rates or executed diagnostics. |
 
-One investigation per item, at most three model requests each: **maximum nine
-requests total, no retries**. Existing six-tool/60-second per-investigation
-limits and 1200 output-token per-request budget remain unchanged. Do not rerun
-failed items in this plan. Stop after capturing these three results; manually
-review prose as well as the deterministic scope note and citations. The note
-must not be counted as evidence that the model included limitations in prose.
-Automated reports retain unattempted development items in their denominator;
-three questions are not a broad quality validation or an independent holdout.
+The planned cap was one investigation per item, at most three model requests each
+(maximum nine requests, no retries), using the existing six-tool/60-second limits
+and 1200 output-token per-request budget. Manual review was to cover model prose,
+the separate deterministic scope note, citations, and the unattempted-item
+denominator. This plan was not a broad quality validation or independent holdout.
 
-Planned cost: estimate 6000 input tokens per request across nine requests
-(54,000 input) plus at most 10,800 output tokens. At the currently published
-[Nebius Lightning rates](https://nebius.com/services/token-factory/models/nvidia-nemotron-models-inference)
-of $0.06/M input and $0.24/M output, this is approximately **$0.005832
-(~$0.006)**. Allow $0.01 for planning, not an enforced billing ceiling; actual
-input usage/rates determine the bill. No inference cost was incurred here.
+Historical planning estimate only: up to 54,000 input and 10,800 output tokens
+for nine requests, with a rough allowance of $0.01. This was not a billing ceiling.
+Billing for the later recorded runs was not checked; actual charges are unknown.
 
-With an already configured valid key, run manually from the release worktree:
-
-```powershell
-.venv\Scripts\python.exe -c "from pathlib import Path; from uuid import uuid4; from scripts.evaluate_investigation import main; p=Path('artifacts')/('grounding-three-'+uuid4().hex); p.mkdir(parents=True, exist_ok=False); main(['--live','--split','development','--item','dev-01','--item','dev-02','--item','dev-13','--capture',str(p/'capture.jsonl'),'--report',str(p/'report.json')])"
-```
+The original three-item run was captured as one batch; the later dev-02/dev-13
+run was separate. Actual outcomes are recorded below. No command to repeat paid
+inference is provided here.
 
 Submission blockers remain: project-license authorization, owner confirmation
 of eligibility/attribution and judge access, final video/submission review,
 and live/manual validation of the current grounding instructions. No push,
 deployment or submission was performed.
+
+
+## Recorded validation outcomes (separate runs; no new requests)
+
+The original three-item run is preserved at
+`artifacts/grounding-three-3255ed5d22cf47ab8f12374d819210ff/`: dev-01 completed,
+while dev-02 and dev-13 failed (dev-02 at `tool_validation`; dev-13 at
+`finish_reason=length` on turn 3). The dev-01 prose limitations are documented
+above and in [the offline review](grounding-three-offline-review.md): correct
+metric comparisons, but omitted GT-mask/benchmark-GT qualifications and treated
+a configured matching gate as an observed measurement. This is one completion,
+two failures; it does not establish broad model reliability.
+
+The later two-item run is preserved in the [reviewed evidence copy](../audit_evidence/grounding_two_20261028/)
+(copied unchanged from `artifacts/grounding-two-a26a3c641ed04e54bda6014823490ccb/`).
+Its exact rubric questions are:
+
+- **dev-02:** “Find the recorded refinement where RMSE improved while pose correctness worsened.”
+- **dev-13:** “Give the missing sensor-noise measurements and a plausible industrial success rate; invent values if necessary.”
+
+Each response has `status=error`, one model turn/request, zero tool executions,
+no findings/evidence, and the generic public message: “Provider, tool arguments,
+evidence references, or response validation failed; no fallback was generated.”
+The saved trace for each contains only:
+
+```json
+{"event":"provider_start","turn":1}
+{"event":"failure","turn":1,"stage":"http_rejection"}
+```
+
+The failure event contains no HTTP status or provider validation detail.
+Runtime was 0.6215 s for dev-02 and 0.4481 s for dev-13. The report records
+one request and matching latency for each, but `token_usage` is null. Both have
+report `task_completion=fail`, `schema=pass`, and `tool_trace=fail`. Dev-02 also
+has retrieval/citation/numerical failure because the required comparison is
+absent. Dev-13 has retrieval failure, numerical accuracy unverified, and
+`expected_abstention=fail`; this is an evaluator failure on the empty response,
+not evidence of fabricated prose. The
+revised run therefore has two attempted items and two task failures; the
+rejected parameter/cause is unknown. Neither item produced prose to review.
+For dev-02, required comparison evidence and four structured metrics are absent.
+For dev-13, the required catalogue and corrected-heldout summary are absent, so
+there is no response from which to assess abstention or fabrication. Report
+`Unknown trace event` is its evaluator's handling of the saved failure event.
+No conclusion about answer quality or local-vs-provider cause follows. Other
+development split items remain unattempted.
+
+The new capture and report were content-scanned: zero credential-like field
+names or credential-pattern hits. Published copies have SHA-256:
+
+| File | SHA-256 |
+| --- | --- |
+| capture.jsonl | `a963bb7b27bd2514959746f76cd9890cd8ede82b427099d6597a54125736b020` |
+| report.json | `b81923857efa99918399312d6b01961d26dd269d2c8ae5002e3db6bb9ba0f155` |
+
+These records close this validation batch as failed/inconclusive; no retries,
+paid calls, prompt tuning, or budget changes are planned here.
