@@ -2,6 +2,12 @@
 
 Prepared 2026-10-28. Local review candidate; no deployment, push or submission.
 
+Latest grounding review: [review and three-item validation plan](evidence-grounding-validation.md).
+The subsequent dev-01 run against 588f514 correctly compared metrics but omitted
+GT limitations and misreported a configured matching gate as a measurement.
+The panel now supplies a separate deterministic scope note; revised grounding
+prompt quality remains unverified. Earlier verification below is historical.
+
 ## Project and contributions
 
 AutoFrame 3D investigates why a good geometric CAD-to-scan fit can still be a

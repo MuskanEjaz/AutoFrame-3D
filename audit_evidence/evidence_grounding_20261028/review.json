@@ -1,0 +1,58 @@
+{
+  "source": "artifacts/prompt-dev01-317e6b5b948f48a2b9bc8ae9cc5500e4/capture.jsonl",
+  "source_sha256": "774ed48cdfdc254e4c0d3ff4dd46bb8af124dfb8462bc101da517157e0d5184d",
+  "tested_code_state": "588f514; before the field-role prompt correction and deterministic scope note in this change",
+  "scope": "dev-01 only; integration works for this item, broad answer quality not validated",
+  "requests": 2,
+  "tools": 1,
+  "runtime_seconds": 15.166922199998226,
+  "review": {
+    "metric_comparisons": "Fitness, RMSE and normalized MSSD comparisons are correct.",
+    "defect_1": "Generated prose omits GT instance-mask and benchmark-GT scoring dependence, although both returned flags are true.",
+    "defect_2": "Generated prose says correspondence distance was within 0.015 m; evidence supplies a configured matching gate, not an observed correspondence-distance statistic."
+  },
+  "new_prompt_quality": "UNVERIFIED; no new live requests",
+  "evidence_records": "Original evidence values, configuration, source hashes and rubric unchanged.",
+  "preserved_local_history": [
+    {
+      "path": "artifacts/diagnostic-dev01-a38c339b72c0426f985944edd50b1eb7/capture.jsonl",
+      "sha256": "d69187f718d6e051c41dadbfbfe43bef8b0e4e14328376770a0427cb636e62be"
+    },
+    {
+      "path": "artifacts/live-dev01-cc134630521a42f8bcf70d2b9a4e5ef5/capture.jsonl",
+      "sha256": "320a95822b22e59b9bd424ecbe122673bf5774d2feb904fef037f2f9f9291e84"
+    },
+    {
+      "path": "artifacts/live-dev01-fixed-0353095321b34f2c9861df8fe433e987/capture.jsonl",
+      "sha256": "24e4f0c04335c69b881d38a6fcb6758948f65ffd514a331a9456061243d6eff5"
+    },
+    {
+      "path": "artifacts/prompt-dev01-317e6b5b948f48a2b9bc8ae9cc5500e4/capture.jsonl",
+      "sha256": "774ed48cdfdc254e4c0d3ff4dd46bb8af124dfb8462bc101da517157e0d5184d"
+    },
+    {
+      "path": "artifacts/nebius-http-probe-02a56cc4dc6142b8ac150bd01b8f23bf/diagnostic.json",
+      "sha256": "fe3171b7370e0578e2705c458f805af42fe45856df7a747918e8c3fc26ebf174"
+    },
+    {
+      "path": "artifacts/nebius-http-probe-2d26ad906fdb4143bcebad03dc7d8716/diagnostic.json",
+      "sha256": "fe3171b7370e0578e2705c458f805af42fe45856df7a747918e8c3fc26ebf174"
+    },
+    {
+      "path": "artifacts/nebius-http-probe-6c9c577dd7b2490bae1ec784202cd35d/diagnostic.json",
+      "sha256": "f3b9b6d3724206c57a6844fc11b041d284f4b12e9c83b695c3fc2a9ed4644c51"
+    },
+    {
+      "path": "artifacts/nebius-http-probe-9e02428fd3644341a785d7ab37e32395/diagnostic.json",
+      "sha256": "f3b9b6d3724206c57a6844fc11b041d284f4b12e9c83b695c3fc2a9ed4644c51"
+    },
+    {
+      "path": "artifacts/nebius-http-probe-e68ec425f9324ca99ef9a5075af5d420/diagnostic.json",
+      "sha256": "f3b9b6d3724206c57a6844fc11b041d284f4b12e9c83b695c3fc2a9ed4644c51"
+    },
+    {
+      "path": "artifacts/nebius-http-probe-e9bc16acf1bb497da41db4c74363fd52/diagnostic.json",
+      "sha256": "fa6d35bb200251d386cd2da6534b3629ef5a88d8deb6a94866694a6a2be3ff51"
+    }
+  ]
+}

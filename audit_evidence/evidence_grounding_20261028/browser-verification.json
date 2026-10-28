@@ -1,0 +1,10 @@
+{
+  "capturedScope": "Evidence scope\n\nDeterministic note from returned evidence flags, separate from the model-generated explanation.\n\nGT instance masks used (reported for at least one evidence card).\nCorrectness evaluated against benchmark GT (reported for at least one evidence card).\nMetrics are recorded.",
+  "missingScope": "Evidence scope\n\nDeterministic note from returned evidence flags, separate from the model-generated explanation.\n\nGT instance-mask use not confirmed by returned flags.\nBenchmark-GT scoring not confirmed by returned flags.\nRecorded metric provenance not confirmed by returned flags.",
+  "exportPreservedEvidence": true,
+  "originalProseUnchanged": true,
+  "interceptedPosts": 2,
+  "providerRequests": 0,
+  "consoleErrors": [],
+  "scope": "Offline browser rendering only; not model-quality evidence"
+}

@@ -338,3 +338,21 @@ def test_malformed_credentials_rejected_before_network(monkeypatch, character):
     assert caught.value.diagnostic == {"stage": "invalid_credentials"}
     assert key not in str(caught.value)
     assert os.environ["NEBIUS_API_KEY"] == key
+
+
+def test_prompt_distinguishes_recorded_metrics_acceptance_and_configuration():
+    provider, _ = scripted([tools(("get_case_evidence", {"case_id": WRONG})), final(f"case:{WRONG}:baseline")])
+    result = inv.investigate(inv.InvestigationRequest(question="Explain evidence roles"), provider=provider)
+    card = result["evidence"][0]
+    assert "maximum_correspondence_distance_m" not in card["metrics"]
+    assert card["thresholds"]["acceptance"]["maximum_correspondence_distance_m"] == .015
+    assert card["metrics"]["accepted"] == (card["metrics"]["fitness"] >= .7 and card["metrics"]["rmse_mm"] <= 10)
+    # These contract checks do not test semantic correctness of model prose.
+    assert "Never turn configuration into a" in inv.SYSTEM
+    assert "measured result" in inv.SYSTEM
+    assert "not an additional acceptance test" in inv.SYSTEM
+    assert "no\nobserved correspondence-distance statistic is supplied" in inv.SYSTEM
+    exported = json.loads(json.dumps(result))["evidence"][0]
+    assert exported["gt_instance_masks_used"] is True
+    assert exported["correctness_uses_benchmark_gt"] is True
+    assert exported["computation"] == "recorded"

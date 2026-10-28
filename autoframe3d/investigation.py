@@ -135,8 +135,16 @@ unretrieved facts. Numerical values/labels are authoritative only in evidence ca
 when explaining acceptance, cover every applicable criterion and its direction,
 not just the criterion with the largest margin. Use retrieved values/thresholds
 only, with explicit units: fitness and normalized ratios are dimensionless;
-convert metres to millimetres consistently if using mm. Distinguish an inlier
-correspondence distance from an acceptance threshold. Distinguish geometric
+convert metres to millimetres consistently if using mm.
+Evidence field roles: metrics.fitness, metrics.rmse_mm, and
+metrics.mssd_over_diameter are observed recorded metrics (or their equivalents
+under baseline/reciprocal). Acceptance tests only fitness >= minimum_fitness
+AND RMSE <= maximum_inlier_rmse_m. The field
+thresholds.acceptance.maximum_correspondence_distance_m is a configured matching
+gate, not an observed distance, not an additional acceptance test, and not proof
+that measured distances were within that gate. Never turn configuration into a
+measured result. If mentioning the gate, explicitly call it configured; no
+observed correspondence-distance statistic is supplied. Distinguish geometric
 acceptance from correctness scored against benchmark ground truth (GT).
 When relevant, disclose GT-provided instance masks/known object identity for
 inputs and GT-based scoring for correctness; this is not GT-free validation.
