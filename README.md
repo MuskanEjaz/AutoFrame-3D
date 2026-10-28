@@ -38,6 +38,23 @@ These commands use the environment executable directly; activation is unnecessar
 
 Fresh setup of commit `40937c9698a4e579694bb3415b7d7413ceb17ddf` was verified on 2026-10-11 with **Windows 11 x64 (build 26200.0), Python 3.12.7, Node.js 24.14.1, npm 11.11.0, pip 26.2.1, and PowerShell 7.5.3**. A new isolated virtual environment and `npm ci` were used; no existing environment, `node_modules`, credentials or dataset was copied. `pip check`, frontend production build and offline browser checks passed. Other Python versions and Linux compatibility remain unverified. See [DEMO.md](DEMO.md) for the checks and dependency snapshot.
 
+## License
+
+Both project owners approved the [MIT License](LICENSE) for original project
+code on 2026-10-28. Copyright holder spellings follow repository attribution:
+Muskan Ejaz and Juwairiya-Haroon. This grant does not relicense third-party
+assets, data or dependencies, which retain their respective terms and notices.
+
+- Panda meshes: preserve the [industrial asset notice](frontend/public/assets/industrial/NOTICE.md)
+  and [Apache-2.0 license](frontend/public/assets/industrial/PANDA-LICENSE).
+- Poly Haven HDR: preserve its author/source notice above and [CC0 text](frontend/public/assets/industrial/FOUNDRY-CC0.txt).
+- T-LESS derived display data: preserve [attribution and change notices](demo_assets/ATTRIBUTION.md)
+  and the existing CC BY-SA 4.0 bundle terms. The recorded source discrepancy
+  (dataset page CC BY 4.0 versus toolkit dataset notice CC BY-SA 4.0) remains
+  unresolved; project MIT approval does not settle it or grant additional rights.
+- Dependencies retain their upstream licenses, including the bundled [Three.js notice](frontend/public/assets/industrial/THREE-LICENSE).
+  Original local scene assets retain their [existing MIT asset notice](frontend/public/assets/industrial/AUTOFRAME-ASSET-LICENSE).
+
 ## Reproducible synthetic experiment workflow
 
 Run the successful full-visibility control:

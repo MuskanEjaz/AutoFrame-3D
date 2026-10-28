@@ -75,8 +75,10 @@ The original three-item run was captured as one batch; the later dev-02/dev-13
 run was separate. Actual outcomes are recorded below. No command to repeat paid
 inference is provided here.
 
-Submission tasks remain: project-license authorization, owner confirmation of
-eligibility/attribution and judge access, and final video/submission review.
+Both owners approved [MIT](../LICENSE) for original project code on 2026-10-28;
+third-party terms and the documented T-LESS source-license discrepancy remain
+separate. Submission tasks remain: owner confirmation of eligibility/attribution
+and judge access, and final video/submission review.
 Organizer requirements are unverified; confirm whether a working live demo is
 required. The copilot remains experimental, and no further paid calls are planned.
 No push, deployment or submission was performed.

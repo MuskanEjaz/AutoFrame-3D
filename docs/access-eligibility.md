@@ -29,9 +29,9 @@ Source: [official submission overview](https://nebiusglobalaihackathon.devpost.c
 - [ ] Explain actual Nebius/NVIDIA use and provide tool/service feedback.
 - [ ] Explain significant submission-period updates if applicable.
 
-Local finding: no project-level LICENSE file was found. Existing asset-specific
-licenses do not establish licensing of application code. Muskan/team must choose
-and authorize the project license; no license was added automatically. The local
+Both owners approved [MIT](../LICENSE) for original project code on 2026-10-28.
+Third-party assets/data/dependencies retain their own terms; the documented
+[T-LESS source-license discrepancy](../demo_assets/ATTRIBUTION.md) remains unresolved. The local
 app runs, but that alone does not establish a public judge-accessible demo or
 repository visibility. Final submission and publication remain subject to lead approval.
 

@@ -1,7 +1,7 @@
 # AutoFrame 3D — release and technical demo
 
 Prepared by Juwairiya, 2026-10-23. **Review candidate only. Submission blocked**
-by Tasks 3–4, project licensing and final lead approval. No deployment or submission.
+by Tasks 3–4 and final lead approval. Original project code is now owner-approved MIT. No deployment or submission.
 
 ## Reproduce locally
 
@@ -77,7 +77,7 @@ error, 0/3 recoveries, 0/1 threshold regressions. Do not mix those experiments.
 | Fresh exported candidate assets/API downloads/missing-key behavior | See final smoke record in release-review note |
 | Asset notices retained | Reviewed; see inventory below |
 | Secret/raw-input exclusion | Candidate checks documented; not a full-history security audit |
-| Project-level open-source license | BLOCKED; team must choose/authorize it |
+| Project-level open-source license | Both owners approved [MIT](../LICENSE) for original code; third-party terms remain separate |
 | Task 3 account/eligibility/credit confirmation | BLOCKED; Muskan |
 | Task 4 model compatibility, approved live run and human review | BLOCKED; Muskan/team + technical executor |
 | Working judge URL/test build and availability | PENDING; no deployment performed |
@@ -102,13 +102,15 @@ error, 0/3 recoveries, 0/1 threshold regressions. Do not mix those experiments.
   assets are CC0 and permits redistribution.
 - Original local assets have `AUTOFRAME-ASSET-LICENSE` (MIT); Three.js notice
   remains in `THREE-LICENSE`. Keep all notices in the source/public assets.
-- Asset licenses do not supply a project-wide software license. No blanket
-  relicensing or legal eligibility certification was performed.
+- Both owners approved the root [MIT license](../LICENSE) for original code.
+  Third-party materials retain the terms above; no blanket relicensing or
+  legal eligibility certification was performed. The T-LESS source-license
+  discrepancy remains unresolved.
 
 ## Review handoff
 
 Completed: offline setup, saved-pair selection diagnosis, release/demo preparation.
 Evidence: setup/diagnostic reports, local screenshots/downloads, final smoke record.
-Blockers: account/credits/usage approval, model compatibility/live quality, project
-license and lead review. Next: Muskan resolves Task 3; execute the one approved
+Blockers: account/credits/usage approval, model compatibility/live quality and
+lead review. Next: Muskan resolves Task 3; execute the one approved
 Task 4 item, review it, then perform final candidate smoke and record narration.

@@ -158,10 +158,15 @@ executed or authorized by this offline task. Dev-01 is not an overall quality
 pass and its prose omission remains documented; broad quality is unvalidated.
 
 Remaining submission blockers: live/manual validation of the revised instructions,
-GT completeness review, project-license authorization, owner eligibility/team
+GT completeness review, owner eligibility/team
 attribution confirmation, judge access, and final video/submission approval.
 No licensing decision, commit, push, deployment or submission was performed.
 
+
+License status update: both owners approved [MIT](../LICENSE) for original
+project code on 2026-10-28; third-party terms and the documented T-LESS
+source-license discrepancy remain separate. Earlier no-licensing-action
+statements describe those historical tasks.
 
 ## Follow-up release repair (2026-10-28)
 
@@ -182,7 +187,7 @@ live response findings or manual prose verdicts for these two items.
 After the prompt repair: `pytest tests/test_investigation.py tests/test_agent.py
 tests/test_answer_evaluation.py -q` passed, **109 passed in 2.29 seconds**;
 `git diff --check` passed. No frontend/build changes were made. The requested
-live validation, dev-01 completeness issue, license authorization, owner
+live validation, dev-01 completeness issue, owner
 eligibility/attribution confirmation, judge access and final video/submission
 approval remain blockers. Do not treat this offline follow-up as live validation.
 

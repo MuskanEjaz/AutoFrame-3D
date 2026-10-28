@@ -94,9 +94,12 @@ remain excluded. Share selected redacted technical screenshots only as needed.
 
 ## Remaining release blockers
 
+Update 2026-10-28: both owners approved [MIT](../LICENSE) for original project
+code. Third-party terms/notices remain separate; the documented T-LESS
+source-license discrepancy is unresolved.
+
 Muskan/team must resolve access/credits and usage approval, confirm model/JSON
-compatibility, review one real live answer, approve a project-level open-source
-license, confirm eligibility/track and judge access, and review the final PRs.
+compatibility, review one real live answer, confirm eligibility/track and judge access, and review the final PRs.
 Muskan owns final narration/recording and submission approval. Repeat the final
 smoke against the final reviewed commit after those changes. No claim of
 automatic pose recovery, general selector safety or verified live quality is

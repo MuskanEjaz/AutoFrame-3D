@@ -87,17 +87,22 @@ systems and historical fitting reproduction remain unverified/incomplete.
 
 ## Draft submission description
 
-AutoFrame 3D demonstrates recorded inspection of curated T-LESS CAD-to-scan
-cases where geometric acceptance and benchmark-GT pose correctness can differ.
-The recorded viewer compares saved methods, exposes the GT-dependent evaluation
-scope, and exports evidence. Separate reproducible synthetic workflows support
-registration experiments. The animated robot view is a synthetic known-reference
-preview, not pose recovery or hardware control. The live evidence copilot is
-experimental; one dev-01 answer had prose omissions, and the latest dev-02/dev-13
-attempts failed before evidence retrieval. No broad model-quality claim is made.
+A geometrically accepted CAD-to-scan fit can still have the wrong pose.
+AutoFrame 3D helps reviewers inspect that discrepancy: open two curated,
+recorded T-LESS cases, compare saved methods and metrics, reveal benchmark
+truth, and export the evidence. Registration inputs used GT instance masks;
+correctness is scored against benchmark GT. Opening the viewer runs no fitting.
+A separate synthetic preview interpolates toward a known reference and does
+not demonstrate pose recovery or hardware control. The experimental live
+copilot is configured by default for NVIDIA `nvidia/Nemotron-3_5-Lightning`;
+Nebius Token Factory supplies its server-side inference endpoint. When calls
+complete, the model can select bounded read-only evidence tools and explain
+saved cards; it cannot change registration. Current successful inference is
+not established: preserved earlier answers had scope omissions and later
+attempts stopped at HTTP rejection before evidence retrieval. No validated
+recovery or broad model-quality claim is made.
 
-Submission fields: [TEAM CONTRIBUTIONS — pending confirmation]; [PROJECT LICENSE —
-team decision pending]; [VIDEO LINK — pending]; [HOSTED/JUDGE ACCESS LINK — pending];
+Submission fields: [TEAM CONTRIBUTIONS — pending confirmation]; [PROJECT LICENSE — MIT for original project code; owner-approved]; [VIDEO LINK — pending]; [HOSTED/JUDGE ACCESS LINK — pending];
 [OFFICIAL TRACK/FORMAT REQUIREMENTS — pending confirmation].
 
 ## Demo script (2 minutes 45 seconds)
@@ -108,7 +113,7 @@ team decision pending]; [VIDEO LINK — pending]; [HOSTED/JUDGE ACCESS LINK — 
 | 0:15–0:50 | Show example A: fitness >=0.70 and inlier RMSE <=10 mm define acceptance; normalized MSSD <=0.10 defines GT-scored correctness. Reveal GT; disclose GT instance masks and benchmark scoring. |
 | 0:50–1:20 | Show example B baseline/reciprocal and export evidence: lower RMSE can accompany worse GT pose error. This experimental method is not promoted as a recovery. |
 | 1:20–1:45 | Show synthetic preview, pause/reset: known-reference interpolation only; no automatic recovery or physical robot. |
-| 1:45–2:20 | Show the preserved dev-01 live capture, clearly labelled recorded live output. Explain three requests/two tools, valid citations and the original answer's missing RMSE/GT qualifications. Do not present an improved answer as tested. |
+| 1:45–2:20 | Show dev-01 from the original three-item capture, clearly labelled recorded live output. Explain its two numerically supported findings, correct RMSE comparison, valid citations and missing recorded-evidence and GT-mask/benchmark-GT qualifications. Do not present an improved answer as tested. |
 | 2:20–2:45 | Show setup, evidence/source notices and remaining limits. State no validated GT-free detector or demonstrated wrong-to-correct recovery. |
 
 ## Setup and judge access
@@ -151,8 +156,10 @@ access/credits remains an owner task. Account access does not prove eligibility.
 
 ## Outstanding submission tasks
 
-- Team/owner chooses and authorizes the project-level open-source license;
-  third-party asset notices do not license application code. Preserve notices.
+- Both owners approved MIT for original project code; see the [root license](../LICENSE).
+  Third-party assets/data/dependencies retain their own terms and notices.
+  Preserve the [T-LESS attribution](../demo_assets/ATTRIBUTION.md), including its
+  unresolved source-license discrepancy; MIT approval does not resolve it.
 - No further live calls are planned. Copilot quality remains unverified; this
   is a limitation, not a blocker unless organizers require a working live demo.
   The official requirements are not yet confirmed; if live demonstration is
@@ -160,7 +167,7 @@ access/credits remains an owner task. Account access does not prove eligibility.
 - Confirm eligibility, team attribution, repository visibility and judge access.
 - Record/edit the final 2–3 minute video, check for secrets, upload it, and fill
   submission fields with real links. Final lead review/approval is pending.
-- Confirm official requirements and replace pending link/team/license
+- Confirm official requirements and replace pending link/team
   placeholders with owner-approved information.
 - No deployment, publication, push or submission has been performed here.
 
