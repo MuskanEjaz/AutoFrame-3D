@@ -185,7 +185,7 @@ def investigate(request, *, provider=None, trace=None):
             turns += 1
             observe("provider_start", turn=turns, timeout_seconds=min(20.0, remaining))
             body = provider({"model": model, "temperature": 0.0, "max_tokens": 1200,
-                             "response_format": {"type": "json_object"}, "guided_json": schema,
+                             "response_format": {"type": "json_schema", "json_schema": schema},
                              "messages": messages}, timeout=min(20.0, remaining), max_response_bytes=32768)
             usage = body.get("usage") if isinstance(body, dict) else None
             observe("provider_result", turn=turns, usage={k: usage[k] for k in (

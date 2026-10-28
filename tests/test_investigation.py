@@ -35,8 +35,9 @@ def scripted(actions):
     def provider(payload, **limits):
         calls.append((payload, limits))
         assert limits["timeout"] <= 20 and limits["max_response_bytes"] == 32768
-        assert payload["response_format"] == {"type": "json_object"}
-        assert payload["guided_json"]["additionalProperties"] is False
+        assert payload["response_format"] == {"type": "json_schema", "json_schema": inv.Action.model_json_schema()}
+        assert "guided_json" not in payload
+        assert payload["max_tokens"] == 1200 and payload["temperature"] == 0.0
         return reply(next(actions))
     return provider, calls
 

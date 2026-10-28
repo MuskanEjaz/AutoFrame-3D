@@ -1,4 +1,4 @@
-# Task 4 — bounded live integration preparation
+# Task 4 â€” bounded live integration preparation
 
 Prepared 2026-10-23. **Live integration: BLOCKED / NOT EXECUTED.**
 Task 3's public-rule research is complete; private access, credit balance,
@@ -22,15 +22,7 @@ This preparation is not a model-quality result or an eligibility certificate.
   yielded no results. Model availability, pricing and JSON support remain
   UNCONFIRMED; verify in the official console/catalog before execution. Do not
   silently switch model or provider.
-- The request uses `response_format: {type: json_object}` plus `guided_json`.
-  The [current structured-output guide](https://docs.tokenfactory.nebius.com/ai-models-inference/json)
-  documents schema output through `response_format` with `json_schema`, and
-  arbitrary JSON through `json_object`; support depends on model capability.
-  No current documentation for `guided_json` was found in this review. This is
-  a compatibility question, not an observed provider failure. Resolve against
-  the chosen model's official documentation/support before spending; no
-  speculative runtime change was made. Local Pydantic action/citation validation
-  remains active regardless of provider formatting.
+- Reviewed 2026-10-28: the [official structured-output guide](https://docs.tokenfactory.nebius.com/ai-models-inference/json) documents `response_format` with `type: json_schema` and a `json_schema` field containing the schema (Python example). Investigation now uses that documented form instead of undocumented `guided_json` plus `json_object`. Schema remains in the prompt; local Pydantic action/citation validation and all limits remain unchanged. Mocked request assertions cover the exact schema, absence of guided_json, output cap and transport limits. This resolves request syntax against documentation, not actual model compatibility. The public catalog still returned no readable listing; the configured model ID is preserved and exact-model JSON support remains UNVERIFIED.
 
 ## Prepared first item and budget
 
@@ -120,3 +112,28 @@ are evidence to review before any separately approved larger evaluation.
 Actual live response, live token usage/timing and human-reviewed live answer:
 **UNAVAILABLE**. Task 4 preparation is ready for access/compatibility review;
 Task 4 completion requires the approved live attempt and manual review above.
+
+## Current release preparation — 2026-10-28
+
+The user reports active billing, a $25 balance, a public NVIDIA Nemotron-3.5-Lightning endpoint, and displayed per-million-token prices of $0.06 input, $0.03 cached input and $0.24 output. These supersede the earlier unknown-balance context; no console access or inference was performed here. Keep live integration/model quality UNVERIFIED.
+
+Cost preparation for dev-01: three requests maximum, six read-only tools total, 60 seconds overall, 20 seconds/request, 1,200 output tokens/request (3,600 total), 32 KiB provider body/request and 12,000 content characters/request. Question input is capped at 1,500 characters; tools expose only finite committed cards. Largest serialized card measured here: 1,460 bytes. A deliberately loose input proxy counts both prior responses at 48,000 UTF-8 bytes each, all six cards at every turn, and 2,000 bytes per turn for framing, yielding 334,020 input bytes over three requests. Assuming at most one billed input token per byte gives about $0.02091 including maximum output; budget $0.03 for this one attempt with no cache discount. This is a conservative estimate, not an enforced currency/token bound: exact tokenizer, provider framing/accounting, reasoning billing and price changes are uncertain. No retry or provider swap is allowed.
+
+Use a fresh GUID directory for capture/report, explicitly set the preserved model ID, and use the masked-key command below only after live execution is authorized. The script never loads dotenv and refuses existing output files.
+
+```powershell
+$env:AUTOFRAME3D_SKIP_DOTENV = '1'
+$env:NEBIUS_MODEL = 'nvidia/Nemotron-3_5-Lightning'
+$livePath = Join-Path 'artifacts' ('live-dev01-' + [guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory -Path $livePath -ErrorAction Stop | Out-Null
+$integrationKey = Read-Host 'Nebius API key' -AsSecureString
+try {
+  $env:NEBIUS_API_KEY = [System.Net.NetworkCredential]::new('', $integrationKey).Password
+  & .\.venv\Scripts\python.exe -B scripts/evaluate_investigation.py --live --split development --item dev-01 --capture (Join-Path $livePath 'capture.jsonl') --report (Join-Path $livePath 'report.json')
+} finally {
+  Remove-Item Env:NEBIUS_API_KEY -ErrorAction SilentlyContinue
+  Remove-Variable integrationKey -ErrorAction SilentlyContinue
+}
+```
+
+The reported `--splitdevelopment` typo is absent from this merged checkout; existing examples already use `--split development`. No historical evidence was changed. The committed adapter lacks `_refine_icp`, required by the historical saved-pose fitting runner. Do not reconstruct it from embedded source or run registration. Saved selection diagnosis remains reproducible from hash-verified records; fitting reproduction additionally needs missing research code and raw data. No project-level LICENSE or license declaration exists in pyproject.toml; owner license selection remains a release blocker. Third-party notices remain intact. Synthetic playback is a reference-guided animation, not automatic pose recovery.
