@@ -179,7 +179,17 @@ maximum**. It stops subsequent items on HTTP/configuration rejection, performs
 no retries and writes fresh GUID output under `artifacts/release-live-*/`.
 Do not rerun failed items under the same authorization. Review actual answers
 and cards; summary/exit status does not certify semantics. [Review checklist](docs/final-release-verification.md).
-This launcher was tested with offline transports, not executed live in this task.
+This launcher was tested with offline transports, not executed live in that release task.
+
+For the next explicitly authorized **investigation-only** scope, use
+`& ./scripts/run_release_validation.ps1 -InvestigationOnly`. This skips the
+separate diagnostic and attempts only dev-01/dev-02/dev-13 once each, with a
+**nine-request maximum** and unchanged investigation limits/stop conditions.
+It records the diagnostic as not run and creates a fresh GUID output directory.
+The previous user-run diagnostic received a provider response but truncated
+at 128 completion tokens; that remains a failed diagnostic, not valid output
+or grounded-answer evidence. The default command above retains its diagnostic
+gate. Do not run both commands for this authorization or retry failed items.
 
 ## Judge walkthrough
 

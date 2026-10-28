@@ -1,4 +1,5 @@
-# One diagnostic, then dev-01/dev-02/dev-13 only if it succeeds; at most ten requests.
+# Default: diagnostic then three items (10 requests max). Explicit -InvestigationOnly: three items (9 max).
+param([switch]$InvestigationOnly)
 & {
     $probeRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
     $probeSecureKey = $null
@@ -16,6 +17,7 @@
         $probeStartInfo = New-Object System.Diagnostics.ProcessStartInfo
         $probeStartInfo.FileName = Join-Path $probeRoot '.venv/Scripts/python.exe'
         $probeStartInfo.Arguments = '-B scripts/validate_release_live.py --live'
+        if ($InvestigationOnly) { $probeStartInfo.Arguments += ' --investigation-only' }
         $probeStartInfo.WorkingDirectory = $probeRoot
         $probeStartInfo.UseShellExecute = $false
         $probeStartInfo.CreateNoWindow = $true
