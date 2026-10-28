@@ -2,7 +2,7 @@
 
 The default workspace is **Pose Inspection**, a clearly labelled synthetic robot/gripper demo showing an incorrect CAD overlay and a reference-guided correction animation. It performs no registration or automatic pose recovery. See [POSE_INSPECTION.md](POSE_INSPECTION.md) for coordinate conventions, synthetic provenance and UI verification.
 
-The separate **Recorded Benchmark** tab uses actual saved T-LESS geometry, poses and metrics, benchmark GT reveal, method comparison, copilot and evidence export. The two display geometries are bundled with T-LESS attribution; no full dataset or Nebius key is required. See [DEMO.md](DEMO.md) for launch commands, asset regeneration, current verification and limits. No registration is run by opening the recorded flow. Live Nebius/NVIDIA integration remains **UNVERIFIED**.
+The separate **Recorded Benchmark** tab uses actual saved T-LESS geometry, poses and metrics, benchmark GT reveal, method comparison, copilot and evidence export. The two display geometries are bundled with T-LESS attribution; no full dataset or Nebius key is required. See [DEMO.md](DEMO.md) for launch commands, asset regeneration, current verification and limits. No registration is run by opening the recorded flow. Live Nebius/NVIDIA explanation completed for **dev-01 only**; the original answer was incomplete and updated prompt quality remains **UNVERIFIED**. See [submission brief](docs/submission-ready.md) for evidence, scope and remaining release tasks.
 
 **Break the pose before it breaks the robot.** AutoFrame 3D generates seeded synthetic CAD-to-scan registration experiments, measures alignment quality separately from true pose error, searches for accepted-but-wrong alignments, and exports cases that can be recomputed and replayed.
 

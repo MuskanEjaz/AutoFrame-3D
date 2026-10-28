@@ -1,0 +1,91 @@
+{
+  "source": "artifacts/live-dev01-fixed-0353095321b34f2c9861df8fe433e987/capture.jsonl",
+  "source_sha256": "24e4f0c04335c69b881d38a6fcb6758948f65ffd514a331a9456061243d6eff5",
+  "tested_code_state": "88a3e73 plus uncommitted named-envelope patch in investigation.py and diagnose_nebius.py; not a run of the later release commit",
+  "scope": "dev-01 only; 14 development items unattempted; no semantic overall pass",
+  "requests": 3,
+  "tools": 2,
+  "runtime_seconds": 12.373640799996792,
+  "checks": {
+    "schema": "pass",
+    "retrieval_coverage": "pass",
+    "citation_validity": "pass",
+    "tool_trace": "pass",
+    "numerical_accuracy": "structured_pass_prose_review_required"
+  },
+  "human_review": "Original prose omitted the RMSE acceptance criterion and GT-mask/GT-scoring dependence; incomplete explanation.",
+  "updated_prompt_quality": "UNVERIFIED; not rerun",
+  "operator_confirmed_diagnosis": "Earlier credential contained control characters; named json_schema name/schema envelope resolved HTTP 422. Retained sanitized failures alone do not identify the original rejected parameter.",
+  "preserved_local_history": [
+    {
+      "path": "artifacts/diagnostic-dev01-a38c339b72c0426f985944edd50b1eb7/capture.jsonl",
+      "sha256": "d69187f718d6e051c41dadbfbfe43bef8b0e4e14328376770a0427cb636e62be",
+      "status": "error",
+      "trace_events": [
+        "provider_start",
+        "failure"
+      ]
+    },
+    {
+      "path": "artifacts/live-dev01-cc134630521a42f8bcf70d2b9a4e5ef5/capture.jsonl",
+      "sha256": "320a95822b22e59b9bd424ecbe122673bf5774d2feb904fef037f2f9f9291e84",
+      "status": "error",
+      "trace_events": [
+        "provider_start"
+      ]
+    },
+    {
+      "path": "artifacts/live-dev01-fixed-0353095321b34f2c9861df8fe433e987/capture.jsonl",
+      "sha256": "24e4f0c04335c69b881d38a6fcb6758948f65ffd514a331a9456061243d6eff5",
+      "status": "complete",
+      "trace_events": [
+        "provider_start",
+        "provider_result",
+        "tool_attempt",
+        "tool_result",
+        "provider_start",
+        "provider_result",
+        "tool_attempt",
+        "tool_result",
+        "provider_start",
+        "provider_result"
+      ]
+    },
+    {
+      "path": "artifacts/nebius-http-probe-02a56cc4dc6142b8ac150bd01b8f23bf/diagnostic.json",
+      "sha256": "fe3171b7370e0578e2705c458f805af42fe45856df7a747918e8c3fc26ebf174",
+      "stage": "http_rejection",
+      "http_status": 422
+    },
+    {
+      "path": "artifacts/nebius-http-probe-2d26ad906fdb4143bcebad03dc7d8716/diagnostic.json",
+      "sha256": "fe3171b7370e0578e2705c458f805af42fe45856df7a747918e8c3fc26ebf174",
+      "stage": "http_rejection",
+      "http_status": 422
+    },
+    {
+      "path": "artifacts/nebius-http-probe-6c9c577dd7b2490bae1ec784202cd35d/diagnostic.json",
+      "sha256": "f3b9b6d3724206c57a6844fc11b041d284f4b12e9c83b695c3fc2a9ed4644c51",
+      "stage": "http_rejection",
+      "http_status": 400
+    },
+    {
+      "path": "artifacts/nebius-http-probe-9e02428fd3644341a785d7ab37e32395/diagnostic.json",
+      "sha256": "f3b9b6d3724206c57a6844fc11b041d284f4b12e9c83b695c3fc2a9ed4644c51",
+      "stage": "http_rejection",
+      "http_status": 400
+    },
+    {
+      "path": "artifacts/nebius-http-probe-e68ec425f9324ca99ef9a5075af5d420/diagnostic.json",
+      "sha256": "f3b9b6d3724206c57a6844fc11b041d284f4b12e9c83b695c3fc2a9ed4644c51",
+      "stage": "http_rejection",
+      "http_status": 400
+    },
+    {
+      "path": "artifacts/nebius-http-probe-e9bc16acf1bb497da41db4c74363fd52/diagnostic.json",
+      "sha256": "fa6d35bb200251d386cd2da6534b3629ef5a88d8deb6a94866694a6a2be3ff51",
+      "stage": "finish_reason",
+      "http_status": null
+    }
+  ]
+}

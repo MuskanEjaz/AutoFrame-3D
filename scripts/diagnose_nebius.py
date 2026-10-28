@@ -22,7 +22,7 @@ def main(argv=None):
     # Keep suspect schema and request fields, replace evidence/user prompts with
     # one constant instruction and reduce output to 128 tokens. Never run tools.
     payload = {"model": nebius.DEFAULT_MODEL, "temperature": 0.0, "max_tokens": 128,
-               "response_format": {"type": "json_schema", "json_schema": investigation.Action.model_json_schema()},
+               "response_format": {"type": "json_schema", "json_schema": {"name": "investigation_action", "schema": investigation.Action.model_json_schema()}},
                "messages": [{"role": "user", "content":
                    'Return JSON: {"kind":"tools","calls":[],"findings":[]}'}]}
     try:

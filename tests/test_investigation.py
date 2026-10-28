@@ -35,7 +35,7 @@ def scripted(actions):
     def provider(payload, **limits):
         calls.append((payload, limits))
         assert limits["timeout"] <= 20 and limits["max_response_bytes"] == 32768
-        assert payload["response_format"] == {"type": "json_schema", "json_schema": inv.Action.model_json_schema()}
+        assert payload["response_format"] == {"type": "json_schema", "json_schema": {"name": "investigation_action", "schema": inv.Action.model_json_schema()}}
         assert "guided_json" not in payload
         assert payload["max_tokens"] == 1200 and payload["temperature"] == 0.0
         return reply(next(actions))
@@ -232,9 +232,8 @@ def test_dispatch_failure_stages(action, stage):
     assert result["status"] == "error" and trace[-1]["stage"] == stage
 
 
-def test_documented_direct_schema_reaches_transport(monkeypatch):
-    # Nebius's Python example passes model_json_schema() directly, unlike the
-    # named envelope also illustrated on the same documentation page.
+def test_verified_named_schema_reaches_transport(monkeypatch):
+    # Preserve the named envelope used by the successful live dev-01 capture.
     monkeypatch.setenv("NEBIUS_API_KEY", "secret")
     seen = []
     def fake(request, **kwargs):
@@ -242,8 +241,8 @@ def test_documented_direct_schema_reaches_transport(monkeypatch):
         return io.BytesIO(json.dumps(reply(tools())).encode())
     monkeypatch.setattr(nebius.urllib.request, "urlopen", fake)
     inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion)
-    schema = seen[0]["response_format"]["json_schema"]
-    assert seen[0]["response_format"] == {"type": "json_schema", "json_schema": inv.Action.model_json_schema()}
+    schema = seen[0]["response_format"]["json_schema"]["schema"]
+    assert seen[0]["response_format"] == {"type": "json_schema", "json_schema": {"name": "investigation_action", "schema": inv.Action.model_json_schema()}}
     assert schema["additionalProperties"] is False
     assert schema["$defs"]["Finding"]["properties"]["evidence_ids"]["minItems"] == 1
     assert schema["$defs"]["ToolCall"]["properties"]["arguments"]["additionalProperties"] == {"type": "string"}
@@ -301,7 +300,7 @@ def test_single_manual_probe_is_bounded_and_private(monkeypatch, tmp_path, capsy
     assert len(attempts) == 1
     payload = attempts[0]
     assert payload["model"] == nebius.DEFAULT_MODEL and payload["max_tokens"] == 128
-    assert payload["response_format"]["json_schema"] == inv.Action.model_json_schema()
+    assert payload["response_format"]["json_schema"] == {"name": "investigation_action", "schema": inv.Action.model_json_schema()}
     assert "reasoning_effort" not in payload
     saved = list(tmp_path.glob("artifacts/nebius-http-probe-*/diagnostic.json"))
     assert len(saved) == 1 and json.loads(saved[0].read_text())["http_status"] == 400
@@ -326,3 +325,16 @@ def test_http_body_limits_and_malformed_errors(monkeypatch, raw):
         nebius.chat_completion({}, timeout=1)
     assert reads == [4097]
     assert caught.value.diagnostic == {"stage": "http_rejection", "http_status": 400, "provider_code": None}
+
+
+@pytest.mark.parametrize("character", [chr(n) for n in range(33)] + [chr(127), chr(133), chr(160)])
+def test_malformed_credentials_rejected_before_network(monkeypatch, character):
+    key = "credential" + character + "suffix"
+    monkeypatch.setattr(nebius.os, "environ", {"NEBIUS_API_KEY": key})
+    monkeypatch.setattr(nebius.urllib.request, "Request", lambda *a, **k: pytest.fail("Must reject before constructing headers"))
+    monkeypatch.setattr(nebius.urllib.request, "urlopen", lambda *a, **k: pytest.fail("No network allowed"))
+    with pytest.raises(nebius.ProviderError) as caught:
+        nebius.chat_completion({})
+    assert caught.value.diagnostic == {"stage": "invalid_credentials"}
+    assert key not in str(caught.value)
+    assert os.environ["NEBIUS_API_KEY"] == key

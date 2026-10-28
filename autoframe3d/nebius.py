@@ -120,8 +120,12 @@ def model_name():
 
 def chat_completion(payload, *, timeout=20.0, max_response_bytes=65536):
     key = os.environ.get("NEBIUS_API_KEY")
-    if not configured():
+    if not key:
         raise RuntimeError("NEBIUS_API_KEY is not configured")
+    # Reject whitespace, controls (including CR/LF/DEL), and non-ASCII header
+    # values unchanged. Never trim/repair or include the credential in errors.
+    if any(ord(char) < 33 or ord(char) > 126 for char in key):
+        raise ProviderError("invalid_credentials")
     # Fixed official endpoint prevents model output/config from redirecting credentials.
     request = urllib.request.Request(
         NEBIUS_BASE_URL + "chat/completions", data=json.dumps(payload).encode(),

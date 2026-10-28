@@ -1,5 +1,14 @@
 # Nebius HTTP 400 diagnostic
 
+Update 2026-10-28: subsequent operator-confirmed testing found control characters
+in an earlier key and HTTP 422 resolved by the named name/schema envelope.
+The existing envelope edits are now preserved for release. A successful dev-01
+run used 88a3e73 plus that uncommitted patch, not the later release commit.
+See [current submission brief](submission-ready.md) and
+[reviewed evidence](../audit_evidence/live_integration_20261028/verification.json).
+The offline findings below describe the earlier diagnostic checkpoint, not
+current compatibility. The probe now uses the named envelope.
+
 The preserved diagnostic-dev01-a38c339b72c0426f985944edd50b1eb7 capture
 confirms first-request HTTP 400, no tools, and no retained provider code.
 The rejected field and root cause remain unknown. Neither failed capture

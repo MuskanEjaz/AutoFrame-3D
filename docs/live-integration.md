@@ -1,3 +1,10 @@
+> Current release update (2026-10-28): live dev-01 completed using 88a3e73
+> plus an uncommitted named-schema envelope patch. This verifies one bounded
+> integration, not overall prose quality. Original answer missed RMSE and GT
+> qualifications; updated prompt quality remains UNVERIFIED. See
+> [submission brief](submission-ready.md) and [reviewed evidence](../audit_evidence/live_integration_20261028/verification.json).
+> Earlier no-live/no-key statements below are historical checkpoints.
+
 # Task 4 — bounded live integration preparation
 
 Prepared 2026-10-23. **Live integration: BLOCKED / NOT EXECUTED.**
