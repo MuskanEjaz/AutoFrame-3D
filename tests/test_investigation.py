@@ -198,7 +198,10 @@ def test_http_error_allowlist_and_trace(monkeypatch, code, expected):
     trace = []
     result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion, trace=trace)
     assert result["status"] == "error" and len(calls) == 1
-    assert trace[-1] == {"event": "failure", "turn": 1, "stage": "http_rejection", "http_status": 400, "provider_code": expected}
+    expected_trace = {"event": "failure", "turn": 1, "stage": "http_rejection", "http_status": 400, "provider_code": expected}
+    if expected:
+        expected_trace["validation_details"] = [{"code": expected}]
+    assert trace[-1] == expected_trace
     assert "secret" not in json.dumps(trace) + json.dumps(result)
 
 
@@ -244,3 +247,82 @@ def test_documented_direct_schema_reaches_transport(monkeypatch):
     assert schema["additionalProperties"] is False
     assert schema["$defs"]["Finding"]["properties"]["evidence_ids"]["minItems"] == 1
     assert schema["$defs"]["ToolCall"]["properties"]["arguments"]["additionalProperties"] == {"type": "string"}
+
+
+@pytest.mark.parametrize("body,expected", [
+    ({"error": {"param": "response_format.json_schema.schema", "type": "invalid_request_error",
+                "code": "invalid_parameter", "message": "Invalid schema: echoed secret", "input": "secret"}},
+     [{"location": ["response_format", "json_schema", "schema"], "type": "invalid_request_error",
+       "code": "invalid_parameter", "reason": "invalid schema"}]),
+    ({"detail": [{"loc": ["body", "response_format", "json_schema", "schema"], "type": "missing",
+                  "msg": "Field required", "input": {"Authorization": "Bearer secret"}, "ctx": "secret"}]},
+     [{"location": ["body", "response_format", "json_schema", "schema"], "type": "missing",
+       "reason": "required field missing"}]),
+    ({"error": {"param": "messages.secret", "type": "secret", "code": "Bearer secret",
+                "message": "secret prompt text"}}, []),
+    ({"detail": [None, "secret", {"loc": ["body", {"input": "secret"}], "msg": "secret"}]}, []),
+    ({"error": {"param": "schema", "type": "missing", "message": "Bearer secret"}},
+     [{"location": ["schema"], "type": "missing"}]),
+])
+def test_sanitized_http_400_details(monkeypatch, body, expected):
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    attempts = []
+    def reject(*a, **k):
+        attempts.append(1)
+        raise nebius.urllib.error.HTTPError("secret", 400, "secret", {}, io.BytesIO(json.dumps(body).encode()))
+    monkeypatch.setattr(nebius.urllib.request, "urlopen", reject)
+    trace = []
+    result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion, trace=trace)
+    assert result["status"] == "error" and result["tool_executions"] == 0 and len(attempts) == 1
+    assert trace[-1]["http_status"] == 400
+    assert trace[-1].get("validation_details", []) == expected
+    assert "secret" not in json.dumps(trace)
+
+
+def test_error_detail_bounds_and_credential_collision(monkeypatch):
+    monkeypatch.setenv("NEBIUS_API_KEY", "schema")
+    assert nebius.http_error_details({"error": {"param": "schema"}}) == []
+    assert len(nebius.http_error_details({"detail": [{"type": "missing"}] * 50})) == 4
+    assert nebius.http_error_details({"error": {"param": "x" * 10000, "message": "x" * 10000}}) == []
+
+
+def test_single_manual_probe_is_bounded_and_private(monkeypatch, tmp_path, capsys):
+    from scripts import diagnose_nebius as probe
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    attempts = []
+    def reject(request, **limits):
+        attempts.append(json.loads(request.data))
+        assert limits["timeout"] == 20
+        raise nebius.urllib.error.HTTPError("secret", 400, "secret", {}, io.BytesIO(
+            b'{"detail":[{"loc":["body","response_format"],"type":"missing","msg":"Field required","input":"secret"}]}'))
+    monkeypatch.setattr(nebius.urllib.request, "urlopen", reject)
+    assert probe.main(["--live"]) == 0
+    assert len(attempts) == 1
+    payload = attempts[0]
+    assert payload["model"] == nebius.DEFAULT_MODEL and payload["max_tokens"] == 128
+    assert payload["response_format"]["json_schema"] == inv.Action.model_json_schema()
+    assert "reasoning_effort" not in payload
+    saved = list(tmp_path.glob("artifacts/nebius-http-probe-*/diagnostic.json"))
+    assert len(saved) == 1 and json.loads(saved[0].read_text())["http_status"] == 400
+    assert "secret" not in saved[0].read_text() + capsys.readouterr().out
+    with pytest.raises(SystemExit):
+        probe.main([])
+    assert len(attempts) == 1
+
+
+@pytest.mark.parametrize("raw", [b"not JSON secret", b'{"error":{"message":"' + b"secret" * 1000 + b'"}}'])
+def test_http_body_limits_and_malformed_errors(monkeypatch, raw):
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    reads = []
+    class Body(io.BytesIO):
+        def read(self, size=-1):
+            reads.append(size)
+            return super().read(size)
+    def reject(*a, **k):
+        raise nebius.urllib.error.HTTPError("secret", 400, "secret", {}, Body(raw))
+    monkeypatch.setattr(nebius.urllib.request, "urlopen", reject)
+    with pytest.raises(nebius.ProviderError) as caught:
+        nebius.chat_completion({}, timeout=1)
+    assert reads == [4097]
+    assert caught.value.diagnostic == {"stage": "http_rejection", "http_status": 400, "provider_code": None}

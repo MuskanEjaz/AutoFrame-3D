@@ -16,6 +16,79 @@ class ProviderError(RuntimeError):
         self.diagnostic = {"stage": stage, **details}
 
 
+# Provider strings are untrusted, including locations and validation messages.
+# Emit only known vocabulary and fixed reason labels, never echoed values.
+ERROR_CODES = frozenset({
+    "invalid_request_error", "authentication_error", "permission_denied",
+    "rate_limit_exceeded", "model_not_found", "insufficient_quota", "server_error",
+    "validation_error", "invalid_parameter", "unsupported_parameter", "invalid_value",
+    "missing", "value_error", "type_error", "extra_forbidden", "string_type",
+    "dict_type", "list_type", "literal_error", "int_type", "greater_than_equal",
+    "less_than_equal", "json_invalid", "model_attributes_type"})
+ERROR_FIELDS = frozenset({
+    "body", "query", "response_format", "json_schema", "schema", "name", "strict",
+    "type", "properties", "additionalProperties", "$defs", "$ref", "required",
+    "items", "enum", "title", "minLength", "maxLength", "minItems", "maxItems",
+    "Action", "ToolCall", "Finding", "kind", "calls", "findings", "arguments",
+    "text", "evidence_ids", "model", "messages", "role", "content", "temperature",
+    "max_tokens", "max_completion_tokens", "reasoning_effort", "extra_body",
+    "chat_template_kwargs", "enable_thinking", "reasoning_budget"})
+
+
+def http_error_details(parsed):
+    import re
+
+    def allowed(value, vocabulary):
+        key = os.environ.get("NEBIUS_API_KEY", "")
+        return isinstance(value, str) and value in vocabulary and not (key and key in value)
+
+    if not isinstance(parsed, dict):
+        return []
+    entries = []
+    if isinstance(parsed.get("error"), dict):
+        entries.append(parsed["error"])
+    if isinstance(parsed.get("detail"), list):
+        entries.extend(parsed["detail"][:4])
+    output = []
+    for entry in entries[:4]:
+        if not isinstance(entry, dict):
+            continue
+        clean = {}
+        for field in ("type", "code"):
+            value = entry.get(field)
+            if allowed(value, ERROR_CODES):
+                clean[field] = value
+        location = entry.get("loc", entry.get("param"))
+        if isinstance(location, str) and len(location) <= 200:
+            location = re.split(r"[./\[\]]+", location)
+            location = [part for part in location if part]
+        if isinstance(location, (list, tuple)) and 0 < len(location) <= 16:
+            if all(allowed(part, ERROR_FIELDS) or type(part) is int and 0 <= part <= 10000
+                   for part in location):
+                clean["location"] = list(location)
+        message = entry.get("msg", entry.get("message"))
+        # Recognize only fixed validation prefixes; never copy message suffixes,
+        # ctx/input fields, enum alternatives, values, or provider prose.
+        if isinstance(message, str) and len(message) <= 1000:
+            for prefix, reason in (
+                ("field required", "required field missing"),
+                ("extra inputs are not permitted", "extra field forbidden"),
+                ("input should be a valid", "invalid value type or format"),
+                ("input should be", "value violates constraint"),
+                ("unsupported parameter", "unsupported parameter"),
+                ("unknown parameter", "unknown parameter"),
+                ("invalid schema", "invalid schema"),
+                ("invalid json schema", "invalid schema"),
+                ("value error,", "value validation failed"),
+            ):
+                if message.lower().startswith(prefix):
+                    clean["reason"] = reason
+                    break
+        if clean:
+            output.append(clean)
+    return output
+
+
 def validate_response(body):
     try:
         choice = body["choices"][0]
@@ -69,19 +142,19 @@ def chat_completion(payload, *, timeout=20.0, max_response_bytes=65536):
             validate_response(body)
             result.put((body, None))
         except urllib.error.HTTPError as error:
-            code = None
+            details = []
             try:
                 with error:
                     raw = error.read(4097)
-                parsed = json.loads(raw) if len(raw) <= 4096 else {}
-                candidate = parsed.get("error", {}).get("code")
-                if isinstance(candidate, str) and candidate in {
-                    "invalid_request_error", "authentication_error", "permission_denied",
-                    "rate_limit_exceeded", "model_not_found", "insufficient_quota", "server_error"}:
-                    code = candidate
+                if len(raw) <= 4096:
+                    details = http_error_details(json.loads(raw))
             except Exception:
                 pass
-            result.put((None, ProviderError("http_rejection", http_status=error.code, provider_code=code)))
+            code = next((item["code"] for item in details if "code" in item), None)
+            fields = {"http_status": error.code, "provider_code": code}
+            if details:
+                fields["validation_details"] = details
+            result.put((None, ProviderError("http_rejection", **fields)))
         except Exception as error:
             # Do not expose provider bodies, request objects, or credentials.
             timed_out = isinstance(error, TimeoutError) or (
