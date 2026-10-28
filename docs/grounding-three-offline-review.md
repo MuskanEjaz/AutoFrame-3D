@@ -185,3 +185,17 @@ tests/test_answer_evaluation.py -q` passed, **109 passed in 2.29 seconds**;
 live validation, dev-01 completeness issue, license authorization, owner
 eligibility/attribution confirmation, judge access and final video/submission
 approval remain blockers. Do not treat this offline follow-up as live validation.
+
+
+## Resume attempt (2026-10-28)
+
+Started from clean release branch `release/finish-20261028` at
+`445444dd872758eba388b2d893cb045edb18fee3`. Credential availability was
+checked without reading files or displaying values: both PowerShell and the
+Python process returned unavailable. Per the bounded-run instruction, the live
+step stopped before starting either item. No provider requests were made, no
+new capture/report directory was created, and all prior captures remain intact.
+Billing was not checked. No live outcomes or manual response verdicts exist for
+this resume attempt. The requested dev-02/dev-13 run remains blocked on a
+credential available to the evaluator process; configure it there, then run
+exactly the two existing item IDs once each with the existing limits.
