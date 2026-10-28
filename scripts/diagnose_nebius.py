@@ -19,9 +19,16 @@ def main(argv=None):
         parser.error("NEBIUS_API_KEY must already be configured; no dotenv is loaded")
     directory = Path("artifacts") / ("nebius-http-probe-" + uuid4().hex)
     directory.mkdir(parents=True, exist_ok=False)
+    result = run_probe(directory)
+    print(json.dumps({"output": str(directory / "diagnostic.json"), "diagnostic": result}))
+    return 0  # Report creation is not inference success; inspect stage.
+
+
+def run_probe(directory):
+    """One transport call; caller must create a fresh output directory."""
     # Keep suspect schema and request fields, replace evidence/user prompts with
     # one constant instruction and reduce output to 128 tokens. Never run tools.
-    payload = {"model": nebius.DEFAULT_MODEL, "temperature": 0.0, "max_tokens": 128,
+    payload = {"model": nebius.model_name(), "temperature": 0.0, "max_tokens": 128,
                "response_format": {"type": "json_schema", "json_schema": {"name": "investigation_action", "schema": investigation.Action.model_json_schema()}},
                "messages": [{"role": "user", "content":
                    'Return JSON: {"kind":"tools","calls":[],"findings":[]}'}]}
@@ -38,8 +45,7 @@ def main(argv=None):
     with (directory / "diagnostic.json").open("x", encoding="utf-8") as handle:
         json.dump(result, handle, indent=2)
         handle.write("\n")
-    print(json.dumps({"output": str(directory / "diagnostic.json"), "diagnostic": result}))
-    return 0
+    return result
 
 
 if __name__ == "__main__":

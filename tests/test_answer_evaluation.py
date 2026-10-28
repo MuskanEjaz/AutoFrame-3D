@@ -185,3 +185,28 @@ def test_unavailable_comparison_is_authoritative_but_does_not_satisfy_required_c
     unavailable = records["comparison-unavailable:tless-s000001-i000001-g00-o02"]
     assert unavailable["status"] == "unavailable" and "baseline" not in unavailable
     assert "comparison:tless-s000001-i000001-g00-o02" not in records
+
+
+@pytest.mark.parametrize("status", ["complete", "insufficient"])
+def test_unavailable_evidence_cannot_complete_requested_comparison(status):
+    tools, records = ev.corpus()
+    item = next(q for q in json.loads(ev.RUBRIC.read_text(encoding="utf-8"))["questions"]
+                if q["split"] == "development" and q["id"] == "dev-02")
+    card = records["comparison-unavailable:tless-s000001-i000001-g00-o02"]
+    row = fixture("supported")
+    row["item_id"] = item["id"]
+    row["response"].update(status=status, question=item["question"], evidence=[card], identity=tools.identity,
+        findings=[{"kind": "limitation", "text": card["message"], "evidence_ids": [card["id"]]}])
+    row.pop("trace", None)
+    result = score(row)
+    assert result["task_completion"] == "fail"
+    assert result["retrieval_coverage"] == result["numerical_accuracy"] == "fail"
+
+
+def test_provider_error_is_not_abstention_for_requested_missing_measurements():
+    row = fixture("appropriate_insufficient")
+    row["response"].update(status="error", findings=[], evidence=[],
+        operational_error={"stage": "http_rejection", "http_status": 401})
+    row.pop("trace", None)
+    result = score(row)
+    assert result["task_completion"] == result["expected_abstention"] == "fail"

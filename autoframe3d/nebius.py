@@ -10,6 +10,16 @@ NEBIUS_BASE_URL = "https://api.tokenfactory.nebius.com/v1/"
 DEFAULT_MODEL = "nvidia/Nemotron-3_5-Lightning"
 
 
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, request, response, code, message, headers, new_url):
+        # A redirect must not create another request or forward authorization.
+        return None
+
+
+def open_response(request, *, timeout):
+    return urllib.request.build_opener(NoRedirect()).open(request, timeout=timeout)
+
+
 class ProviderError(RuntimeError):
     def __init__(self, stage, **details):
         super().__init__("Nebius provider failed or returned an invalid/incomplete response")
@@ -144,7 +154,7 @@ def chat_completion(payload, *, timeout=20.0, max_response_bytes=65536):
 
     def send():
         try:
-            with urllib.request.urlopen(request, timeout=timeout) as response:
+            with open_response(request, timeout=timeout) as response:
                 raw = response.read(max_response_bytes + 1)
             if len(raw) > max_response_bytes:
                 raise ProviderError("response_size")

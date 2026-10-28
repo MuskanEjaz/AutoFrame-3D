@@ -145,7 +145,7 @@ def test_transport_request_and_output_limits_without_live_network(monkeypatch):
     def fake(request, timeout):
         seen.append(request)
         return io.BytesIO(json.dumps(reply(final("test"))).encode())
-    monkeypatch.setattr(nebius.urllib.request, "urlopen", fake)
+    monkeypatch.setattr(nebius, "open_response", fake)
     nebius.chat_completion({"model": nebius.DEFAULT_MODEL}, timeout=1)
     assert seen[0].full_url == "https://api.tokenfactory.nebius.com/v1/chat/completions"
     with pytest.raises(RuntimeError, match="invalid/incomplete"):
@@ -153,7 +153,7 @@ def test_transport_request_and_output_limits_without_live_network(monkeypatch):
     def stalled(*a, **k):
         threading.Event().wait(.1)
         return io.BytesIO(b"{}")
-    monkeypatch.setattr(nebius.urllib.request, "urlopen", stalled)
+    monkeypatch.setattr(nebius, "open_response", stalled)
     with pytest.raises(TimeoutError):
         nebius.chat_completion({}, timeout=.01)
 
@@ -177,7 +177,7 @@ def test_api_mocked_workflow_does_not_touch_registration(monkeypatch):
 ])
 def test_transport_failure_stages(monkeypatch, raw, stage):
     monkeypatch.setenv("NEBIUS_API_KEY", "secret")
-    monkeypatch.setattr(nebius.urllib.request, "urlopen", lambda *a, **k: io.BytesIO(raw))
+    monkeypatch.setattr(nebius, "open_response", lambda *a, **k: io.BytesIO(raw))
     trace = []
     result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion, trace=trace)
     assert result["status"] == "error"
@@ -193,7 +193,7 @@ def test_http_error_allowlist_and_trace(monkeypatch, code, expected):
         calls.append(1)
         raise nebius.urllib.error.HTTPError("secret", 400, "secret", {},
             io.BytesIO(json.dumps({"error": {"code": code, "message": "secret"}}).encode()))
-    monkeypatch.setattr(nebius.urllib.request, "urlopen", reject)
+    monkeypatch.setattr(nebius, "open_response", reject)
     trace = []
     result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion, trace=trace)
     assert result["status"] == "error" and len(calls) == 1
@@ -212,7 +212,7 @@ def test_network_diagnostics(monkeypatch, error, stage, status):
     monkeypatch.setenv("NEBIUS_API_KEY", "secret")
     def fail(*a, **k):
         raise error
-    monkeypatch.setattr(nebius.urllib.request, "urlopen", fail)
+    monkeypatch.setattr(nebius, "open_response", fail)
     trace = []
     result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion, trace=trace)
     assert result["status"] == status and trace[-1]["stage"] == stage
@@ -238,7 +238,7 @@ def test_verified_named_schema_reaches_transport(monkeypatch):
     def fake(request, **kwargs):
         seen.append(json.loads(request.data))
         return io.BytesIO(json.dumps(reply(tools())).encode())
-    monkeypatch.setattr(nebius.urllib.request, "urlopen", fake)
+    monkeypatch.setattr(nebius, "open_response", fake)
     inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion)
     schema = seen[0]["response_format"]["json_schema"]["schema"]
     assert seen[0]["response_format"] == {"type": "json_schema", "json_schema": {"name": "investigation_action", "schema": inv.Action.model_json_schema()}}
@@ -268,7 +268,7 @@ def test_sanitized_http_400_details(monkeypatch, body, expected):
     def reject(*a, **k):
         attempts.append(1)
         raise nebius.urllib.error.HTTPError("secret", 400, "secret", {}, io.BytesIO(json.dumps(body).encode()))
-    monkeypatch.setattr(nebius.urllib.request, "urlopen", reject)
+    monkeypatch.setattr(nebius, "open_response", reject)
     trace = []
     result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion, trace=trace)
     assert result["status"] == "error" and result["tool_executions"] == 0 and len(attempts) == 1
@@ -294,7 +294,7 @@ def test_single_manual_probe_is_bounded_and_private(monkeypatch, tmp_path, capsy
         assert limits["timeout"] == 20
         raise nebius.urllib.error.HTTPError("secret", 400, "secret", {}, io.BytesIO(
             b'{"detail":[{"loc":["body","response_format"],"type":"missing","msg":"Field required","input":"secret"}]}'))
-    monkeypatch.setattr(nebius.urllib.request, "urlopen", reject)
+    monkeypatch.setattr(nebius, "open_response", reject)
     assert probe.main(["--live"]) == 0
     assert len(attempts) == 1
     payload = attempts[0]
@@ -319,7 +319,7 @@ def test_http_body_limits_and_malformed_errors(monkeypatch, raw):
             return super().read(size)
     def reject(*a, **k):
         raise nebius.urllib.error.HTTPError("secret", 400, "secret", {}, Body(raw))
-    monkeypatch.setattr(nebius.urllib.request, "urlopen", reject)
+    monkeypatch.setattr(nebius, "open_response", reject)
     with pytest.raises(nebius.ProviderError) as caught:
         nebius.chat_completion({}, timeout=1)
     assert reads == [4097]
@@ -331,7 +331,7 @@ def test_malformed_credentials_rejected_before_network(monkeypatch, character):
     key = "credential" + character + "suffix"
     monkeypatch.setattr(nebius.os, "environ", {"NEBIUS_API_KEY": key})
     monkeypatch.setattr(nebius.urllib.request, "Request", lambda *a, **k: pytest.fail("Must reject before constructing headers"))
-    monkeypatch.setattr(nebius.urllib.request, "urlopen", lambda *a, **k: pytest.fail("No network allowed"))
+    monkeypatch.setattr(nebius, "open_response", lambda *a, **k: pytest.fail("No network allowed"))
     with pytest.raises(nebius.ProviderError) as caught:
         nebius.chat_completion({})
     assert caught.value.diagnostic == {"stage": "invalid_credentials"}
@@ -364,7 +364,8 @@ def test_single_method_comparison_returns_unavailability_without_metrics():
     assert evidence == {"id": f"comparison-unavailable:{WRONG}", "case_id": WRONG,
         "computation": "recorded_catalogue", "status": "unavailable",
         "reason_code": "requires_two_recorded_methods", "available_methods": ["baseline"],
-        "required_method_count": 2}
+        "required_method_count": 2,
+        "message": "No recorded method comparison exists for this case; only one method is available."}
     with pytest.raises(ValidationError):
         source.execute(inv.ToolCall(name=call.name, arguments={"case_id": WRONG, "method_id": "baseline"}))
     with pytest.raises(ValueError):
@@ -409,7 +410,7 @@ def test_nonstop_usage_survives_transport_without_accepting_partial_output(monke
         body = {"choices": [{"finish_reason": "length", "message": {"content": "PRIVATE partial JSON"}}],
                 "usage": usage}
         return io.BytesIO(json.dumps(body).encode())
-    monkeypatch.setattr(nebius.urllib.request, "urlopen", truncated)
+    monkeypatch.setattr(nebius, "open_response", truncated)
     trace = []
     result = inv.investigate(inv.InvestigationRequest(question="Length failure"), provider=nebius.chat_completion, trace=trace)
     assert result["status"] == "error" and result["findings"] == []
@@ -420,3 +421,21 @@ def test_nonstop_usage_survives_transport_without_accepting_partial_output(monke
     assert trace[-1] == failure
     assert not any(e["event"] == "provider_result" for e in trace)
     assert "PRIVATE" not in json.dumps(trace) + json.dumps(result)
+
+
+
+def test_provider_redirects_never_forward_credentials_or_make_another_request():
+    request = nebius.urllib.request.Request(nebius.NEBIUS_BASE_URL + "chat/completions")
+    assert nebius.NoRedirect().redirect_request(request, None, 307, "redirect", {}, "https://other.invalid") is None
+
+
+def test_probe_uses_configured_model_without_extra_request(monkeypatch, tmp_path):
+    from scripts.diagnose_nebius import run_probe
+    monkeypatch.setenv("NEBIUS_MODEL", "nvidia/Nemotron-fixture")
+    seen = []
+    def provider(payload, **limits):
+        seen.append(payload)
+        return reply(final("unused"))
+    monkeypatch.setattr(nebius, "chat_completion", provider)
+    assert run_probe(tmp_path)["stage"] == "response_received"
+    assert len(seen) == 1 and seen[0]["model"] == "nvidia/Nemotron-fixture"

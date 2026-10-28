@@ -119,7 +119,8 @@ class EvidenceTools:
             return {"id": f"comparison-unavailable:{case['case_id']}",
                     "case_id": case["case_id"], "computation": "recorded_catalogue",
                     "status": "unavailable", "reason_code": "requires_two_recorded_methods",
-                    "available_methods": methods, "required_method_count": 2}
+                    "available_methods": methods, "required_method_count": 2,
+                    "message": "No recorded method comparison exists for this case; only one method is available."}
         baseline, reciprocal = self.metrics(case, "baseline"), self.metrics(case, "reciprocal")
         return {"id": f"comparison:{case['case_id']}", "case_id": case["case_id"], "viewer_id": case["id"],
                 "computation": "recorded", "gt_instance_masks_used": True,

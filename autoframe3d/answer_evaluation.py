@@ -223,6 +223,14 @@ def evaluate_item(item, saved, tools, records):
             numeric_errors.append("Unknown/malformed numerical claim")
     result["numerical_accuracy"] = "fail" if numeric_errors else ("structured_pass_prose_review_required" if response.evidence else "unverified")
     result["errors"].extend(citation_errors + numeric_errors + trace_errors)
+    # Status alone cannot satisfy the requested task. Missing comparison cards,
+    # incorrect facts, invalid citations/provenance or broken traces stay failures.
+    if citation_errors or numeric_errors or trace_errors or (
+        response.status in {"complete", "insufficient"} and response.identity != tools.identity
+    ):
+        result["task_completion"] = "fail"
+        if item["expected_behavior"] == "abstain":
+            result["expected_abstention"] = "fail"
     return result
 
 
