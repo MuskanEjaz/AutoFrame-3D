@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-28",
+  "implementation_commit": "ceb5b60a78e3fc13257626fc004754e8251d3933",
+  "provider_requests": 0,
+  "live_verification": "unperformed: securely configured process credential unavailable",
+  "release_backend": {
+    "passed": 122,
+    "skipped": 1,
+    "reason": "Optional raw-source asset rebuild unavailable"
+  },
+  "broader_backend_excluding_saved_reciprocal_module": {
+    "passed": 168,
+    "skipped": 1,
+    "failed": 4,
+    "failures": "test_tless_api requires absent raw scene/model inputs"
+  },
+  "full_suite": "not passing: first deterministic failure is missing tless_adapter._refine_icp; initial memory-exhausted run also aborted",
+  "frontend_tests": {
+    "passed": 8
+  },
+  "production_build": {
+    "passed": true,
+    "method": "tsc -b then Vite 7.3.7; max-old-space-size=384, max-semi-space-size=2",
+    "warning": "Existing >500 kB bundle advisory"
+  },
+  "ui": "Actual production UI; key-free recorded/synthetic checks and separately intercepted fixtures; see browser.json",
+  "live_manual_review": "No new answers exist to review; original runs remain separate",
+  "screenshots_sha256": {
+    "synthetic_desktop.png": "8e3f1d90c9906c9af8fb3f298e17935050df9bf08e13df1115341796b81a6d0c",
+    "recorded_desktop.png": "4d23ecb873107b4a75d7ca011d5ac4e5a93955b37f1a33b434214bdd2c8fb94a"
+  }
+}

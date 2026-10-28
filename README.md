@@ -1,165 +1,341 @@
 # AutoFrame 3D
 
-The default workspace is **Pose Inspection**, a clearly labelled synthetic robot/gripper demo showing an incorrect CAD overlay and a reference-guided correction animation. It performs no registration or automatic pose recovery. See [POSE_INSPECTION.md](POSE_INSPECTION.md) for coordinate conventions, synthetic provenance and UI verification.
+**Inspect why a good geometric fit can still be the wrong pose.**
 
-The separate **Recorded Benchmark** tab uses actual saved T-LESS geometry, poses and metrics, benchmark GT reveal, method comparison, copilot and evidence export. The two display geometries are bundled with T-LESS attribution; no full dataset or Nebius key is required. See [DEMO.md](DEMO.md) for launch commands, asset regeneration, current verification and limits. No registration is run by opening the recorded flow. Live Nebius/NVIDIA integration remains **UNVERIFIED**.
+AutoFrame 3D gives CAD-to-scan reviewers a concrete evidence workflow: inspect
+saved geometry and poses, compare recorded registration methods, reveal
+benchmark ground truth, and export the supporting records. Two curated T-LESS
+examples make geometric acceptance and benchmark correctness visible as
+separate decisions. An experimental NVIDIA Nemotron copilot can request
+read-only evidence through Nebius Token Factory; it cannot modify poses.
 
-**Break the pose before it breaks the robot.** AutoFrame 3D generates seeded synthetic CAD-to-scan registration experiments, measures alignment quality separately from true pose error, searches for accepted-but-wrong alignments, and exports cases that can be recomputed and replayed.
+This release demonstrates recorded inspection and a synthetic preview. Current
+live inference has not been verified. It does not establish autonomous pose
+recovery, GT-free failure detection, industrial safety or broad accuracy.
 
-## Windows setup
+## Contents
 
-Open PowerShell in the repository root. Python 3.10 or newer and Node.js 20.19+ or 22.12+ are required. Check that `python` selects your intended supported interpreter before creating the environment. The Python launcher may not discover an installed interpreter; `py -3.12` failed on the tested machine even though `python` selected Python 3.12.7.
+[Problem and workflow](#problem-and-workflow) · [Screenshots](#screenshots) ·
+[Modes and features](#modes-and-features) · [Architecture](#architecture) ·
+[NVIDIA and Nebius](#nvidia-and-nebius) · [Quick start](#quick-start) ·
+[Judge walkthrough](#judge-walkthrough) · [Metrics](#metrics-and-evaluation) ·
+[Validation](#validation) · [Troubleshooting](#troubleshooting) ·
+[Repository and contributions](#repository-and-contributions) · [Licensing](#licensing)
 
-```powershell
-python --version
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --upgrade pip
-.\.venv\Scripts\python.exe -m pip install -e ".[test]"
-npm ci --prefix frontend
+## Problem and workflow
+
+Fitness and inlier RMSE describe local geometric agreement. Similar shapes,
+symmetries and partial observations can yield an accepted fit at an incorrect
+pose. AutoFrame 3D exposes the saved fit alongside a separate GT-scored pose
+metric so a reviewer can inspect the disagreement rather than treat a fit
+threshold as confidence in correctness.
+
+Reviewers can select two saved cases, orbit the geometry, toggle benchmark GT,
+compare available recorded methods, inspect thresholds/provenance and download
+evidence. Case B demonstrates a recorded reciprocal refinement with lower RMSE
+but worse benchmark correctness; it is labelled experimental and rejected for
+production promotion. Opening these views performs no registration.
+
+## Screenshots
+
+![Recorded case B with lower RMSE but incorrect benchmark pose](docs/screenshots/recorded_desktop.png)
+
+Actual production UI: saved reciprocal method, accepted geometry, incorrect
+GT-scored pose and baseline comparison. The curated case is not a benchmark-wide claim.
+
+![Synthetic gripper preview with a known reference and explicit animation labels](docs/screenshots/synthetic_desktop.png)
+
+Actual synthetic workspace: known-reference overlay and five-second preview,
+not scanner acquisition or physical robot control. [Image notices](docs/screenshots/NOTICE.md).
+
+## Modes and features
+
+| Mode | What runs | Evidence and maturity |
+| --- | --- | --- |
+| Recorded Benchmark | Saved geometry, transforms, metrics and comparison cards; JSON export | Locally verified; two curated GT-assisted examples, no fitting on open |
+| Pose Inspection | Procedural gripper, pose math, five-second interpolation, pause/reset/export | Locally verified synthetic visualization; reference is known |
+| Synthetic research experiments | Seeded generated geometry and bounded classical registration/search via CLI | Separate computation; synthetic results do not establish real sensor behavior |
+| Experimental live copilot | NVIDIA model selects approved evidence tools and produces cited prose | Implemented; historical successes and failures preserved, current live validation unperformed |
+
+The UI separates deterministic evidence-scope disclosures from generated prose.
+Operational errors are alerts, not model abstention or cached answers. An
+unavailable comparison reports that no comparison exists for that case; it does
+not fabricate a method or satisfy an evaluator's requested comparison.
+Optional raw-data/historical fitting workflows are research paths: the saved
+reciprocal runner currently lacks `_refine_icp` and is not release-verified.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    UI[React workspace] --> API[FastAPI api.py]
+    API --> REC[recorded_demo.py]
+    REC --> SAVED[Committed metrics and display geometry]
+    UI --> POSE[poseMath.ts and PoseScene.tsx]
+    API --> INV[investigation.py bounded dispatcher]
+    INV --> N[nebius.py transport]
+    N --> TF[Nebius Token Factory / NVIDIA Nemotron]
+    INV --> TOOLS[Read-only EvidenceTools]
+    TOOLS --> SAVED
+    INV --> EV[answer_evaluation.py offline review]
 ```
 
-Start the backend in one PowerShell terminal:
+`recorded_demo.py` serves saved poses/cards; it does not refit. `poseMath.ts`
+computes synthetic transforms in a shared scan frame. `investigation.py`
+validates model actions and citations before returning an answer. The offline
+evaluator checks returned records against authoritative cards; human review
+is still required for entailment, completeness, omissions and unsupported claims.
+
+## NVIDIA and Nebius
+
+The default configured NVIDIA model is **`nvidia/Nemotron-3_5-Lightning`** in
+[nebius.py](autoframe3d/nebius.py). `NEBIUS_MODEL` may select another NVIDIA
+Nemotron identifier; exact availability must be validated, not inferred from
+identifier syntax. Nebius Token Factory supplies server-side inference at
+`https://api.tokenfactory.nebius.com/v1/chat/completions`, with bearer authentication.
+The frontend never receives the key.
+
+Nemotron chooses JSON-schema actions: `list_available_cases`,
+`get_case_evidence`, `compare_recorded_methods`, `get_benchmark_summary`, then
+synthesizes or returns insufficient evidence. The application validates approved
+IDs/arguments, computes labels from frozen metrics, tracks provenance and
+requires retrieved citations. The model does not register geometry or change GT.
+
+| Investigation limit | Enforced value |
+| --- | --- |
+| Model requests per investigation | 3 maximum; no retries |
+| Read-only tool attempts | 6 total, invalid attempts included |
+| Investigation deadline | 60 seconds |
+| Request timeout | At most 20 seconds and remaining deadline |
+| Output tokens per request | 1,200 |
+| Provider response | 32 KiB maximum accepted; one extra byte detects overflow |
+| Question / parsed content | 1,500 / 12,000 characters |
+
+Strict schemas, evidence validation and operational failures remain enforced.
+HTTP redirects are rejected to avoid extra requests or credential forwarding.
+[Current primary-source compatibility review](docs/final-release-verification.md)
+records the endpoint/model/schema checks. Historical captures are not proof of
+current endpoint availability or current prose quality.
+
+## Quick start
+
+Tested host: Windows 11, Python **3.13.7**, Node **24.14.1**, npm **11.11.0**.
+Use a recent Node version compatible with Vite 7 (Node 22.12+ or 24 recommended)
+and Python 3.10+; other OS/version combinations are not verified here.
+Git, Python and Node/npm are prerequisites. No key, full T-LESS download or GPU
+is needed for bundled recorded/synthetic views.
+
+From the repository root, install an editable checkout and locked frontend:
+
+```powershell
+python -m venv .venv
+.venv/Scripts/python.exe -m pip install -e '.[test]'
+npm.cmd ci --prefix frontend
+```
+
+Keep `demo_assets/`, `audit_evidence/` and `frontend/public/assets/` beside the
+source. Standalone wheel execution is not verified: runtime data live outside
+the Python package. Prior clean setup is documented in [setup verification](docs/setup-verification.md);
+this task reused installed dependencies rather than claiming a new-machine install.
+
+Backend terminal (choose a free port; do not stop someone else's server):
 
 ```powershell
 $env:AUTOFRAME3D_SKIP_DOTENV='1'
 Remove-Item Env:NEBIUS_API_KEY -ErrorAction SilentlyContinue
-.\.venv\Scripts\python.exe -m uvicorn autoframe3d.api:app --host 127.0.0.1 --port 8000
+.venv/Scripts/python.exe -m uvicorn autoframe3d.api:app --host 127.0.0.1 --port 8000
 ```
 
-Start the dashboard in another:
+Frontend terminal:
 
 ```powershell
-npm run dev --prefix frontend
+npm.cmd run dev --prefix frontend -- --port 5173 --strictPort
 ```
 
-Open <http://127.0.0.1:5173>. The local API health check is <http://127.0.0.1:8000/api/health>.
+Open <http://127.0.0.1:5173>. The Vite development proxy expects API port 8000.
+Stop your own servers with Ctrl+C. Actual release UI verification used separate
+ports and a production bundle; it did not attach to another checkout's services.
 
-These commands use the environment executable directly; activation is unnecessary. This is an **editable install from a checkout**: keep the checkout, including `demo_assets/` and `audit_evidence/`, and launch from its root. Standalone wheel installation is not verified; the runtime currently reads these files outside the Python package.
+### Offline and live configuration
 
-Fresh setup of commit `40937c9698a4e579694bb3415b7d7413ceb17ddf` was verified on 2026-10-11 with **Windows 11 x64 (build 26200.0), Python 3.12.7, Node.js 24.14.1, npm 11.11.0, pip 26.2.1, and PowerShell 7.5.3**. A new isolated virtual environment and `npm ci` were used; no existing environment, `node_modules`, credentials or dataset was copied. `pip check`, frontend production build and offline browser checks passed. Other Python versions and Linux compatibility remain unverified. See [DEMO.md](DEMO.md) for the checks and dependency snapshot.
+`api.py` reads a root `.env` by default and preserves existing process values.
+`AUTOFRAME3D_SKIP_DOTENV=1` disables that file access. The commands above disable
+it and remove the process key to guarantee the key-free judge path. Do not put
+credentials in frontend variables, source, captures or committed commands.
+The diagnostic/evaluation scripts do not load `.env` at all.
 
-## Core experiment
-
-Run the successful full-visibility control:
+The one approved bounded sequence is available through a secure hidden-input
+launcher. It puts the credential only in the child process environment, trims
+surrounding whitespace, rejects internal whitespace/control/non-ASCII bytes,
+and cleans references and unmanaged BSTR memory in `finally`:
 
 ```powershell
-python -m autoframe3d.cli run --object near_symmetric --visibility all --seed 41 --yaw 0 --output artifacts/control
+& ./scripts/run_release_validation.ps1
 ```
 
-Run the fixed 12-registration deterministic search:
+Running this command makes paid requests: **one diagnostic**, then only if it
+succeeds, one attempt each for development dev-01/dev-02/dev-13, **ten requests
+maximum**. It stops subsequent items on HTTP/configuration rejection, performs
+no retries and writes fresh GUID output under `artifacts/release-live-*/`.
+Do not rerun failed items under the same authorization. Review actual answers
+and cards; summary/exit status does not certify semantics. [Review checklist](docs/final-release-verification.md).
+This launcher was tested with offline transports, not executed live in that release task.
+
+For the next explicitly authorized **investigation-only** scope, use
+`& ./scripts/run_release_validation.ps1 -InvestigationOnly`. This skips the
+separate diagnostic and attempts only dev-01/dev-02/dev-13 once each, with a
+**nine-request maximum** and unchanged investigation limits/stop conditions.
+It records the diagnostic as not run and creates a fresh GUID output directory.
+The previous user-run diagnostic received a provider response but truncated
+at 128 completion tokens; that remains a failed diagnostic, not valid output
+or grounded-answer evidence. The default command above retains its diagnostic
+gate. Do not run both commands for this authorization or retry failed items.
+
+## Judge walkthrough
+
+1. Open **Recorded Benchmark**, select **A · Geometrically accepted, incorrect pose**, then
+   toggle **Benchmark ground truth**. Compare **Geometric acceptance** with
+   **Symmetry-aware pose correctness** and read GT-mask/benchmark-GT disclosures.
+2. Select **B · Lower RMSE, worse pose**, switch **Recorded method** from
+   historical baseline to reciprocal. Inspect lower RMSE and the correctness
+   regression; the experimental label remains visible.
+3. Choose **Download recorded evidence**. The JSON contains saved cases,
+   method records, thresholds and provenance; it is not a new registration.
+4. Return to **Pose Inspection**. Use **Preview correction · 5 sec**, pause,
+   **Reset estimate**, and **Export synthetic state**. The export preserves the
+   original estimate and labels its synthetic known-reference provenance.
+5. The **Experimental live copilot** reports missing-key availability honestly.
+   Only use a live answer if actually obtained; never present fixture output as inference.
+
+See the [2:45 narration and judge instructions](docs/submission-ready.md).
+
+### Separate synthetic experiment
+
+To compute a seeded full-visibility control (separate from opening either UI):
 
 ```powershell
-python -m autoframe3d.cli search --budget 12 --output artifacts/search
+.venv/Scripts/python.exe -m autoframe3d.cli run --object near_symmetric --visibility all --seed 41 --yaw 0 --output artifacts/synthetic-control
 ```
 
-The search command writes a mesh, scan, result/config/transforms/metrics, and environment metadata per case. Search results can be inspected in `artifacts/search/case-*/result.json`.
+This writes a newly computed synthetic result. It uses generated geometry and
+its own thresholds; it is not a T-LESS result or live inference. Inspect
+[CLI implementation](autoframe3d/cli.py) and [experiment code](autoframe3d/experiment.py)
+for the bounded classical registration path. Do not run raw-data replay as part
+of the key-free recorded judge walkthrough.
 
-Run the end-to-end demonstration (one successful control, one failure, bounded simplification, export, and actual replay):
+## Metrics and evaluation
+
+For the curated recorded T-LESS cases, geometric acceptance requires
+**fitness >= 0.70 and inlier RMSE <= 10 mm**. Fitness is a scan-point fraction;
+RMSE is an observed recorded residual. The **15 mm correspondence gate** is
+configured matching distance, not a measured distance or a third acceptance test.
+Benchmark correctness requires symmetry-aware **MSSD / object diameter <= 0.10**,
+using benchmark GT and model symmetry metadata. GT instance masks and known
+object identity were inputs. GT-assisted inputs are distinct from GT scoring.
+
+Case B's saved baseline RMSE is about **4.37 mm**, reciprocal **3.73 mm**;
+normalized MSSD changes from **0.0853** (correct) to **0.1224** (incorrect).
+Both satisfy geometric acceptance. These are saved case metrics, not a measured
+success rate. The broader historical corrected 200-case audit reports 24
+accepted-and-correct / 176 accepted-but-wrong, with 21 affected records rescored
+and 179 carried forward; it is not a complete independent rescore or a new run.
+See [benchmark report](BENCHMARK_REPORT.md) and [scoring audit](audit_evidence/symmetry_scoring_audit_20261011_02a10626368f/README.md).
+Synthetic experiment thresholds differ; do not substitute them into this table.
+
+## Validation
+
+The dated [release verification](docs/final-release-verification.md) records
+exact tests/build/UI results and implementation commit identity. Original rubric,
+GT values, dataset identities and historical captures are unchanged.
+
+| Historical live record | Actual result |
+| --- | --- |
+| Original three-item dev-01 | Supported numerical/RMSE comparisons; omitted recorded/GT qualifications; no measured-gate claim |
+| Earlier separate dev-01 | Unsupported measured 0.015 m gate claim; separate capture |
+| Original dev-02 | Requested unavailable single-method comparison; failed tool validation |
+| Original dev-13 | Truncated on turn 3; partial output rejected |
+| Later dev-02/dev-13 | HTTP 401 with invalid_request_error category; one request each, zero tools/findings; underlying cause unresolved |
+| This task | Zero provider requests; credential unavailable, current live/manual validation unperformed |
+
+The original batch attempted 3/15 development items, not the whole split; the
+later batch attempted 2/15 separately. Unattempted items remain in denominators.
+Schema, citation and structured-number checks do not prove prose correctness.
+[History and rubric-linked review](docs/evidence-grounding-validation.md).
+
+## Troubleshooting
+
+| Symptom | Evidence-supported action |
+| --- | --- |
+| Live analysis unavailable | Configure a key securely in the backend process for live use; recorded/synthetic views need none |
+| HTTP 401 | Preserved captures establish status/category only. Check authorized account/key provisioning through official controls; no expired-key, billing or model cause is established |
+| HTTP schema rejection | Review sanitized status/field locations and named name/schema envelope; no raw provider body is needed |
+| Truncation / finish_reason=length | Partial answers are rejected; inspect usage/trace. Do not increase budgets or retry silently |
+| Port already occupied | Use a free port and matching proxy configuration; leave existing services alone |
+| Node heap allocation failure | Use explicit small heaps below; host memory pressure caused failures during this task |
+| Historical reciprocal runner fails | `_refine_icp` is missing; research fitting reproduction is incomplete, not a recorded-viewer failure |
+| Missing source dataset | Use bundled display geometry for inspection; raw-data preparation/replay needs separately authorized inputs |
+
+Verification commands from the root:
 
 ```powershell
-python scripts/demo.py
+$env:AUTOFRAME3D_SKIP_DOTENV='1'
+.venv/Scripts/python.exe -B -m pytest -q --tb=short -p no:cacheprovider
+node --test frontend/tests/*.test.mjs
+node --max-old-space-size=384 --max-semi-space-size=2 frontend/node_modules/typescript/bin/tsc -b frontend
+Push-Location frontend
+try { node --max-old-space-size=384 --max-semi-space-size=2 node_modules/vite/bin/vite.js build } finally { Pop-Location }
 ```
 
-## T-LESS Benchmark
+The full backend command exposes the known historical fitting failures; see the
+verification record for the separately tested release suite. The production
+bundle still has a >500 kB advisory. No Linux, hosted service, standalone wheel,
+raw-data refit or current live answer is certified by these checks.
 
-The T-LESS benchmark is a **custom internal evaluation** on the public BOP19 PrimeSense test subset, not an official BOP score. Registration uses BOP-provided visible instance masks and is not end-to-end object detection. Dataset inputs and their pinned SHA-256 provenance are excluded from git; reviewable manifests, benchmark results, report, and one diagnostic overlay are retained.
+## Repository and contributions
 
-Download only the pinned base metadata, CAD/evaluation models, and PrimeSense BOP19 test subset. CRCs/checksums and archive contents are recorded before extraction:
+| Path | Purpose |
+| --- | --- |
+| `autoframe3d/recorded_demo.py`, `demo_assets/` | Portable saved-evidence viewer and two display bundles |
+| `autoframe3d/investigation.py`, `nebius.py` | Bounded evidence workflow and provider transport |
+| `autoframe3d/answer_evaluation.py` | Offline protocol/fact scoring with manual semantic review |
+| `frontend/src/` | Recorded workspace, synthetic scene, pose math and evidence disclosures |
+| `scripts/validate_release_live.py` | One diagnostic plus authorized three-item sequence, ten-request cap |
+| `scripts/run_release_validation.ps1` | Secure process-scoped direct launcher |
+| `scripts/prepare_demo_assets.py` | Hash-checked local geometry preparation |
+| `tests/`, `frontend/tests/` | Backend, browser and frontend verification |
+| `audit_evidence/` | Preserved results, rubric, provenance and audits |
+| `docs/` | Requirements, permissions, verification and submission materials |
 
-```powershell
-python scripts/tless_data.py download
-python scripts/tless_data.py inspect
-python scripts/tless_data.py extract
-```
+Git history during the submission period records Windows setup/saved-pose
+handoff (`8e539ac`), recorded evidence and diagnostic repairs (`02983c6`,
+`88a3e73`, `588f514`), evidence-scope/grounding fixes (`8ea46fb`, `445444d`,
+`61191f4`) and MIT/submission text (`cf8b960`). This release adds stricter
+completion scoring, configured-model probing, bounded orchestration and product
+verification. Repository authors are **Muskan Ejaz** and **Juwairiya-Haroon**;
+the handoff identifies Muskan as lead and Juwairiya as engineering contributor.
+Git author labels do not establish who personally performed every change;
+final roles, eligibility and coding-assistance disclosure need owner review.
+AI coding assistance was used for release repair, tests and documentation.
 
-Generate fixed scene-separated manifests and inspect the annotation-only CAD/depth overlay:
+## Licensing
 
-```powershell
-python scripts/tless_benchmark.py manifests
-python scripts/tless_benchmark.py diagnostic
-```
+Original project code is [MIT](LICENSE), approved by both owners. Third-party
+material keeps its own terms: Panda Apache-2.0, Poly Haven HDR CC0, original
+local scene assets under their existing MIT notice, dependency licenses and
+T-LESS attribution/ShareAlike bundle terms. No third-party material is relicensed.
+[Asset notices](frontend/public/assets/industrial/NOTICE.md) ·
+[Dataset attribution](demo_assets/ATTRIBUTION.md) · [Permission review and alternative setup](docs/data-permissions.md).
+The exact T-LESS governing source grant remains ambiguous; publication review
+must address that question, not treat project MIT as a data permission.
 
-Run the bounded smoke, frozen development tuning subset, and 200-case held-out evaluation:
+## Release and submission materials
 
-```powershell
-python scripts/tless_benchmark.py evaluate smoke20_frozen --group original --workers 1
-python scripts/tless_benchmark.py evaluate development_tuning20 --group original --workers 1
-python scripts/tless_benchmark.py evaluate heldout200 --group original --workers 1
-```
+[Submission description, 2:45 demo and judge setup](docs/submission-ready.md) ·
+[Current organizer requirements](docs/hackathon-requirements.md) ·
+[Release verification](docs/final-release-verification.md) ·
+[Detailed historical grounding review](docs/evidence-grounding-validation.md) ·
+[Recorded demo](DEMO.md) · [Synthetic preview](POSE_INSPECTION.md).
 
-Each command checkpoints JSONL results and can be rerun to resume without redoing completed cases. Original and additional noise/dropout scans are stored separately:
-
-```powershell
-python scripts/tless_benchmark.py evaluate heldout200 --group perturbed --limit 4 --workers 1
-```
-
-Run the separate equal-budget deterministic/seeded-random search comparison (the optional live arm requires `NEBIUS_API_KEY` in `.env` or the process environment):
-
-```powershell
-python scripts/tless_search.py
-```
-
-Run all eligible instances explicitly, only when the measured runtime fits your window:
-
-```powershell
-python scripts/tless_benchmark.py all --group original --workers 1
-```
-
-The measured held-out throughput estimated the full 6,562-instance original pass at about 2 h 20 min on this machine. The dashboard can browse completed T-LESS cases under the `T-LESS real` source; exports include dataset revision/license attribution and replay recomputes registration from the local source data. See [BENCHMARK_REPORT.md](BENCHMARK_REPORT.md) for thresholds, detailed outcomes, per-object results, provenance, and limitations.
-
-Run tests and build the dashboard:
-
-```powershell
-python -m pytest -q -p no:cacheprovider
-npm run build --prefix frontend
-```
-
-## Optional live Nemotron mode
-
-The deterministic mode works without credentials and is identified as such in the API/UI. To enable live model proposals, copy `.env.example` to `.env` and set `NEBIUS_API_KEY` there. Keep `.env` private; it is git-ignored. `NEBIUS_MODEL` defaults to `nvidia/Nemotron-3_5-Lightning` and can be overridden server-side. Restart the API after changing environment values. The credential was not available during this implementation, so live requests and model usage remain unverified. The backend validates strict JSON-schema output, permits at most four model calls and 12 total campaign registrations, and never executes generated code or shell commands.
-
-Official references checked 2026-09-27:
-
-- [Nebius Token Factory quickstart](https://docs.tokenfactory.nebius.com/quickstart): OpenAI-compatible base URL `https://api.tokenfactory.nebius.com/v1/`.
-- [Nebius structured JSON output](https://docs.tokenfactory.nebius.com/ai-models-inference/json.md): `response_format` supports strict JSON schema on compatible models.
-- [Nebius current model catalog](https://tokenfactory.nebius.com/models): lists the default model ID `nvidia/Nemotron-3_5-Lightning`.
-
-## Architecture
-
-- `autoframe3d/geometry.py`: procedural CAD-like meshes, area-weighted seeded surface sampling, rigid transforms, and declared rotational-symmetry-aware pose error.
-- `autoframe3d/experiment.py`: partial scan generation and the ground-truth-blind fixed-yaw-sweep plus point-to-point ICP baseline. A candidate grid and iteration limit make work bounded and reproducible.
-- `autoframe3d/agent.py`, `campaign.py`, `simplify.py`: strict bounded proposal schema, optional server-side Nebius requests, equal-budget seeded-random comparison, deterministic fallback, and greedy failure-preserving simplification.
-- `autoframe3d/cases.py`: self-contained ZIP case bundles and replay that regenerates and re-registers rather than loading saved measurements as results.
-- `autoframe3d/api.py`: FastAPI health/scenario/job/campaign/case endpoints. Registrations run on worker threads; the React client polls progress and requests cancellation between evaluations.
-- `autoframe3d/tless_adapter.py`, `tless_metrics.py`, `tless_benchmark.py`, `tless_cases.py`, `tless_search.py`: BOP depth/model units, GT-masked adapter, symmetry-aware MSSD, fixed manifests, resumable results, attribution-bearing exports/replay, and separate bounded search comparison.
-- `frontend/src/`: React/TypeScript dashboard and direct Three.js CAD/scan view.
-- `tests/`: focused geometry, classification, budget, API, schema, and replay tests.
-
-## Scientific assumptions and limitations
-
-Coordinates are right-handed metres. Scan arrays are in the generated world/sensor frame; homogeneous transforms use column-vector convention, and a transform named `T_object_from_scan` maps scan-frame coordinates into object CAD coordinates. Registration estimates the CAD-from-scan transform. Its initializer is computed only from scan/CAD geometry: a fixed 30-degree yaw grid, centroid alignment, and then point-to-point ICP, capped at 20 iterations. It is not initialized from ground truth or from an intentionally wrong pose.
-
-Acceptance is fixed before searching: fitness >= 0.70 and inlier RMSE <= 0.075 m. An accepted pose is wrong if translation error > 0.08 m or rotation error > 12 degrees. Fitness is the fraction of scan points with a CAD neighbor within 0.18 m; RMSE uses those inliers. These are **alignment quality metrics**, not calibrated confidence probabilities. Synthetic geometry, noise, visibility, and the acceptance limits do not establish real sensor or production-system behavior.
-
-The supplied objects include a small asymmetric side feature and an asymmetric control. Their declared exact rotational symmetry order is one. The pose-error API can minimize over a declared integer-order rotational symmetry about object Z; no undeclared approximate symmetry is discounted. The simplified failure is only the simplest found by the recorded bounded greedy procedure, not a mathematical minimum. The measured 6-vs-6 seeded search comparison found six failures per arm and no deterministic-agent advantage; search performance should not be inferred from this small fixture.
-
-Background points are uniform synthetic outliers. The registration is a classical point-to-point ICP baseline, not a substitute for production CAD registration, robust feature matching, sensor calibration, or uncertainty estimation. Meshes are procedural test objects, not imported customer CAD.
-
-## Status
-
-Completed implementation and measured results are tracked in [PROJECT_STATUS.md](PROJECT_STATUS.md) and [BENCHMARK_REPORT.md](BENCHMARK_REPORT.md). Known blocker: live Nebius calls need the user's API key. Browser rendering, responsive layout, and interaction checks are performed against the running local app where available; see the status file for checks actually run.
-## Corrected historical scoring audit
-
-The saved held-out run originally reported **23 accepted-and-correct and 177 accepted-but-wrong**. A subsequent independent scoring audit corrected one label after fixing BOP symmetry translations from millimetres to metres: **24 accepted-and-correct and 176 accepted-but-wrong (88.0%)**. Registration estimates and geometric acceptance did not change.
-
-The audit rescored all 21 affected held-out records and carried forward 179 unaffected labels, including three independently checked controls. This was **not a full independent rescore**. Audit provenance does not establish the original execution source identity. Historical reports and result files retain their original values; use the separate [audit evidence](audit_evidence/symmetry_scoring_audit_20261011_02a10626368f/README.md) for corrected scoring.
-
-The repository includes source, tests, frozen configuration, bounded manifests, compact historical results, and portable audit evidence. Raw dataset/model files, downloaded archives, local environments, backups, and bulk generated inventories/summaries remain local. Reproduction commands requiring those inputs need the separately restored dataset; no new benchmark or test execution was performed while preparing this publication.
-
-## Development search and eligibility findings
-
-The [development pilot](audit_evidence/development_search_pilot_20261011T051807Z_289be02e/README.md) did not demonstrate added value over random search. Both tested local policies were feedback-free; all five starting poses were already accepted-but-wrong. Four candidates per case/seed/method were predeclared, giving 60 evaluations per method within the permitted maximum of 150. All planned slots ran. Deterministic search included **15 no-op candidates; random included none**, so equal call budgets did not provide equal perturbation coverage. Rediscovering those failures is not evidence of failure induction or an adaptive agent.
-
-The [fresh eligibility audit](audit_evidence/development_eligibility_audit_20261011T053002Z_963a0a93/README.md) found **1 accepted-and-correct and 29 accepted-but-wrong** cases among 30 outcome-independent, balanced development selections, with no operational failures. This verified pool is insufficient for the proposed five-case pilot, but does not prove the full development split lacks five eligible starts. Future correctness-selected experiments measure robustness **conditional on initial success**, not unconditional failure rate or generalization performance. These evaluations use ground-truth instance masks and ground-truth-dependent correctness labels.
-
-The perturbation replay/export repair preserves saved parameters and exports the perturbed scan. Replay verification (a no-op baseline repeat) and four focused mocked tests passed as previously recorded; they were **not rerun for this publication**. These findings do not establish improved registration accuracy. Original artifacts, historical reports and frozen configuration remain unchanged.
+**Public video URL: pending. Judge access URL: pending.** No deployment, push,
+video upload or submission was performed. Current live verification, exact data
+permissions review, final attribution and public access remain owner actions.

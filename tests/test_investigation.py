@@ -35,8 +35,9 @@ def scripted(actions):
     def provider(payload, **limits):
         calls.append((payload, limits))
         assert limits["timeout"] <= 20 and limits["max_response_bytes"] == 32768
-        assert payload["response_format"] == {"type": "json_object"}
-        assert payload["guided_json"]["additionalProperties"] is False
+        assert payload["response_format"] == {"type": "json_schema", "json_schema": {"name": "investigation_action", "schema": inv.Action.model_json_schema()}}
+        assert "guided_json" not in payload
+        assert payload["max_tokens"] == 1200 and payload["temperature"] == 0.0
         return reply(next(actions))
     return provider, calls
 
@@ -66,7 +67,6 @@ def test_known_comparison_and_acceptance_are_deterministic():
     ("get_case_evidence", {"case_id": WRONG, "method_id": "reciprocal"}),
     ("get_case_evidence", {"case_id": WRONG, "method_id": "invented"}),
     ("get_benchmark_summary", {"path": ".env"}),
-    ("compare_recorded_methods", {"case_id": WRONG}),
 ])
 def test_tool_arguments_reject_unknowns(name, args):
     with pytest.raises((ValueError, ValidationError)):
@@ -145,7 +145,7 @@ def test_transport_request_and_output_limits_without_live_network(monkeypatch):
     def fake(request, timeout):
         seen.append(request)
         return io.BytesIO(json.dumps(reply(final("test"))).encode())
-    monkeypatch.setattr(nebius.urllib.request, "urlopen", fake)
+    monkeypatch.setattr(nebius, "open_response", fake)
     nebius.chat_completion({"model": nebius.DEFAULT_MODEL}, timeout=1)
     assert seen[0].full_url == "https://api.tokenfactory.nebius.com/v1/chat/completions"
     with pytest.raises(RuntimeError, match="invalid/incomplete"):
@@ -153,7 +153,7 @@ def test_transport_request_and_output_limits_without_live_network(monkeypatch):
     def stalled(*a, **k):
         threading.Event().wait(.1)
         return io.BytesIO(b"{}")
-    monkeypatch.setattr(nebius.urllib.request, "urlopen", stalled)
+    monkeypatch.setattr(nebius, "open_response", stalled)
     with pytest.raises(TimeoutError):
         nebius.chat_completion({}, timeout=.01)
 
@@ -167,3 +167,275 @@ def test_api_mocked_workflow_does_not_touch_registration(monkeypatch):
     monkeypatch.setattr(inv, "investigate", lambda request: original(request, provider=provider))
     response = TestClient(api.app).post("/api/investigation", json={"question": "Find regression", "selected_case_id": CONTROL})
     assert response.status_code == 200 and response.json()["analysis_mode"] == "mocked"
+
+
+@pytest.mark.parametrize("raw,stage", [
+    (b"not json", "response_json"), (b"[]", "response_shape"),
+    (b'{"choices": []}', "response_shape"),
+    (json.dumps({"choices": [{"finish_reason": "length", "message": {"content": "secret"}}]}).encode(), "finish_reason"),
+    (json.dumps({"choices": [{"finish_reason": "stop", "message": {"content": "  "}}]}).encode(), "empty_content"),
+])
+def test_transport_failure_stages(monkeypatch, raw, stage):
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    monkeypatch.setattr(nebius, "open_response", lambda *a, **k: io.BytesIO(raw))
+    trace = []
+    result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion, trace=trace)
+    assert result["status"] == "error"
+    assert trace[-1]["stage"] == stage
+    assert "secret" not in json.dumps(trace)
+
+
+@pytest.mark.parametrize("code,expected", [("invalid_request_error", "invalid_request_error"), ("secret", None)])
+def test_http_error_allowlist_and_trace(monkeypatch, code, expected):
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    calls = []
+    def reject(*a, **k):
+        calls.append(1)
+        raise nebius.urllib.error.HTTPError("secret", 400, "secret", {},
+            io.BytesIO(json.dumps({"error": {"code": code, "message": "secret"}}).encode()))
+    monkeypatch.setattr(nebius, "open_response", reject)
+    trace = []
+    result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion, trace=trace)
+    assert result["status"] == "error" and len(calls) == 1
+    expected_trace = {"event": "failure", "turn": 1, "stage": "http_rejection", "http_status": 400, "provider_code": expected}
+    if expected:
+        expected_trace["validation_details"] = [{"code": expected}]
+    assert trace[-1] == expected_trace
+    assert "secret" not in json.dumps(trace) + json.dumps(result)
+
+
+@pytest.mark.parametrize("error,stage,status", [
+    (nebius.urllib.error.URLError("secret"), "network", "error"),
+    (nebius.urllib.error.URLError(TimeoutError("secret")), "timeout", "incomplete"),
+])
+def test_network_diagnostics(monkeypatch, error, stage, status):
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    def fail(*a, **k):
+        raise error
+    monkeypatch.setattr(nebius, "open_response", fail)
+    trace = []
+    result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion, trace=trace)
+    assert result["status"] == status and trace[-1]["stage"] == stage
+    assert "secret" not in json.dumps(trace)
+
+
+@pytest.mark.parametrize("action,stage", [
+    ({"kind": "invalid"}, "action_schema"),
+    (tools(), "action_validation"),
+    (tools(("get_case_evidence", {"case_id": "unknown"})), "tool_validation"),
+    (final("unretrieved"), "evidence_validation"),
+])
+def test_dispatch_failure_stages(action, stage):
+    trace = []
+    result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=lambda *a, **k: reply(action), trace=trace)
+    assert result["status"] == "error" and trace[-1]["stage"] == stage
+
+
+def test_verified_named_schema_reaches_transport(monkeypatch):
+    # Preserve the named envelope used by the successful live dev-01 capture.
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    seen = []
+    def fake(request, **kwargs):
+        seen.append(json.loads(request.data))
+        return io.BytesIO(json.dumps(reply(tools())).encode())
+    monkeypatch.setattr(nebius, "open_response", fake)
+    inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion)
+    schema = seen[0]["response_format"]["json_schema"]["schema"]
+    assert seen[0]["response_format"] == {"type": "json_schema", "json_schema": {"name": "investigation_action", "schema": inv.Action.model_json_schema()}}
+    assert schema["additionalProperties"] is False
+    assert schema["$defs"]["Finding"]["properties"]["evidence_ids"]["minItems"] == 1
+    assert schema["$defs"]["ToolCall"]["properties"]["arguments"]["additionalProperties"] == {"type": "string"}
+
+
+@pytest.mark.parametrize("body,expected", [
+    ({"error": {"param": "response_format.json_schema.schema", "type": "invalid_request_error",
+                "code": "invalid_parameter", "message": "Invalid schema: echoed secret", "input": "secret"}},
+     [{"location": ["response_format", "json_schema", "schema"], "type": "invalid_request_error",
+       "code": "invalid_parameter", "reason": "invalid schema"}]),
+    ({"detail": [{"loc": ["body", "response_format", "json_schema", "schema"], "type": "missing",
+                  "msg": "Field required", "input": {"Authorization": "Bearer secret"}, "ctx": "secret"}]},
+     [{"location": ["body", "response_format", "json_schema", "schema"], "type": "missing",
+       "reason": "required field missing"}]),
+    ({"error": {"param": "messages.secret", "type": "secret", "code": "Bearer secret",
+                "message": "secret prompt text"}}, []),
+    ({"detail": [None, "secret", {"loc": ["body", {"input": "secret"}], "msg": "secret"}]}, []),
+    ({"error": {"param": "schema", "type": "missing", "message": "Bearer secret"}},
+     [{"location": ["schema"], "type": "missing"}]),
+])
+def test_sanitized_http_400_details(monkeypatch, body, expected):
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    attempts = []
+    def reject(*a, **k):
+        attempts.append(1)
+        raise nebius.urllib.error.HTTPError("secret", 400, "secret", {}, io.BytesIO(json.dumps(body).encode()))
+    monkeypatch.setattr(nebius, "open_response", reject)
+    trace = []
+    result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion, trace=trace)
+    assert result["status"] == "error" and result["tool_executions"] == 0 and len(attempts) == 1
+    assert trace[-1]["http_status"] == 400
+    assert trace[-1].get("validation_details", []) == expected
+    assert "secret" not in json.dumps(trace)
+
+
+def test_error_detail_bounds_and_credential_collision(monkeypatch):
+    monkeypatch.setenv("NEBIUS_API_KEY", "schema")
+    assert nebius.http_error_details({"error": {"param": "schema"}}) == []
+    assert len(nebius.http_error_details({"detail": [{"type": "missing"}] * 50})) == 4
+    assert nebius.http_error_details({"error": {"param": "x" * 10000, "message": "x" * 10000}}) == []
+
+
+def test_single_manual_probe_is_bounded_and_private(monkeypatch, tmp_path, capsys):
+    from scripts import diagnose_nebius as probe
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    attempts = []
+    def reject(request, **limits):
+        attempts.append(json.loads(request.data))
+        assert limits["timeout"] == 20
+        raise nebius.urllib.error.HTTPError("secret", 400, "secret", {}, io.BytesIO(
+            b'{"detail":[{"loc":["body","response_format"],"type":"missing","msg":"Field required","input":"secret"}]}'))
+    monkeypatch.setattr(nebius, "open_response", reject)
+    assert probe.main(["--live"]) == 0
+    assert len(attempts) == 1
+    payload = attempts[0]
+    assert payload["model"] == nebius.DEFAULT_MODEL and payload["max_tokens"] == 128
+    assert payload["response_format"]["json_schema"] == {"name": "investigation_action", "schema": inv.Action.model_json_schema()}
+    assert "reasoning_effort" not in payload
+    saved = list(tmp_path.glob("artifacts/nebius-http-probe-*/diagnostic.json"))
+    assert len(saved) == 1 and json.loads(saved[0].read_text())["http_status"] == 400
+    assert "secret" not in saved[0].read_text() + capsys.readouterr().out
+    with pytest.raises(SystemExit):
+        probe.main([])
+    assert len(attempts) == 1
+
+
+@pytest.mark.parametrize("raw", [b"not JSON secret", b'{"error":{"message":"' + b"secret" * 1000 + b'"}}'])
+def test_http_body_limits_and_malformed_errors(monkeypatch, raw):
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    reads = []
+    class Body(io.BytesIO):
+        def read(self, size=-1):
+            reads.append(size)
+            return super().read(size)
+    def reject(*a, **k):
+        raise nebius.urllib.error.HTTPError("secret", 400, "secret", {}, Body(raw))
+    monkeypatch.setattr(nebius, "open_response", reject)
+    with pytest.raises(nebius.ProviderError) as caught:
+        nebius.chat_completion({}, timeout=1)
+    assert reads == [4097]
+    assert caught.value.diagnostic == {"stage": "http_rejection", "http_status": 400, "provider_code": None}
+
+
+@pytest.mark.parametrize("character", [chr(n) for n in range(33)] + [chr(127), chr(133), chr(160)])
+def test_malformed_credentials_rejected_before_network(monkeypatch, character):
+    key = "credential" + character + "suffix"
+    monkeypatch.setattr(nebius.os, "environ", {"NEBIUS_API_KEY": key})
+    monkeypatch.setattr(nebius.urllib.request, "Request", lambda *a, **k: pytest.fail("Must reject before constructing headers"))
+    monkeypatch.setattr(nebius, "open_response", lambda *a, **k: pytest.fail("No network allowed"))
+    with pytest.raises(nebius.ProviderError) as caught:
+        nebius.chat_completion({})
+    assert caught.value.diagnostic == {"stage": "invalid_credentials"}
+    assert key not in str(caught.value)
+    assert os.environ["NEBIUS_API_KEY"] == key
+
+
+def test_prompt_distinguishes_recorded_metrics_acceptance_and_configuration():
+    provider, _ = scripted([tools(("get_case_evidence", {"case_id": WRONG})), final(f"case:{WRONG}:baseline")])
+    result = inv.investigate(inv.InvestigationRequest(question="Explain evidence roles"), provider=provider)
+    card = result["evidence"][0]
+    assert "maximum_correspondence_distance_m" not in card["metrics"]
+    assert card["thresholds"]["acceptance"]["maximum_correspondence_distance_m"] == .015
+    assert card["metrics"]["accepted"] == (card["metrics"]["fitness"] >= .7 and card["metrics"]["rmse_mm"] <= 10)
+    # These contract checks do not test semantic correctness of model prose.
+    assert "Never turn configuration into a" in inv.SYSTEM
+    assert "measured result" in inv.SYSTEM
+    assert "not an additional acceptance test" in inv.SYSTEM
+    assert "no\nobserved correspondence-distance statistic is supplied" in inv.SYSTEM
+    exported = json.loads(json.dumps(result))["evidence"][0]
+    assert exported["gt_instance_masks_used"] is True
+    assert exported["correctness_uses_benchmark_gt"] is True
+    assert exported["computation"] == "recorded"
+
+
+def test_single_method_comparison_returns_unavailability_without_metrics():
+    call = inv.ToolCall(name="compare_recorded_methods", arguments={"case_id": WRONG})
+    source = inv.EvidenceTools()
+    evidence = source.execute(call)
+    assert evidence == {"id": f"comparison-unavailable:{WRONG}", "case_id": WRONG,
+        "computation": "recorded_catalogue", "status": "unavailable",
+        "reason_code": "requires_two_recorded_methods", "available_methods": ["baseline"],
+        "required_method_count": 2,
+        "message": "No recorded method comparison exists for this case; only one method is available."}
+    with pytest.raises(ValidationError):
+        source.execute(inv.ToolCall(name=call.name, arguments={"case_id": WRONG, "method_id": "baseline"}))
+    with pytest.raises(ValueError):
+        source.execute(inv.ToolCall(name=call.name, arguments={"case_id": "unknown"}))
+    provider, calls = scripted([tools((call.name, call.arguments)), final(evidence["id"], kind="insufficient")])
+    result = inv.investigate(inv.InvestigationRequest(question="Unavailable comparison"), provider=provider)
+    assert result["status"] == "insufficient" and result["tool_executions"] == 1
+    assert result["evidence"] == [evidence] and len(calls) == 2
+    assert "not citeable until retrieved" in calls[0][0]["messages"][0]["content"]
+
+
+def test_public_operational_diagnostics_are_bounded_and_do_not_echo_provider_prose():
+    diagnostic = {"stage": "http_rejection", "http_status": 422, "provider_code": "invalid_request_error",
+        "validation_details": [{"location": ["body", "response_format", "json_schema", "name"],
+            "reason": "required field missing", "input": "PRIVATE", "message": "PRIVATE"},
+            {"location": ["PRIVATE"], "reason": "PRIVATE", "code": "PRIVATE"}], "body": "PRIVATE"}
+    def reject(*a, **k):
+        raise nebius.ProviderError(**diagnostic)
+    result = inv.investigate(inv.InvestigationRequest(question="Diagnostic contract"), provider=reject)
+    assert result["status"] == "error" and result["model_turns"] == 1 and result["tool_executions"] == 0
+    assert result["operational_error"] == {"stage": "http_rejection", "http_status": 422,
+        "provider_code": "invalid_request_error", "validation_details": [{
+            "location": ["body", "response_format", "json_schema", "name"], "reason": "required field missing"}]}
+    assert "PRIVATE" not in json.dumps(result)
+    assert inv._public_operational_error({"stage": "PRIVATE", "http_status": True}) == {"stage": "provider_error"}
+    assert inv._public_operational_error(None) == {"stage": "provider_error"}
+
+
+@pytest.mark.parametrize("usage,expected", [
+    ({"prompt_tokens": 2300, "completion_tokens": 1200, "total_tokens": 3500,
+      "reasoning": "PRIVATE", "other": {"input": "PRIVATE"}},
+     {"prompt_tokens": 2300, "completion_tokens": 1200, "total_tokens": 3500}),
+    ({"prompt_tokens": "PRIVATE", "completion_tokens": True, "total_tokens": -1}, None),
+    ({"prompt_tokens": 2**64, "completion_tokens": 0.5, "total_tokens": {"input": "PRIVATE"}}, None),
+    (None, None),
+])
+def test_nonstop_usage_survives_transport_without_accepting_partial_output(monkeypatch, usage, expected):
+    monkeypatch.setenv("NEBIUS_API_KEY", "mock-credential-not-real")
+    attempts = []
+    def truncated(request, **limits):
+        attempts.append(1)
+        body = {"choices": [{"finish_reason": "length", "message": {"content": "PRIVATE partial JSON"}}],
+                "usage": usage}
+        return io.BytesIO(json.dumps(body).encode())
+    monkeypatch.setattr(nebius, "open_response", truncated)
+    trace = []
+    result = inv.investigate(inv.InvestigationRequest(question="Length failure"), provider=nebius.chat_completion, trace=trace)
+    assert result["status"] == "error" and result["findings"] == []
+    assert result["model_turns"] == len(attempts) == 1 and result["tool_executions"] == 0
+    failure = {"event": "failure", "turn": 1, "stage": "finish_reason", "finish_reason": "length"}
+    if expected is not None:
+        failure["usage"] = expected
+    assert trace[-1] == failure
+    assert not any(e["event"] == "provider_result" for e in trace)
+    assert "PRIVATE" not in json.dumps(trace) + json.dumps(result)
+
+
+
+def test_provider_redirects_never_forward_credentials_or_make_another_request():
+    request = nebius.urllib.request.Request(nebius.NEBIUS_BASE_URL + "chat/completions")
+    assert nebius.NoRedirect().redirect_request(request, None, 307, "redirect", {}, "https://other.invalid") is None
+
+
+def test_probe_uses_configured_model_without_extra_request(monkeypatch, tmp_path):
+    from scripts.diagnose_nebius import run_probe
+    monkeypatch.setenv("NEBIUS_MODEL", "nvidia/Nemotron-fixture")
+    seen = []
+    def provider(payload, **limits):
+        seen.append(payload)
+        return reply(final("unused"))
+    monkeypatch.setattr(nebius, "chat_completion", provider)
+    assert run_probe(tmp_path)["stage"] == "response_received"
+    assert len(seen) == 1 and seen[0]["model"] == "nvidia/Nemotron-fixture"
