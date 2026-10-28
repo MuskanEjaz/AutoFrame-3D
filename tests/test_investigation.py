@@ -168,3 +168,79 @@ def test_api_mocked_workflow_does_not_touch_registration(monkeypatch):
     monkeypatch.setattr(inv, "investigate", lambda request: original(request, provider=provider))
     response = TestClient(api.app).post("/api/investigation", json={"question": "Find regression", "selected_case_id": CONTROL})
     assert response.status_code == 200 and response.json()["analysis_mode"] == "mocked"
+
+
+@pytest.mark.parametrize("raw,stage", [
+    (b"not json", "response_json"), (b"[]", "response_shape"),
+    (b'{"choices": []}', "response_shape"),
+    (json.dumps({"choices": [{"finish_reason": "length", "message": {"content": "secret"}}]}).encode(), "finish_reason"),
+    (json.dumps({"choices": [{"finish_reason": "stop", "message": {"content": "  "}}]}).encode(), "empty_content"),
+])
+def test_transport_failure_stages(monkeypatch, raw, stage):
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    monkeypatch.setattr(nebius.urllib.request, "urlopen", lambda *a, **k: io.BytesIO(raw))
+    trace = []
+    result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion, trace=trace)
+    assert result["status"] == "error"
+    assert trace[-1]["stage"] == stage
+    assert "secret" not in json.dumps(trace)
+
+
+@pytest.mark.parametrize("code,expected", [("invalid_request_error", "invalid_request_error"), ("secret", None)])
+def test_http_error_allowlist_and_trace(monkeypatch, code, expected):
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    calls = []
+    def reject(*a, **k):
+        calls.append(1)
+        raise nebius.urllib.error.HTTPError("secret", 400, "secret", {},
+            io.BytesIO(json.dumps({"error": {"code": code, "message": "secret"}}).encode()))
+    monkeypatch.setattr(nebius.urllib.request, "urlopen", reject)
+    trace = []
+    result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion, trace=trace)
+    assert result["status"] == "error" and len(calls) == 1
+    assert trace[-1] == {"event": "failure", "turn": 1, "stage": "http_rejection", "http_status": 400, "provider_code": expected}
+    assert "secret" not in json.dumps(trace) + json.dumps(result)
+
+
+@pytest.mark.parametrize("error,stage,status", [
+    (nebius.urllib.error.URLError("secret"), "network", "error"),
+    (nebius.urllib.error.URLError(TimeoutError("secret")), "timeout", "incomplete"),
+])
+def test_network_diagnostics(monkeypatch, error, stage, status):
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    def fail(*a, **k):
+        raise error
+    monkeypatch.setattr(nebius.urllib.request, "urlopen", fail)
+    trace = []
+    result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion, trace=trace)
+    assert result["status"] == status and trace[-1]["stage"] == stage
+    assert "secret" not in json.dumps(trace)
+
+
+@pytest.mark.parametrize("action,stage", [
+    ({"kind": "invalid"}, "action_schema"),
+    (tools(), "action_validation"),
+    (tools(("get_case_evidence", {"case_id": "unknown"})), "tool_validation"),
+    (final("unretrieved"), "evidence_validation"),
+])
+def test_dispatch_failure_stages(action, stage):
+    trace = []
+    result = inv.investigate(inv.InvestigationRequest(question="Q"), provider=lambda *a, **k: reply(action), trace=trace)
+    assert result["status"] == "error" and trace[-1]["stage"] == stage
+
+
+def test_documented_direct_schema_reaches_transport(monkeypatch):
+    # Nebius's Python example passes model_json_schema() directly, unlike the
+    # named envelope also illustrated on the same documentation page.
+    monkeypatch.setenv("NEBIUS_API_KEY", "secret")
+    seen = []
+    def fake(request, **kwargs):
+        seen.append(json.loads(request.data))
+        return io.BytesIO(json.dumps(reply(tools())).encode())
+    monkeypatch.setattr(nebius.urllib.request, "urlopen", fake)
+    inv.investigate(inv.InvestigationRequest(question="Q"), provider=nebius.chat_completion)
+    schema = seen[0]["response_format"]["json_schema"]
+    assert seen[0]["response_format"] == {"type": "json_schema", "json_schema": inv.Action.model_json_schema()}
+    assert schema["additionalProperties"] is False
+    assert schema["$defs"]["Finding"]["properties"]["evidence_ids"]["minItems"] == 1
+    assert schema["$defs"]["ToolCall"]["properties"]["arguments"]["additionalProperties"] == {"type": "string"}

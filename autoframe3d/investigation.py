@@ -149,6 +149,7 @@ def investigate(request, *, provider=None, trace=None):
     mode = "mocked" if provider is not None else "live"
     model = "mocked-provider" if provider is not None else nebius.DEFAULT_MODEL
     identity = {}
+    stage = "setup"
 
     def observe(event, **fields):
         # Evaluation-only caller-owned trace. No credentials/provider bodies recorded.
@@ -184,18 +185,22 @@ def investigate(request, *, provider=None, trace=None):
                 return response("incomplete", "Investigation deadline reached")
             turns += 1
             observe("provider_start", turn=turns, timeout_seconds=min(20.0, remaining))
+            stage = "provider"
             body = provider({"model": model, "temperature": 0.0, "max_tokens": 1200,
                              "response_format": {"type": "json_schema", "json_schema": schema},
                              "messages": messages}, timeout=min(20.0, remaining), max_response_bytes=32768)
             usage = body.get("usage") if isinstance(body, dict) else None
             observe("provider_result", turn=turns, usage={k: usage[k] for k in (
-                "prompt_tokens", "completion_tokens", "total_tokens") if k in usage} if isinstance(usage, dict) else None)
+                "prompt_tokens", "completion_tokens", "total_tokens") if k in usage and type(usage[k]) is int and usage[k] >= 0} if isinstance(usage, dict) else None)
             if time.monotonic() - start >= DEADLINE_SECONDS:
                 return response("incomplete", "Investigation deadline reached")
-            content = body["choices"][0]["message"]["content"]
-            if not isinstance(content, str) or len(content) > 12000 or body["choices"][0].get("finish_reason") != "stop":
+            content = nebius.validate_response(body)
+            stage = "response_size"
+            if len(content) > 12000:
                 raise ValueError("Incomplete or oversized model response")
+            stage = "action_schema"
             action = Action.model_validate_json(content)
+            stage = "action_validation"
             if action.kind == "tools":
                 if not action.calls or action.findings:
                     raise ValueError("Invalid tool action")
@@ -205,6 +210,7 @@ def investigate(request, *, provider=None, trace=None):
                 for call in action.calls:
                     executions += 1  # Invalid attempted tools also consume budget.
                     observe("tool_attempt", attempt=executions, call=call.model_dump())
+                    stage = "tool_validation"
                     item = tools.execute(call)
                     observe("tool_result", attempt=executions, output=item)
                     records[item["id"]] = item
@@ -215,6 +221,7 @@ def investigate(request, *, provider=None, trace=None):
                 continue
             if action.calls or not action.findings:
                 raise ValueError("Invalid final action")
+            stage = "evidence_validation"
             for finding in action.findings:
                 if any(ref not in records for ref in finding.evidence_ids):
                     raise ValueError("Unsupported evidence reference")
@@ -223,6 +230,8 @@ def investigate(request, *, provider=None, trace=None):
                             "Live analysis of recorded evidence" if mode == "live" else "Mocked analysis; not model-quality evidence")
         return response("incomplete", "Model turn budget exhausted")
     except TimeoutError:
+        observe("failure", turn=turns, stage="timeout")
         return response("incomplete", "Provider timeout; no fallback response was generated")
-    except (RuntimeError, ValueError, ValidationError, KeyError, TypeError, IndexError, OSError):
+    except (RuntimeError, ValueError, ValidationError, KeyError, TypeError, IndexError, OSError) as error:
+        observe("failure", turn=turns, **(error.diagnostic if isinstance(error, nebius.ProviderError) else {"stage": stage}))
         return response("error", "Provider, tool arguments, evidence references, or response validation failed; no fallback was generated")
