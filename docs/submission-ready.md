@@ -3,11 +3,15 @@
 Prepared 2026-10-28. Local review candidate; no deployment, push or submission.
 
 Grounding review and separate run records: [validation history](evidence-grounding-validation.md).
-An earlier dev-01 completion compared metrics correctly but omitted GT limitations
-and treated a configured matching gate as a measurement. A later run attempted
-dev-02 and dev-13; both stopped at HTTP-rejection stages before evidence tools.
-The deterministic panel scope note is separate from model prose. Updated prompt
-quality remains unverified.
+In the original three-item run, dev-01 has two numerically supported findings
+and no correspondence-gate claim; it omits GT qualifications and does not label
+the values as recorded metrics ([capture](../artifacts/grounding-three-3255ed5d22cf47ab8f12374d819210ff/capture.jsonl)).
+A separate earlier response reports the configured 0.015 m gate as measured
+([capture](../artifacts/prompt-dev01-317e6b5b948f48a2b9bc8ae9cc5500e4/capture.jsonl)).
+The later dev-02/dev-13 run failed on the first turn at `http_rejection`, with
+zero tools and no findings; its cause is unknown. These are operational task
+failures and do not test revised prompt quality. The deterministic panel scope
+note remains separate from model prose.
 
 ## Project and contributions
 
@@ -146,8 +150,10 @@ access/credits remains an owner task. Account access does not prove eligibility.
 
 - Team/owner chooses and authorizes the project-level open-source license;
   third-party asset notices do not license application code. Preserve notices.
-- Updated-prompt quality remains unverified; live validation stopped at HTTP
-  rejection for dev-02/dev-13. No further calls are planned in this package.
+- No further live calls are planned. Copilot quality remains unverified; this
+  is a limitation, not a blocker unless organizers require a working live demo.
+  The official requirements are not yet confirmed; if live demonstration is
+  mandatory, the current validation does not establish that capability.
 - Confirm eligibility, team attribution, repository visibility and judge access.
 - Record/edit the final 2–3 minute video, check for secrets, upload it, and fill
   submission fields with real links. Final lead review/approval is pending.
