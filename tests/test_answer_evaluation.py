@@ -167,3 +167,46 @@ def test_failed_injected_provider_still_captures_request(failure):
     result = score({"item_id": "dev-01", "response": response, "trace": trace})
     assert result["task_completion"] == "fail"
     assert result["telemetry"]["requests"] == 1
+
+
+def test_operational_diagnostics_preserve_strict_saved_response_validation():
+    from autoframe3d.answer_evaluation import SavedResponse
+    from pydantic import ValidationError
+    source = fixture("supported")["response"]
+    safe = {**source, "operational_error": {"stage": "http_rejection", "http_status": 401}}
+    assert SavedResponse.model_validate(safe).operational_error["http_status"] == 401
+    with pytest.raises(ValidationError):
+        SavedResponse.model_validate({**source, "operational_error": {"stage": "http_rejection", "body": "PRIVATE"}})
+
+
+def test_unavailable_comparison_is_authoritative_but_does_not_satisfy_required_comparison():
+    from autoframe3d.answer_evaluation import corpus
+    _, records = corpus()
+    unavailable = records["comparison-unavailable:tless-s000001-i000001-g00-o02"]
+    assert unavailable["status"] == "unavailable" and "baseline" not in unavailable
+    assert "comparison:tless-s000001-i000001-g00-o02" not in records
+
+
+@pytest.mark.parametrize("status", ["complete", "insufficient"])
+def test_unavailable_evidence_cannot_complete_requested_comparison(status):
+    tools, records = ev.corpus()
+    item = next(q for q in json.loads(ev.RUBRIC.read_text(encoding="utf-8"))["questions"]
+                if q["split"] == "development" and q["id"] == "dev-02")
+    card = records["comparison-unavailable:tless-s000001-i000001-g00-o02"]
+    row = fixture("supported")
+    row["item_id"] = item["id"]
+    row["response"].update(status=status, question=item["question"], evidence=[card], identity=tools.identity,
+        findings=[{"kind": "limitation", "text": card["message"], "evidence_ids": [card["id"]]}])
+    row.pop("trace", None)
+    result = score(row)
+    assert result["task_completion"] == "fail"
+    assert result["retrieval_coverage"] == result["numerical_accuracy"] == "fail"
+
+
+def test_provider_error_is_not_abstention_for_requested_missing_measurements():
+    row = fixture("appropriate_insufficient")
+    row["response"].update(status="error", findings=[], evidence=[],
+        operational_error={"stage": "http_rejection", "http_status": 401})
+    row.pop("trace", None)
+    result = score(row)
+    assert result["task_completion"] == result["expected_abstention"] == "fail"

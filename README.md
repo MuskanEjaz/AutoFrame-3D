@@ -4,6 +4,8 @@
   </a>
 </p>
 
+[Watch the Demo Video](https://youtu.be/dfL55NZeDBQ)
+
 <h2 align="center">Watch AutoFrame 3D in Action</h2>
 
 <p align="center">
@@ -22,7 +24,7 @@
 
 AutoFrame 3D brings CAD overlays, pose inspection, registration metrics and benchmark evidence into one workflow. Explore a pose mismatch in 3D, compare recorded method results, reveal benchmark ground truth and export the evidence behind a result.
 
-**Run locally using the setup instructions below.** The YouTube link is a recorded demonstration; this repository does not provide a publicly hosted application. The cover is a conceptual illustration.
+**Run locally using the setup instructions below.** The project has not been deployed. The user-provided YouTube link is a recorded demonstration; its content and duration have not been independently verified. The cover is conceptual artwork, not an application screenshot, scanner output or physical experiment.
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
@@ -91,10 +93,10 @@ This walkthrough demonstrates the inspection experience without requiring a prov
 - Node.js **20.19+ or 22.12+**, and npm.
 - A complete repository checkout, including its required demo assets.
 
-Use the release branch for this submission:
+Use this publication branch for the combined inspection UI and release behavior:
 
 ```powershell
-git clone --branch release/finish-20261028 https://github.com/MuskanEjaz/AutoFrame-3D.git
+git clone --branch publish/local-updates-20261030 https://github.com/MuskanEjaz/AutoFrame-3D.git
 cd AutoFrame-3D
 ```
 
@@ -123,7 +125,7 @@ Remove-Item Env:NEBIUS_API_KEY -ErrorAction SilentlyContinue
 In a second terminal, from the same repository root:
 
 ```powershell
-npm run dev --prefix frontend
+npm.cmd run dev --prefix frontend -- --port 5173 --strictPort
 ```
 
 | Local service | Address |
@@ -141,7 +143,9 @@ AutoFrame 3D integrates optional server-side model access through **Nebius Token
 
 The geometry pipeline remains responsible for registration and numerical evaluation. Model-assisted components add a separate layer for bounded experiment proposals and experimental evidence investigation. An explanation is assessed against the supplied evidence; it does not replace a geometric measurement or ground-truth correctness check.
 
-The documented campaign implementation uses strict proposal validation, a maximum of four model calls and 12 total registrations. Release investigation launchers have their own budgets; do not apply campaign limits to every workflow. Generated code and shell commands are not executed.
+The separate campaign uses strict proposal validation, at most four model calls and 12 total registrations. Recorded-evidence investigations instead permit three model requests, six tool attempts and 60 seconds, at most 20 seconds/request, 1,200 output tokens and 32 KiB accepted response. No retries or generated code/shell execution are permitted. The model chooses approved catalogue/case/comparison/summary tools and synthesizes prose; application code validates IDs/citations and computes labels from frozen recorded metrics. It cannot change registration.
+
+The panel separates deterministic **Evidence scope** disclosures from model prose and shows allowlisted operational errors without treating them as abstention. **Download investigation response** exports the actual returned response/cards. An unavailable comparison does not satisfy the evaluator's requested comparison. [Source-backed release verification](docs/final-release-verification.md).
 
 ### Optional configuration
 
@@ -155,7 +159,7 @@ The offline launch above deliberately bypasses `.env`. To enable optional remote
 
 Keep the key out of source files, screenshots, frontend bundles and Git. Remote inference can incur charges. Run it explicitly within the selected workflow's limits.
 
-**Validation scope:** a saved release diagnostic received a provider response but did not pass strict output validation. A completed end-to-end live investigation is not established by that diagnostic. The recorded demonstration remains reproducible independently of remote inference. The reviewed diagnostic uses a fixed default model rather than an environment-selected override.
+**Validation scope:** a saved release diagnostic received a provider response but did not pass strict output validation. A completed end-to-end live investigation is not established by that diagnostic. The recorded demonstration remains reproducible independently of remote inference. The current investigation and diagnostic use `model_name()` and honor `NEBIUS_MODEL`; the separate proposal path also reads that override directly. Do not apply the diagnostic's 128-token setting to investigations or synthetic campaigns.
 
 ## 7. Technical architecture
 
@@ -226,7 +230,9 @@ The T-LESS evaluation is a **custom internal evaluation on the BOP19 PrimeSense 
 | Scoring correction | One label changed after correcting symmetry translation units | The correction changed scoring, not registration estimates or geometric acceptance |
 | Seeded search comparison | No demonstrated advantage over the tested random-search baseline | The saved pilot does not establish adaptive-search superiority |
 
-The 88.0% accepted-but-wrong result describes this particular baseline, subset and criterion. It is not a detection accuracy claim for AutoFrame 3D.
+The 88.0% accepted-but-wrong result describes this particular baseline, subset and criterion. It is not a detection accuracy claim for AutoFrame 3D. The corrected scoring audit rescored 21 affected records and carried forward 179 labels; it was not a full independent rescore. Historical registration estimates and evidence remain unchanged.
+
+For the recorded cases, geometric acceptance is fitness >=0.70 **and** inlier RMSE <=10 mm; correctness is symmetry-aware MSSD/diameter <=0.10 against benchmark GT. The 15 mm correspondence gate is configuration, not a measured residual or an additional acceptance criterion. GT instance masks and known object identity were inputs; this is not GT-free detection.
 
 Read [BENCHMARK_REPORT.md](BENCHMARK_REPORT.md) for configurations, thresholds and historical outcomes. Read the [symmetry scoring audit](audit_evidence/symmetry_scoring_audit_20261011_02a10626368f/README.md) for corrected labels. Historical reports retain their original values.
 
@@ -286,9 +292,13 @@ Run from the repository root:
 npm run build --prefix frontend
 ```
 
-These are verification commands, not a claim that every current test passes. The supplied release history reports focused backend/frontend checks and a production build, while full-suite issues remain recorded. Consult [PROJECT_STATUS.md](PROJECT_STATUS.md) and [DEMO.md](DEMO.md) for the exact check scope and evidence.
+These are verification commands, not a claim that every current test passes. The incoming dated [release verification](docs/final-release-verification.md) records 122 release-focused backend passes with one optional raw-source rebuild skipped, eight frontend passes and a production build with an existing bundle-size warning. Those counts describe that earlier source and run, not this merged branch. Fresh merge checks are reported with the merge result. Full raw-data/research reproduction is not established by the recorded UI checks.
 
-The documented historical clean setup at commit `40937c9698a4e579694bb3415b7d7413ceb17ddf` used Windows 11 x64, Python 3.12.7, Node.js 24.14.1, npm 11.11.0, pip 26.2.1 and PowerShell 7.5.3. That historical verification does not certify every later commit or operating system. This README revision did not execute the application or rerun its tests.
+Preserve these distinct live histories: the original three-item dev-01 had supported numerical/RMSE comparisons but omitted recorded/GT qualifications and made no measured-gate claim; the earlier standalone dev-01 made an unsupported measured-gate claim; original dev-02 requested an unavailable single-method comparison; original dev-13 truncated. The later dev-02/dev-13 captures contain first-turn HTTP 401 and invalid_request_error, zero tools/findings and an unresolved underlying cause. A subsequent user-run diagnostic received one response but truncated at 128 completion tokens, so no investigations ran. [Grounding history](docs/evidence-grounding-validation.md). No new provider calls are made by this merge.
+
+The secure [launcher](scripts/run_release_validation.ps1) requires an explicit paid-call authorization. Its `-InvestigationOnly` mode selects only dev-01/dev-02/dev-13 once each, nine requests maximum, fresh outputs and no retries; it stops remaining items on operational rejection. Default mode retains the separate diagnostic gate and ten-request maximum. Do not run either as part of the key-free walkthrough.
+
+The documented historical clean setup at commit `40937c9698a4e579694bb3415b7d7413ceb17ddf` used Windows 11 x64, Python 3.12.7, Node.js 24.14.1, npm 11.11.0, pip 26.2.1 and PowerShell 7.5.3. That historical verification does not certify every later commit or operating system. That setup record is historical; current merge verification is reported separately.
 
 ## 11. Troubleshooting
 
@@ -361,7 +371,9 @@ Local environments, secrets, downloaded archives, raw datasets and bulk generate
 
 ## 14. License and attribution
 
-Project source is provided under the repository's [MIT license](LICENSE). Third-party datasets, models and assets retain their own licenses and attribution requirements. The project license does not grant redistribution rights to T-LESS or other third-party material. Resolve any outstanding dataset-permission questions before redistributing affected assets.
+Both owners approved [MIT](LICENSE) for original project code. Third-party material retains its own terms: Panda visual meshes Apache-2.0, Poly Haven HDR CC0, existing original local asset MIT notices and dependency licenses. Preserve [industrial asset notices](frontend/public/assets/industrial/NOTICE.md), [T-LESS attribution](demo_assets/ATTRIBUTION.md) and [screenshot notices](docs/screenshots/NOTICE.md).
+
+The exact governing T-LESS source grant remains unresolved: primary sources state CC BY 4.0 and CC BY-SA 4.0 differently. Existing derived bundles keep their attribution/change notices and ShareAlike treatment; project MIT does not resolve that question or grant new data rights. [Permission review and alternative setup](docs/data-permissions.md). [Submission materials](docs/submission-ready.md) and [requirements](docs/hackathon-requirements.md) retain pending judge-access, team and final owner confirmations.
 
 The cover image is illustrative project artwork. Benchmark evidence, synthetic visualization and physical validation are distinct sources of information.
 
@@ -369,4 +381,4 @@ The cover image is illustrative project artwork. Benchmark evidence, synthetic v
 
 **Inspect the pose. Understand the evidence. Question the score.**
 
-[Watch the demonstration](https://youtu.be/dfL55NZeDBQ) · [Explore the release branch](https://github.com/MuskanEjaz/AutoFrame-3D/tree/release/finish-20261028)
+[Watch the demonstration](https://youtu.be/dfL55NZeDBQ) · [Explore this publication branch](https://github.com/MuskanEjaz/AutoFrame-3D/tree/publish/local-updates-20261030)

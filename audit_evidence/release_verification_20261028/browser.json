@@ -1,0 +1,51 @@
+{
+  "production": {
+    "both_examples": true,
+    "gt_reveal": true,
+    "method_comparison": true,
+    "valid_evidence_download": true,
+    "missing_credentials": true,
+    "synthetic_pause_reset_export": true,
+    "gt_qualifications": true,
+    "consoleErrors": [],
+    "exceptions": []
+  },
+  "fixtures": {
+    "label": "CDP-intercepted TEST FIXTURE; no live provider",
+    "all_four_questions": true,
+    "loading": true,
+    "duplicate_prevention": true,
+    "evidence_navigation": true,
+    "provider_timeout": true,
+    "provider_error": true,
+    "http_error": true,
+    "error_recovery": true,
+    "posts": 6
+  },
+  "mobile": {
+    "width": 390,
+    "scrollWidth": 390,
+    "buttons": [
+      {
+        "width": 336,
+        "height": 36
+      },
+      {
+        "width": 336,
+        "height": 36
+      },
+      {
+        "width": 336,
+        "height": 36
+      },
+      {
+        "width": 336,
+        "height": 36
+      }
+    ]
+  },
+  "exceptions": [],
+  "consoleErrors": [],
+  "remote_requests": [],
+  "live_provider_requests": 0
+}

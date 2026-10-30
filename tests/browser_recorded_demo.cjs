@@ -23,7 +23,7 @@ const assert=(value,message)=>{if(!value)throw Error(message)};
     posts++;const q=JSON.parse(request.postData);
     const response={...fixture,question:q.question,selected_case_id:q.selected_case_id};
     if(mode==='timeout')Object.assign(response,{status:'incomplete',message:'TEST FIXTURE: Provider timeout; no fallback response was generated',findings:[],evidence:[]});
-    if(mode==='provider-error')Object.assign(response,{status:'error',message:'TEST FIXTURE: Provider, tool arguments, evidence references, or response validation failed; no fallback was generated',findings:[],evidence:[]});
+    if(mode==='provider-error')Object.assign(response,{status:'error',message:'TEST FIXTURE: Provider, tool arguments, evidence references, or response validation failed; no fallback was generated',findings:[],evidence:[],operational_error:{stage:'http_rejection',http_status:422,validation_details:[{location:['body','response_format'],reason:'invalid schema'}]}});
     setTimeout(()=>fulfill(requestId,mode==='http-error'?{detail:'TEST FIXTURE HTTP failure'}:response,mode==='http-error'?503:200),mode==='success'?1200:100);
    }
   }
@@ -36,6 +36,25 @@ const assert=(value,message)=>{if(!value)throw Error(message)};
  await send('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:downloads});
  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
  await send('Page.navigate',{url:process.env.AUTOFRAME_BROWSER_URL||'http://127.0.0.1:5180/'});
+ await wait("[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Recorded Benchmark'))");
+ await wait("Boolean(document.querySelector('.pose-preview-card')) && document.querySelectorAll('canvas').length>=2");
+ assert(await evaluate("document.body.innerText.includes('Known synthetic reference')&&document.body.innerText.includes('Synthetic animation')"),'Synthetic scope labels');
+ await delay(800);
+ let initialShot=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,'synthetic_desktop.png'),Buffer.from(initialShot.data,'base64'));
+ await click('Preview correction');
+ await wait("Number(document.querySelector('.pose-preview-card').dataset.elapsed)>.1");
+ await evaluate("document.querySelector('[aria-label=\"Pause preview\"]').click()");
+ const paused=await evaluate("Number(document.querySelector('.pose-preview-card').dataset.elapsed)");await delay(300);
+ assert(await evaluate("document.querySelector('.pose-preview-card').dataset.running==='false'&&Number(document.querySelector('.pose-preview-card').dataset.elapsed)==="+paused),'Preview pauses');
+ await click('Reset estimate');
+ assert(await evaluate("Number(document.querySelector('.pose-preview-card').dataset.elapsed)===0"),'Preview resets');
+ await click('Export synthetic state');
+ const syntheticDownload=path.join(downloads,'autoframe-synthetic-pose.json');
+ for(let i=0;i<40&&!fs.existsSync(syntheticDownload);i++)await delay(100);
+ const syntheticState=JSON.parse(fs.readFileSync(syntheticDownload,'utf8'));
+ assert(syntheticState.label==='Synthetic pose demo'&&syntheticState.originalEstimate&&syntheticState.provenance.includes('No recorded scan, registration or inference'),'Synthetic export scope');
+ fs.copyFileSync(syntheticDownload,path.join(out,path.basename(syntheticDownload)));
+ await click('Recorded Benchmark');
  await wait("Boolean(document.querySelector('canvas')) && document.body.innerText.includes('Live analysis unavailable')");
  assert(await evaluate("document.querySelector('.investigation-panel .button-export').disabled"),'Missing credential must disable inference');
  assert(await evaluate("document.body.innerText.includes('1.4023')"),'Recorded A metadata');
@@ -45,6 +64,9 @@ const assert=(value,message)=>{if(!value)throw Error(message)};
  await wait("Boolean(document.querySelector('canvas'))&&document.body.innerText.includes('0.0853')");
  await evaluate("(()=>{const s=document.getElementById('recorded-method');s.value='reciprocal';s.dispatchEvent(new Event('change',{bubbles:true}));})()");
  await wait("Boolean(document.querySelector('canvas'))&&document.body.innerText.includes('0.1224')&&document.body.innerText.includes('3.73')");
+ assert(await evaluate("document.body.innerText.includes('Geometric acceptance')&&document.body.innerText.includes('Symmetry-aware pose correctness')&&document.body.innerText.includes('GT instance mask')"),'Decision and GT qualifications');
+ await evaluate("window.scrollTo(0,0)");
+ const recordedShot=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,'recorded_desktop.png'),Buffer.from(recordedShot.data,'base64'));
  await click('Download recorded evidence');
  const download=path.join(downloads,'autoframe3d-control-regression-recorded-evidence.json');
  for(let i=0;i<40&&!fs.existsSync(download);i++)await delay(150);
@@ -55,6 +77,8 @@ const assert=(value,message)=>{if(!value)throw Error(message)};
  assert(!requests.some(r=>r.method==='POST'),'No production inference/registration requests');
  await send('Fetch.enable',{patterns:[{urlPattern:'*/api/investigation*',requestStage:'Request'}]});
  mode='success';await send('Page.reload');
+ await wait("[...document.querySelectorAll('button')].some(b=>b.textContent.includes('Recorded Benchmark'))");
+ await click('Recorded Benchmark');
  await wait("document.body.innerText.includes('TEST FIXTURE availability')&&Boolean(document.querySelector('canvas'))");
  assert(await evaluate("document.querySelectorAll('.investigation-examples button').length===4"),'Four example controls');
  for(let i=0;i<4;i++){
@@ -73,6 +97,10 @@ const assert=(value,message)=>{if(!value)throw Error(message)};
  for(const failure of ['timeout','provider-error','http-error']){
   mode=failure;await click('Ask Nemotron');
   await wait(failure==='http-error'?"Boolean(document.querySelector('[role=alert]'))":`document.body.innerText.includes(${JSON.stringify(failure==='timeout'?'TEST FIXTURE: Provider timeout':'TEST FIXTURE: Provider, tool arguments')})`);
+  if(failure==='provider-error'){
+   assert(await evaluate("document.body.innerText.includes('HTTP status: 422')&&document.body.innerText.includes('Stage: http_rejection')&&document.body.innerText.includes('invalid schema')"),'Sanitized diagnostic visible');
+   assert(await evaluate("!document.querySelector('.investigation-panel').innerText.includes('Model-generated explanation')"),'Operational error has no explanation heading');
+  }
   assert(await evaluate("!document.querySelector('.investigation-panel .button-export').disabled"),'Recovery control available');
  }
  mode='success';await click('Ask Nemotron');await wait("document.body.innerText.includes('MOCKED ANALYSIS · complete')");
@@ -87,7 +115,7 @@ const assert=(value,message)=>{if(!value)throw Error(message)};
  shot=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,'copilot_mobile.png'),Buffer.from(shot.data,'base64'));
  assert(!exceptions.length,'Browser exceptions');
  assert(!requests.some(r=>!r.url.startsWith('http://127.0.0.1:')&&!/^(data|blob):/.test(r.url)),'No remote browser requests');
- const result={production:{both_examples:true,gt_reveal:true,method_comparison:true,valid_evidence_download:true,missing_credentials:true,consoleErrors:productionErrors,exceptions:productionExceptions},
+ const result={production:{both_examples:true,gt_reveal:true,method_comparison:true,valid_evidence_download:true,missing_credentials:true,synthetic_pause_reset_export:true,gt_qualifications:true,consoleErrors:productionErrors,exceptions:productionExceptions},
  fixtures:{label:'CDP-intercepted TEST FIXTURE; no live provider',all_four_questions:true,loading:true,duplicate_prevention:true,evidence_navigation:true,provider_timeout:true,provider_error:true,http_error:true,error_recovery:true,posts},mobile,exceptions,consoleErrors:errors,remote_requests:[],live_provider_requests:0};
  fs.writeFileSync(path.join(out,'browser_results.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));
  await send('Browser.close');socket.close();

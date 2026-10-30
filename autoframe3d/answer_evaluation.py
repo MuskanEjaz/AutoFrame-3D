@@ -27,6 +27,14 @@ class SavedResponse(investigation.Strict):
     tool_executions: int = Field(ge=0, le=investigation.MAX_TOOLS)
     runtime_seconds: float = Field(ge=0, allow_inf_nan=False)
     prose_verification: str
+    operational_error: dict | None = None
+
+    @field_validator("operational_error")
+    @classmethod
+    def safe_operational_error(cls, value):
+        if value is not None and value != investigation._public_operational_error(value):
+            raise ValueError("Operational diagnostics must use bounded public vocabulary")
+        return value
 
     @field_validator("evidence")
     @classmethod
@@ -45,8 +53,7 @@ def corpus():
         for method in case["variants"]:
             calls.append(investigation.ToolCall(name="get_case_evidence", arguments={
                 "case_id": case["case_id"], "method_id": method["id"]}))
-        if len(case["variants"]) > 1:
-            calls.append(investigation.ToolCall(name="compare_recorded_methods", arguments={"case_id": case["case_id"]}))
+        calls.append(investigation.ToolCall(name="compare_recorded_methods", arguments={"case_id": case["case_id"]}))
     for call in calls:
         result = tools.execute(call)
         records[result["id"]] = result
@@ -216,6 +223,14 @@ def evaluate_item(item, saved, tools, records):
             numeric_errors.append("Unknown/malformed numerical claim")
     result["numerical_accuracy"] = "fail" if numeric_errors else ("structured_pass_prose_review_required" if response.evidence else "unverified")
     result["errors"].extend(citation_errors + numeric_errors + trace_errors)
+    # Status alone cannot satisfy the requested task. Missing comparison cards,
+    # incorrect facts, invalid citations/provenance or broken traces stay failures.
+    if citation_errors or numeric_errors or trace_errors or (
+        response.status in {"complete", "insufficient"} and response.identity != tools.identity
+    ):
+        result["task_completion"] = "fail"
+        if item["expected_behavior"] == "abstain":
+            result["expected_abstention"] = "fail"
     return result
 
 
