@@ -34,7 +34,16 @@ def test_current_lexicographic_priority_and_exact_tie_retention():
 
 def test_published_analysis_is_reproducible_and_four_pairs_are_unchanged():
     expected = json.loads((ROOT / 'audit_evidence/selection_diagnostic_20261023/analysis.json').read_text())
-    assert diagnostic.diagnose() == expected
+    actual = diagnostic.diagnose()
+    # Reproduction preserves saved pairs/rules/results; current source identity
+    # must be truthful rather than rewritten to the historical adapter hash.
+    assert set(actual['source_sha256']) == set(expected['source_sha256'])
+    for name, digest in actual['source_sha256'].items():
+        assert digest == diagnostic.sha(ROOT / name)
+        if name not in {'autoframe3d/tless_adapter.py', 'scripts/evaluate_saved_pose_reciprocal.py'}:
+            assert digest == expected['source_sha256'][name]
+    assert {k: v for k, v in actual.items() if k != 'source_sha256'} == {
+        k: v for k, v in expected.items() if k != 'source_sha256'}
     assert expected['counts'] == {'pairs': 4, 'refined_selected': 4, 'selected_error_worsens': 3,
                                   'recoveries': 0, 'regressions': 0}
 

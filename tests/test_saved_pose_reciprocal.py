@@ -44,7 +44,11 @@ def test_supplied_pose_only_gt_guard_and_incomplete_accounting(monkeypatch, tmp_
         "initial_camera_from_object": initial.tolist(), "saved_baseline": {
             "alignment_quality_metrics": {"fitness": 1., "inlier_rmse_m": 0.},
             "pose_metrics": {"mssd_m": 0., "mssd_over_diameter": 0.}}}]}
+    original_pca = adapter.pca_initial_rotations
     row = evaluation.worker(plan, 0)
+    assert adapter.load_ground_truth is gt
+    assert adapter.pca_initial_rotations is original_pca
+    evaluation.sys.audit("socket.connect", None, None)  # No real network: guard is inactive after return.
     assert row["outcome"] == ("remained_correct" if has_correspondences else "incomplete")
     assert row["status"] == ("completed" if has_correspondences else "insufficient_correspondences")
 
@@ -59,3 +63,17 @@ def test_existing_start_marker_prevents_second_attempt(monkeypatch, tmp_path):
     monkeypatch.setattr(evaluation.subprocess, "run", lambda *a, **k: pytest.fail("Repeated attempt"))
     with pytest.raises(FileExistsError):
         evaluation.run(output)
+
+
+
+def test_worker_restores_guards_after_input_failure(monkeypatch):
+    from autoframe3d import tless_adapter as adapter
+    original_gt, original_pca = adapter.load_ground_truth, adapter.pca_initial_rotations
+    def fail_inputs(*args):
+        raise RuntimeError("fixture input failure")
+    monkeypatch.setattr(adapter, "load_registration_inputs", fail_inputs)
+    with pytest.raises(RuntimeError, match="fixture input failure"):
+        evaluation.worker({"cases": [{"case": {}}]}, 0)
+    assert adapter.load_ground_truth is original_gt
+    assert adapter.pca_initial_rotations is original_pca
+    evaluation.sys.audit("socket.connect", None, None)
