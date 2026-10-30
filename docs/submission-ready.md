@@ -86,10 +86,17 @@ prose review makes both successes and failures easier to assess.
 
 Complete the separately authorized bounded investigation validation and manual
 review without retrying failed items; clarify the exact T-LESS source grant;
-restore missing research fitting code and authorized raw-data reproduction;
+verify the restored research fitting code with authorized raw-data inputs;
 then evaluate more representative cases before making broader capability claims.
 Managed judge access and a compliant public video are immediate release tasks,
 not features already delivered.
+
+Completeness follow-up: the omitted fitting helper and its controlled tests were
+restored from the source checkout. Temporary worker guards now clean up after
+return/failure. The dataset-independent backend run passed 189 tests with one
+optional raw-source rebuild skipped; four raw-data API tests were excluded.
+Frontend tests (8) and production build passed. This does not replace historical
+model results or establish full raw-data reproduction. [Audit](repository-completeness.md).
 
 ## Built With
 
