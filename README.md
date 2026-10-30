@@ -2,15 +2,15 @@
 
 Inspect saved CAD-to-scan poses, compare recorded methods, and export the evidence behind a geometrically accepted but incorrect fit.
 
-[![Watch demo — AutoFrame 3D recorded benchmark interface](docs/screenshots/recorded_desktop.png)](https://drive.google.com/file/d/1qpVvW9SfT1RpIhEUCSIbKb80J4Md0DdW/view?usp=sharing)
+[![AutoFrame 3D interface](docs/screenshots/recorded_desktop.png)](https://youtu.be/dfL55NZeDBQ)
 
-**Watch demo:** [Watch the demo on Google Drive](https://drive.google.com/file/d/1qpVvW9SfT1RpIhEUCSIbKb80J4Md0DdW/view?usp=sharing)
+**[Watch the demo](https://youtu.be/dfL55NZeDBQ)** · [Optional Google Drive backup](https://drive.google.com/file/d/1qpVvW9SfT1RpIhEUCSIbKb80J4Md0DdW/view?usp=sharing)
 
 [Quick Start](#quick-start) · [Architecture](#architecture) · [Evidence](#evidence-and-validation) · [Limitations](#limitations)
 
 *Actual application screenshot, captured 2026-10-28 and inspected for this update.
-The user supplied the video link; its accessibility, duration and content have
-not been verified. Public YouTube submission URL: **pending**.*
+The user supplied the final YouTube demo link; its content and duration have
+not been independently verified.*
 
 AutoFrame 3D gives CAD-to-scan reviewers a concrete evidence workflow: inspect
 saved geometry and poses, compare recorded registration methods, reveal
@@ -288,8 +288,9 @@ Schema, citation and structured-number checks do not prove prose correctness.
   hardware control, learned recovery or industrial reliability is demonstrated.
 - The exact T-LESS source-license grant remains unresolved; existing notices
   and ShareAlike bundle terms are preserved. See [permission review](docs/data-permissions.md).
-- Public YouTube and managed judge access remain pending. The Google Drive link
-  is supplied for convenience and does not satisfy the public YouTube requirement.
+- The final YouTube demo link is provided; its content and duration have not
+  been independently verified. Managed judge access remains pending. Google
+  Drive is an optional backup, not the primary submission video.
 
 ## Troubleshooting
 
@@ -365,8 +366,9 @@ must address that question, not treat project MIT as a data permission.
 [Detailed historical grounding review](docs/evidence-grounding-validation.md) ·
 [Recorded demo](DEMO.md) · [Synthetic preview](POSE_INSPECTION.md).
 
-[Watch the demo on Google Drive](https://drive.google.com/file/d/1qpVvW9SfT1RpIhEUCSIbKb80J4Md0DdW/view?usp=sharing) (user-provided; not verified).
-**Public YouTube URL: pending. Judge access URL: pending.** The earlier release
+[Watch the demo on YouTube](https://youtu.be/dfL55NZeDBQ) · [Optional Google Drive backup](https://drive.google.com/file/d/1qpVvW9SfT1RpIhEUCSIbKb80J4Md0DdW/view?usp=sharing).
+Both links are user-provided; video content/duration were not independently
+verified. **Judge access URL: pending.** The earlier release
 is already merged into `main`; this presentation update is prepared on
 `release/finish-20261028` for a separate review. No video upload, deployment or
 hackathon submission was performed. Current live verification, exact data

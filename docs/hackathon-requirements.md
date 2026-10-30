@@ -38,7 +38,7 @@ The 2:45 script spends more than a minute showing actual inspection modules.
 | Third-party distribution | Notices retained; resolve/review exact T-LESS grant per data-permissions.md |
 | Public repository URL/visibility | Owner must confirm approved public URL and final release availability |
 | Judge demo/access URL and access duration | Pending; owner supplies free access or approved test build through judging |
-| Public YouTube URL | Pending; record reviewed 2:45 script, check capture for secrets, then upload separately |
+| Public YouTube URL | [Final demo](https://youtu.be/dfL55NZeDBQ) supplied by the user; content/duration not independently verified |
 | Team eligibility/representative/contributions | Owner confirmation required; Git authorship is not proof of individual work |
 | Final submit | Owner review and action; no submission here |
 

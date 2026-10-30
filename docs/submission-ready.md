@@ -162,10 +162,10 @@ assistance was used for release repair, tests and documentation.
 
 ## Links and declarations still requiring owner action
 
-- Demo: [Watch the demo on Google Drive](https://drive.google.com/file/d/1qpVvW9SfT1RpIhEUCSIbKb80J4Md0DdW/view?usp=sharing).
-  User-provided link; accessibility, duration and content were not verified.
-- Required public YouTube URL: **pending**. Drive is not a substitute for the
-  public YouTube upload required by the [official rules](https://nebiusglobalaihackathon.devpost.com/rules).
+- Final YouTube demo: [Watch the demo](https://youtu.be/dfL55NZeDBQ).
+  User-provided final link; video content and duration were not independently verified.
+- Optional backup: [Google Drive](https://drive.google.com/file/d/1qpVvW9SfT1RpIhEUCSIbKb80J4Md0DdW/view?usp=sharing).
+  YouTube is the primary submission video under the [official rules](https://nebiusglobalaihackathon.devpost.com/rules).
 - Public source: [GitHub repository](https://github.com/MuskanEjaz/AutoFrame-3D).
   The previous release is merged into main; newer presentation changes require
   their own PR review before appearing on the default branch.
@@ -179,7 +179,7 @@ assistance was used for release repair, tests and documentation.
 
 ## Reviewable narration plan
 
-The plan below targets 2:45; it does not establish the actual Drive video's
+The plan below targets 2:45; it does not establish the final YouTube video's
 length or content. If using Physical AI without hardware, show at least one
 minute of key modules operating. Do not present interpolation as robot control.
 
