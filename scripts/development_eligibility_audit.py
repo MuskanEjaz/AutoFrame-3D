@@ -71,18 +71,29 @@ def previous_pilot_review():
             "historical_baseline_files": historical}
 
 
-def prepare():
+def prepare(exclude_audits=()):
     dev = ROOT / "data/tless/manifests/development.json"
     heldout = ROOT / "data/tless/manifests/heldout200.json"
     development = read(dev)["cases"]
+    exclusion_paths = []
+    excluded = set()
+    if exclude_audits:
+        exclusion_paths.append(PILOT / "selected_manifest.json")
+        exclusion_paths.extend(path.resolve() / "selected_manifest.json" for path in exclude_audits)
+        for path in exclusion_paths:
+            path.relative_to(ROOT)  # Require local, hashable exclusion evidence.
+            excluded.update(case["case_id"] for case in read(path)["cases"])
+    remaining = [case for case in development if case["case_id"] not in excluded]
+    if len(remaining) < 30:
+        raise RuntimeError("Fewer than 30 unaudited development cases; no evaluation launched")
     buckets = defaultdict(list)
-    for case in development:
+    for case in remaining:
         buckets[case["object_id"]].append(case)
     for cases in buckets.values():
         cases.sort(key=lambda case: case["case_id"])
     selected = []
     rank = 0
-    while len(selected) < min(30, len(development)):
+    while len(selected) < 30:
         for object_id in sorted(buckets):
             if rank < len(buckets[object_id]):
                 selected.append(buckets[object_id][rank])
@@ -90,12 +101,16 @@ def prepare():
                     break
         rank += 1
     assert len(selected) == len({case["case_id"] for case in selected}) == 30
+    assert not {case["case_id"] for case in selected} & excluded
     assert all(case["scene_id"] in {1, 2, 3, 4} for case in selected)
     assert not {case["case_id"] for case in selected} & {case["case_id"] for case in read(heldout)["cases"]}
     out = ROOT / "artifacts" / ("development_eligibility_audit_" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ_") + uuid.uuid4().hex[:8])
     out.mkdir(exist_ok=False)
-    selection = {"procedure": "Round-robin ascending available object IDs; within each object lexicographic case ID order. Take first 30; no outcomes used, no early stopping on correctness. Two or three cases per each of 13 available objects.",
+    selection = {"procedure": "Exclude prior selected IDs, then round-robin ascending available object IDs; within each object lexicographic case ID order. Take exactly 30; no outcomes used, no early stopping on correctness.",
                  "development_pool_cases": len(development), "available_object_ids": sorted(buckets),
+                 "remaining_development_cases": len(remaining), "excluded_case_ids": sorted(excluded),
+                 "exclusion_manifests": {p.relative_to(ROOT).as_posix(): sha(p) for p in exclusion_paths},
+                 "previously_audited_overlap": 0,
                  "selected_object_counts": dict(Counter(c["object_id"] for c in selected)), "heldout_overlap": 0, "cases": selected}
     write(out / "selected_manifest.json", selection)
     # Selection is persisted before looking at saved artifact compatibility or any fresh outcomes.
@@ -106,6 +121,9 @@ def prepare():
     paths = [dev, heldout, config, Path(__file__), ROOT / "scripts/development_search_pilot.py", ROOT / "pyproject.toml",
              ROOT / "data/tless/provenance.json", ROOT / "data/tless/bop/models_cad/models_info.json"]
     paths += list((ROOT / "autoframe3d").glob("*.py"))
+    paths += exclusion_paths
+    for prior in exclude_audits:
+        paths += [prior.resolve() / name for name in ("plan.json", "results.jsonl", "summary.json", "output_hashes.json", "execution_guard.json")]
     paths += [PILOT / name for name in ("plan.json", "summary.json", "results.jsonl", "execution_guard.json", "output_hashes.json")]
     paths += list(PILOT.rglob("*.py"))
     paths += [ROOT / item["path"] for item in review["historical_baseline_files"]]
@@ -127,7 +145,8 @@ def prepare():
             "dependency_versions": {name: version(name) for name in ("numpy", "scipy", "Pillow", "pydantic", "fastapi", "uvicorn", "huggingface_hub")},
             "input_and_source_inventory": {p.relative_to(ROOT).as_posix(): {"sha256": sha(p), "bytes": p.stat().st_size} for p in sorted(set(paths))},
             "base_commit": subprocess.check_output(["git", "--no-optional-locks", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
-            "commands": [".\\.venv\\Scripts\\python.exe -B scripts/development_eligibility_audit.py --prepare",
+            "commands": [".\\.venv\\Scripts\\python.exe -B scripts/development_eligibility_audit.py --prepare" +
+                         "".join(" --exclude-audit " + p.resolve().relative_to(ROOT).as_posix() for p in exclude_audits),
                          ".\\.venv\\Scripts\\python.exe -B scripts/development_eligibility_audit.py --run " + out.relative_to(ROOT).as_posix()]}
     write(out / "plan.json", plan)
     print(json.dumps({"directory": out.relative_to(ROOT).as_posix(), "selected_objects": selection["selected_object_counts"], "selected_cases": 30, "heldout_overlap": 0, "pilot_review": review}, indent=2))
@@ -174,7 +193,7 @@ def execute(out):
                "five_case_pilot_decision": "GO" if len(eligible) >= 5 else "NO-GO: verified current eligible pool has fewer than five cases",
                "scope_limit": "Only the fixed 30-case sample was freshly evaluated, not all 768 development cases. This cannot establish absence of eligible cases elsewhere in the split.",
                "conditional_interpretation": "Selecting accepted-and-correct starts by baseline correctness is intentional. Future results estimate robustness conditional on initial success, not unconditional failure rate or generalization performance.",
-               "next_step_if_insufficient": "Predeclare one further balanced batch of at most 30 previously unaudited development IDs, keeping registration and thresholds fixed; do not preferentially pick historically successful IDs.",
+               "next_step_if_insufficient": "Stop expanding eligibility search; diagnose the unchanged baseline on development data before proposing a new method." if plan["selection"].get("excluded_case_ids") else "Predeclare one further balanced batch of at most 30 previously unaudited development IDs, keeping registration and thresholds fixed; do not preferentially pick historically successful IDs.",
                "elapsed_execute_seconds": time.monotonic() - started, "source_config_inputs_and_previous_pilot_unchanged": unchanged,
                "model_calls": 0, "perturbed_evaluations": 0, "heldout_registration_calls": 0,
                "plan_sha256": sha(out / "plan.json"), "reused_saved_baseline_count": 0}
@@ -221,11 +240,13 @@ def guarded_run(out):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--prepare", action="store_true")
+    parser.add_argument("--exclude-audit", type=Path, action="append", default=[],
+                        help="Exclude this prior audit's selected IDs and the original pilot IDs before selection")
     parser.add_argument("--run", type=Path)
     parser.add_argument("--execute", type=Path)
     args = parser.parse_args()
     if args.prepare:
-        prepare()
+        prepare(args.exclude_audit)
     elif args.run:
         guarded_run(args.run.resolve())
     elif args.execute:
