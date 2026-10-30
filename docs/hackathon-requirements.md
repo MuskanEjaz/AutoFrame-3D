@@ -1,11 +1,11 @@
 # Hackathon requirements and owner decisions
 
-Primary pages checked 2026-10-28: [rules](https://nebiusglobalaihackathon.devpost.com/rules),
+Primary pages checked 2026-10-28; rules rechecked 2026-10-30: [rules](https://nebiusglobalaihackathon.devpost.com/rules),
 [FAQs](https://nebiusglobalaihackathon.devpost.com/details/faqs),
 [overview](https://nebiusglobalaihackathon.devpost.com/). No organizer approval is claimed.
 
 The submission deadline is **October 30, 2026, 10:00 a.m. Pacific (PDT)**:
-17:00 UTC / **22:00 Pakistan time**. Judging ends December 15, 2026, noon Pacific.
+17:00 UTC / **22:00 Pakistan time**. Judging now ends December 23, 2026, noon Pacific, per the rechecked rules.
 Required: runtime Nebius Token Factory inference or Nebius AI Cloud execution,
 an NVIDIA open-source model, a working application, English description,
 public source repository with open-source license/setup/assets, track choice,

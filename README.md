@@ -1,6 +1,16 @@
 # AutoFrame 3D
 
-**Inspect why a good geometric fit can still be the wrong pose.**
+Inspect saved CAD-to-scan poses, compare recorded methods, and export the evidence behind a geometrically accepted but incorrect fit.
+
+[![Watch demo — AutoFrame 3D recorded benchmark interface](docs/screenshots/recorded_desktop.png)](https://drive.google.com/file/d/1qpVvW9SfT1RpIhEUCSIbKb80J4Md0DdW/view?usp=sharing)
+
+**Watch demo:** [Watch the demo on Google Drive](https://drive.google.com/file/d/1qpVvW9SfT1RpIhEUCSIbKb80J4Md0DdW/view?usp=sharing)
+
+[Quick Start](#quick-start) · [Architecture](#architecture) · [Evidence](#evidence-and-validation) · [Limitations](#limitations)
+
+*Actual application screenshot, captured 2026-10-28 and inspected for this update.
+The user supplied the video link; its accessibility, duration and content have
+not been verified. Public YouTube submission URL: **pending**.*
 
 AutoFrame 3D gives CAD-to-scan reviewers a concrete evidence workflow: inspect
 saved geometry and poses, compare recorded registration methods, reveal
@@ -19,7 +29,7 @@ recovery, GT-free failure detection, industrial safety or broad accuracy.
 [Modes and features](#modes-and-features) · [Architecture](#architecture) ·
 [NVIDIA and Nebius](#nvidia-and-nebius) · [Quick start](#quick-start) ·
 [Judge walkthrough](#judge-walkthrough) · [Metrics](#metrics-and-evaluation) ·
-[Validation](#validation) · [Troubleshooting](#troubleshooting) ·
+[Evidence](#evidence-and-validation) · [Limitations](#limitations) · [Troubleshooting](#troubleshooting) ·
 [Repository and contributions](#repository-and-contributions) · [Licensing](#licensing)
 
 ## Problem and workflow
@@ -38,9 +48,7 @@ production promotion. Opening these views performs no registration.
 
 ## Screenshots
 
-![Recorded case B with lower RMSE but incorrect benchmark pose](docs/screenshots/recorded_desktop.png)
-
-Actual production UI: saved reciprocal method, accepted geometry, incorrect
+The interface shown above is the actual production UI: saved reciprocal method, accepted geometry, incorrect
 GT-scored pose and baseline comparison. The curated case is not a benchmark-wide claim.
 
 ![Synthetic gripper preview with a known reference and explicit animation labels](docs/screenshots/synthetic_desktop.png)
@@ -63,28 +71,6 @@ unavailable comparison reports that no comparison exists for that case; it does
 not fabricate a method or satisfy an evaluator's requested comparison.
 Optional raw-data/historical fitting workflows are research paths: the saved
 reciprocal runner currently lacks `_refine_icp` and is not release-verified.
-
-## Architecture
-
-```mermaid
-flowchart LR
-    UI[React workspace] --> API[FastAPI api.py]
-    API --> REC[recorded_demo.py]
-    REC --> SAVED[Committed metrics and display geometry]
-    UI --> POSE[poseMath.ts and PoseScene.tsx]
-    API --> INV[investigation.py bounded dispatcher]
-    INV --> N[nebius.py transport]
-    N --> TF[Nebius Token Factory / NVIDIA Nemotron]
-    INV --> TOOLS[Read-only EvidenceTools]
-    TOOLS --> SAVED
-    INV --> EV[answer_evaluation.py offline review]
-```
-
-`recorded_demo.py` serves saved poses/cards; it does not refit. `poseMath.ts`
-computes synthetic transforms in a shared scan frame. `investigation.py`
-validates model actions and citations before returning an answer. The offline
-evaluator checks returned records against authoritative cards; human review
-is still required for entailment, completeness, omissions and unsupported claims.
 
 ## NVIDIA and Nebius
 
@@ -116,6 +102,28 @@ HTTP redirects are rejected to avoid extra requests or credential forwarding.
 [Current primary-source compatibility review](docs/final-release-verification.md)
 records the endpoint/model/schema checks. Historical captures are not proof of
 current endpoint availability or current prose quality.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    UI[React workspace] --> API[FastAPI api.py]
+    API --> REC[recorded_demo.py]
+    REC --> SAVED[Committed metrics and display geometry]
+    UI --> POSE[poseMath.ts and PoseScene.tsx]
+    API --> INV[investigation.py bounded dispatcher]
+    INV --> N[nebius.py transport]
+    N --> TF[Nebius Token Factory / NVIDIA Nemotron]
+    INV --> TOOLS[Read-only EvidenceTools]
+    TOOLS --> SAVED
+    INV --> EV[answer_evaluation.py offline review]
+```
+
+`recorded_demo.py` serves saved poses/cards; it does not refit. `poseMath.ts`
+computes synthetic transforms in a shared scan frame. `investigation.py`
+validates model actions and citations before returning an answer. The offline
+evaluator checks returned records against authoritative cards; human review
+is still required for entailment, completeness, omissions and unsupported claims.
 
 ## Quick start
 
@@ -242,7 +250,7 @@ and 179 carried forward; it is not a complete independent rescore or a new run.
 See [benchmark report](BENCHMARK_REPORT.md) and [scoring audit](audit_evidence/symmetry_scoring_audit_20261011_02a10626368f/README.md).
 Synthetic experiment thresholds differ; do not substitute them into this table.
 
-## Validation
+## Evidence and validation
 
 The dated [release verification](docs/final-release-verification.md) records
 exact tests/build/UI results and implementation commit identity. Original rubric,
@@ -255,12 +263,33 @@ GT values, dataset identities and historical captures are unchanged.
 | Original dev-02 | Requested unavailable single-method comparison; failed tool validation |
 | Original dev-13 | Truncated on turn 3; partial output rejected |
 | Later dev-02/dev-13 | HTTP 401 with invalid_request_error category; one request each, zero tools/findings; underlying cause unresolved |
-| This task | Zero provider requests; credential unavailable, current live/manual validation unperformed |
+| Initial release-engineering task | Zero provider requests; credential unavailable then |
+| Subsequent user-run diagnostic | One response, finish_reason=length at 128 completion tokens; no investigations ran |
+| Investigation-only validation | Explicit nine-request mode committed and offline-tested; no new saved investigation run found |
 
 The original batch attempted 3/15 development items, not the whole split; the
 later batch attempted 2/15 separately. Unattempted items remain in denominators.
 Schema, citation and structured-number checks do not prove prose correctness.
 [History and rubric-linked review](docs/evidence-grounding-validation.md).
+
+## Limitations
+
+- Only two curated recorded cases are demonstrated. GT instance masks and known
+  object identity were inputs; correctness uses benchmark GT. This is not a
+  GT-free detector or a broad registration-accuracy claim.
+- Current grounded live quality remains unverified. A user-run diagnostic
+  received a response but truncated; that is not valid diagnostic output or
+  evidence-supported abstention. Historical successful answers also had omissions.
+- The full backend suite is not passing: the historical reciprocal runner lacks
+  `_refine_icp`, and raw-data API tests require absent T-LESS inputs. The recorded
+  viewer and synthetic preview are separately verified; no fresh tests/build
+  were run for this documentation-only update.
+- The synthetic preview interpolates to a known reference. No real scanner,
+  hardware control, learned recovery or industrial reliability is demonstrated.
+- The exact T-LESS source-license grant remains unresolved; existing notices
+  and ShareAlike bundle terms are preserved. See [permission review](docs/data-permissions.md).
+- Public YouTube and managed judge access remain pending. The Google Drive link
+  is supplied for convenience and does not satisfy the public YouTube requirement.
 
 ## Troubleshooting
 
@@ -336,6 +365,9 @@ must address that question, not treat project MIT as a data permission.
 [Detailed historical grounding review](docs/evidence-grounding-validation.md) ·
 [Recorded demo](DEMO.md) · [Synthetic preview](POSE_INSPECTION.md).
 
-**Public video URL: pending. Judge access URL: pending.** No deployment, push,
-video upload or submission was performed. Current live verification, exact data
-permissions review, final attribution and public access remain owner actions.
+[Watch the demo on Google Drive](https://drive.google.com/file/d/1qpVvW9SfT1RpIhEUCSIbKb80J4Md0DdW/view?usp=sharing) (user-provided; not verified).
+**Public YouTube URL: pending. Judge access URL: pending.** The earlier release
+is already merged into `main`; this presentation update is prepared on
+`release/finish-20261028` for a separate review. No video upload, deployment or
+hackathon submission was performed. Current live verification, exact data
+permissions review, final attribution and judge access remain owner actions.
