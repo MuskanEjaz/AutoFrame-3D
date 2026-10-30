@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Archive, Crosshair, Eye, EyeOff, RotateCcw } from "lucide-react";
 import Scene, { type GeometryPayload } from "./Scene";
 import InvestigationPanel from "./InvestigationPanel";
+import "./recorded.css";
 
 type RecordedResult = {
   accepted: boolean; correct: boolean; category: string;
@@ -27,6 +28,8 @@ async function get<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export default function RecordedDemo() {
+  const [tab, setTab] = useState("results");
+  const [viewCommand, setViewCommand] = useState({ id: 0, view: "fit" });
   const [catalogue, setCatalogue] = useState<Catalogue | null>(null);
   const [caseId, setCaseId] = useState("accepted-wrong");
   const [variantId, setVariantId] = useState("baseline");
@@ -51,13 +54,13 @@ export default function RecordedDemo() {
 
   useEffect(() => {
     let cancelled = false;
-    setGeometry(null); setGeometryError(null); setLoading(false);
+    setGeometryError(null); setLoading(false);
     if (!selected || !variant) return;
-    if (!selected.geometry_available) { setGeometryError(selected.geometry_status); return; }
+    if (!selected.geometry_available) { setGeometry(null); setGeometryError(selected.geometry_status); return; }
     setLoading(true);
     get<GeometryPayload>(`/api/demo/cases/${selected.id}/geometry?variant=${variant.id}`)
       .then(data => { if (!cancelled) setGeometry(data); })
-      .catch(e => { if (!cancelled) setGeometryError(e.message); })
+      .catch(e => { if (!cancelled) { setGeometry(null); setGeometryError(e.message); } })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [selected, variant]);
@@ -101,73 +104,61 @@ export default function RecordedDemo() {
   const thresholds = catalogue?.config.geometric_acceptance;
   const audit = catalogue?.evidence.heldout_corrected;
 
-  return <div className="app-shell recorded-demo">
-    <header className="topbar">
-      <div className="brand-lockup"><div className="brand-mark"><Crosshair size={20} /></div><div className="brand-copy"><strong>AUTOFRAME 3D</strong><span>RECORDED BENCHMARK DEMO</span></div></div>
-      <div className="tagline">Good geometric fit can hide a wrong pose.</div>
-      <span className="connection-state">RECORDED · NO LIVE EVALUATION</span>
+  return <div className="app-shell recorded-demo inspection">
+    <header className="inspection-header">
+      <div className="inspection-brand"><Crosshair size={24} /><div><h1>AutoFrame <span>3D</span></h1><p>Expose the wrong poses that pass your checks.</p></div></div>
+      <span className="recorded-badge"><span />Recorded benchmark</span>
     </header>
     {error && <div className="error-banner" role="alert">{error} <button onClick={() => window.location.reload()}>Retry</button></div>}
-    <main className="workbench">
-      <aside className="scenario-panel panel">
-        <span className="eyebrow">01 / SAVED EVIDENCE</span><h1>Recorded benchmark demo</h1>
-        <p>Inspect an observed scan, a saved estimated CAD pose, and benchmark ground truth. Selecting a case does not run registration.</p>
-        <label className="field-label" htmlFor="recorded-case">Saved example</label>
-        <select id="recorded-case" value={caseId} disabled={!catalogue} onChange={e => { setCaseId(e.target.value); setVariantId("baseline"); setShowTruth(false); }}>
-          {catalogue?.cases.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
-        </select>
-        {selected && <p className="case-identity">{selected.case_id}</p>}
-        <label className="field-label" htmlFor="recorded-method">Recorded method</label>
-        <select id="recorded-method" value={variantId} disabled={!selected} onChange={e => setVariantId(e.target.value)}>
-          {selected?.variants.map(v => <option key={v.id} value={v.id}>{v.label}</option>)}
-        </select>
-        {variant && <p>{variant.method}</p>}
-        {variant?.experimental && <div className="error-banner">Experimental result · rejected for production promotion.</div>}
-        <div className="control-stack"><button className="button button-export" disabled={!selected} onClick={() => void downloadEvidence()}><Archive size={16} />Download recorded evidence</button></div>
-        <details className="replay-details"><summary>Optional local replay · new compute</summary><p>Recomputes the historical baseline from local data. Experimental refinements are not replayed by this action.</p><button className="button button-secondary" disabled={!selected?.geometry_available || variantId !== "baseline" || Boolean(jobId)} onClick={() => void startReplay()}><RotateCcw size={15} />Run baseline replay</button></details>
-        {replay && <p role="status">{replay}</p>}
-      </aside>
-      <section className="viewer-panel panel">
-        <div className="viewer-header"><div><span className="eyebrow">02 / SAVED ALIGNMENT</span><h2>{selected ? `T-LESS object ${selected.object_id}` : "Loading recorded evidence"}</h2></div><span className="frame-badge">CAMERA FRAME · METRES</span></div>
-        <div className="viewer-stage">
-          {geometry ? <Scene data={geometry} showScan={showScan} showEstimate={showEstimate} showTruth={showTruth} /> : <div className="loading-state" role="status">{loading ? "Loading local geometry for the saved transforms…" : geometryError ?? "Waiting for recorded evidence…"}{geometryError && <span>Recorded metrics are still available. No geometry is fabricated.</span>}</div>}
-          {geometry && <div className="viewer-legend">
-            <button aria-pressed={showScan} onClick={() => setShowScan(!showScan)}><span className="legend-dot legend-scan" />Observed scan</button>
-            <button aria-pressed={showEstimate} onClick={() => setShowEstimate(!showEstimate)}><span className="legend-dot legend-estimate" />Saved estimate</button>
-            <button aria-pressed={showTruth} onClick={() => setShowTruth(!showTruth)}><span className="legend-dot legend-truth" />Benchmark ground truth {showTruth ? <Eye size={13} /> : <EyeOff size={13} />}</button>
-          </div>}
+    <div className="case-toolbar">
+      <div className="case-field"><label htmlFor="recorded-case">Saved example</label><select id="recorded-case" value={caseId} disabled={!catalogue} onChange={e => { setCaseId(e.target.value); setVariantId("baseline"); setShowTruth(false); }}>{catalogue?.cases.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}</select></div>
+      <div className="case-field"><label htmlFor="recorded-method">Recorded method</label><select id="recorded-method" value={variantId} disabled={!selected} onChange={e => setVariantId(e.target.value)}>{selected?.variants.map(v => <option key={v.id} value={v.id}>{v.label}</option>)}</select></div>
+      <span className="case-identity">{selected?.case_id}</span>
+      <button className="button download-button" disabled={!selected} onClick={() => void downloadEvidence()}><Archive size={16} /><span>Download recorded evidence</span></button>
+    </div>
+    <main className="inspection-workspace">
+      <section className="inspection-viewport">
+        <div className="inspection-view-heading"><div><span>Saved alignment</span><h2>{selected ? `T-LESS object ${selected.object_id}` : "Loading recorded evidence"}</h2></div><span className="coordinate-note">Camera frame · metres</span></div>
+        <div className="inspection-canvas">
+          <Scene data={geometry} showScan={showScan} showEstimate={showEstimate} showTruth={showTruth} viewCommand={viewCommand} />
+          {(!geometry || loading || geometryError) && <div className="geometry-notice" role="status">{loading ? "Loading recorded geometry…" : geometryError ?? "Waiting for recorded evidence…"}{geometryError && <p>Metrics remain available. No geometry is fabricated.</p>}</div>}
+          <div className="layer-controls" aria-label="Geometry layers">
+            <button aria-pressed={showScan} onClick={() => setShowScan(!showScan)}><span className="layer-dot scan-dot" />Observed scan</button>
+            <button aria-pressed={showEstimate} onClick={() => setShowEstimate(!showEstimate)}><span className="layer-dot metal-dot" />Estimated CAD</button>
+            <button aria-pressed={showTruth} onClick={() => setShowTruth(!showTruth)}><span className="layer-dot gt-dot" />Benchmark ground truth {showTruth ? <Eye size={14} /> : <EyeOff size={14} />}</button>
+          </div>
+          <span className="viewport-caption">Actual CAD · saved pose<br />Floor/grid are display aids</span>
         </div>
-        <div className="viewer-footer"><span>{geometry ? "Drag to orbit · scroll to zoom" : "3D assets unavailable or loading"}</span><span>{geometry ? "Local source geometry · saved transforms · GT instance mask" : "Recorded metrics and evidence remain available"}</span></div>
+        <div className="camera-toolbar"><span>Drag to orbit · scroll to zoom</span><div>{[["fit", "Fit view"], ["front", "Front"], ["side", "Side"], ["top", "Top"]].map(([view, label]) => <button key={view} disabled={!geometry} onClick={() => setViewCommand(v => ({ id: v.id + 1, view }))}>{view === "fit" && <RotateCcw size={13} />}{label}</button>)}</div></div>
       </section>
-      <aside className="history-panel panel">
-        <span className="eyebrow">03 / TWO SEPARATE DECISIONS</span><h2>Fit versus correctness</h2>
-        {result && <>
-          <div className="decision"><span>Geometric acceptance</span><strong>{result.accepted ? "Accepted" : "Rejected"}</strong></div>
-          <div className={`decision ${!result.correct ? "wrong-pose" : ""}`}><span>Symmetry-aware pose correctness</span><strong>{result.correct ? "Correct" : "Incorrect"}</strong></div>
-          <div className="metric-cell"><span>FITNESS · SCAN-POINT FRACTION</span><strong>{fmt(result.alignment_quality_metrics.fitness)}</strong><small>Acceptance ≥ {thresholds?.minimum_fitness}</small></div>
-          <div className="metric-cell"><span>INLIER RMSE</span><strong>{fmt(result.alignment_quality_metrics.inlier_rmse_m * 1000, 2)} <i>mm</i></strong><small>Acceptance ≤ {fmt((thresholds?.maximum_inlier_rmse_m ?? NaN) * 1000, 1)} mm</small></div>
-          <div className="metric-cell"><span>SYMMETRY-AWARE MSSD / DIAMETER</span><strong>{fmt(result.pose_metrics.mssd_over_diameter, 4)}</strong><small>Correctness ≤ {catalogue?.config.pose_correctness.maximum_normalized_mssd}</small></div>
-          <p>Fitness uses scan points within {fmt((thresholds?.maximum_correspondence_distance_m ?? NaN) * 1000, 1)} mm of the model. Acceptance is not a correctness guarantee.</p>
-        </>}
+      <aside className="inspection-inspector">
+        <div className="inspector-verdict"><span>Fit ≠ pose correctness</span>{result && <div className="verdict-pair"><div><small>Geometric fit</small><strong className={result.accepted ? "positive" : "negative"}>{result.accepted ? "Accepted" : "Rejected"}</strong></div><div><small>Benchmark pose</small><strong className={result.correct ? "positive" : "negative"}>{result.correct ? "Correct" : "Incorrect"}</strong></div></div>}<p>Correctness uses benchmark ground truth.</p></div>
+        <div className="inspector-tabs" role="tablist" aria-label="Case inspector">{["results", "copilot", "evidence"].map(t => <button key={t} id={`tab-${t}`} role="tab" aria-selected={tab === t} aria-controls={`panel-${t}`} onClick={() => setTab(t)}>{t[0].toUpperCase() + t.slice(1)}</button>)}</div>
+        <div className="inspector-content">
+          <section id="panel-results" role="tabpanel" aria-labelledby="tab-results" hidden={tab !== "results"}>
+            <h2>Recorded results</h2>
+            {selected && selected.variants.length > 1 && <div className="regression-card"><h3>Better fit. Worse pose.</h3><p>Recorded reciprocal refinement crossed the correctness threshold.</p><div className="comparison-grid">{selected.variants.map(v => <div key={v.id} className={variantId === v.id ? "selected-method" : ""}><h4>{v.experimental ? "Reciprocal" : "Baseline"}</h4><span>RMSE</span><strong>{fmt(v.record.alignment_quality_metrics.inlier_rmse_m * 1000, 2)} <small>mm</small></strong><span>MSSD/D</span><strong>{fmt(v.record.pose_metrics.mssd_over_diameter, 4)}</strong><b className={v.record.correct ? "positive" : "negative"}>{v.record.correct ? "Correct" : "Incorrect"}</b><small>{v.record.accepted ? "Geometrically accepted" : "Rejected"}</small></div>)}</div><p>Experimental · rejected for production promotion. Same inputs, thresholds and six starts.</p></div>}
+            {result && <div className="result-metrics">
+              <div><label>Fitness <small>scan-point fraction</small></label><strong>{fmt(result.alignment_quality_metrics.fitness)}</strong><p>Acceptance ≥ {thresholds?.minimum_fitness}</p></div>
+              <div><label>Inlier RMSE</label><strong>{fmt(result.alignment_quality_metrics.inlier_rmse_m * 1000, 2)} <small>mm</small></strong><p>Acceptance ≤ {fmt((thresholds?.maximum_inlier_rmse_m ?? NaN) * 1000, 1)} mm</p></div>
+              <div><label>Symmetry-aware MSSD / diameter</label><strong className={!result.correct ? "negative" : ""}>{fmt(result.pose_metrics.mssd_over_diameter, 4)}</strong><p>Correctness ≤ {catalogue?.config.pose_correctness.maximum_normalized_mssd} · dimensionless</p></div>
+            </div>}
+            <p className="inspector-note">Fitness counts scan points within {fmt((thresholds?.maximum_correspondence_distance_m ?? NaN) * 1000, 1)} mm of the model. Geometric acceptance does not guarantee a correct pose.</p>
+
+          </section>
+          <section id="panel-copilot" role="tabpanel" aria-labelledby="tab-copilot" hidden={tab !== "copilot"}><InvestigationPanel caseId={selected?.case_id} onSelect={(viewerId, methodId) => { setCaseId(viewerId); setVariantId(methodId); setShowTruth(false); setTab("results"); }} /></section>
+          <section id="panel-evidence" role="tabpanel" aria-labelledby="tab-evidence" hidden={tab !== "evidence"}>
+            <h2>Evidence & limits</h2>
+            {catalogue && <><div className="aggregate-card"><h3>Corrected held-out aggregate</h3><div><strong>{audit?.accepted_and_correct}</strong> accepted-and-correct<br /><strong>{audit?.accepted_but_wrong}</strong> accepted-but-wrong</div><p>{audit?.affected_rescored} rescored · {audit?.unaffected_carried_forward} labels carried forward, including three independently checked controls. Not a full independent rescore.</p></div><p>{catalogue.evidence.scope}</p>
+              <details><summary>Method & experimental limits</summary><p>{variant?.method}</p><p>{catalogue.evidence.pilot}</p><p>{catalogue.evidence.experimental}</p></details>
+              <details><summary>Configuration & provenance</summary><p>Versioned copy: <code>{variant?.publication_copy}</code></p><p>Original evidence: <code>{variant?.evidence_source}</code></p><p>Source SHA-256: <code>{variant?.source_sha256}</code></p><p>Execution adapter SHA-256: <code>{variant?.execution_source_identity}</code></p><p>Frozen configuration SHA-256: <code>{catalogue.config_sha256}</code></p><p>{catalogue.evidence.historical_provenance}</p><pre>{JSON.stringify(catalogue.config, null, 2)}</pre><pre>{JSON.stringify(catalogue.publication, null, 2)}</pre></details>
+              <details><summary>AI & ground-truth dependence</summary><p>{catalogue.evidence.AI}</p><p>GT instance masks were used. Synthetic model proposals receive GT-derived pose errors and labels: an offline adversary, not a GT-free detector.</p></details>
+            </>}
+            <details className="replay-details"><summary>Optional local replay · new compute</summary><p>Requires original local dataset inputs; bundled display geometry is not a scoring input. Recomputes the historical baseline, not experimental refinements.</p><button className="button button-secondary" disabled={!selected?.geometry_available || variantId !== "baseline" || Boolean(jobId)} onClick={() => void startReplay()}>Run baseline replay</button>{replay && <p role="status">{replay}</p>}</details>
+          </section>
+        </div>
       </aside>
-      {selected && selected.variants.length > 1 && <section className="panel recorded-evidence">
-        <h2>Recorded control regression: lower RMSE, worse pose</h2>
-        <p>Same case, inputs, thresholds and six starts. Reciprocal refinement reduced RMSE but crossed the correctness threshold. It is experimental, not an improvement.</p>
-        <div className="table-scroll"><table><thead><tr><th>Saved method</th><th>Fitness</th><th>RMSE, mm</th><th>MSSD/D</th><th>Acceptance</th><th>Correctness</th></tr></thead><tbody>{selected.variants.map(v => <tr key={v.id}><td>{v.experimental ? "Reciprocal (experimental)" : "Historical baseline"}</td><td>{fmt(v.record.alignment_quality_metrics.fitness)}</td><td>{fmt(v.record.alignment_quality_metrics.inlier_rmse_m * 1000, 2)}</td><td>{fmt(v.record.pose_metrics.mssd_over_diameter, 4)}</td><td>{v.record.accepted ? "Accepted" : "Rejected"}</td><td>{v.record.correct ? "Correct" : "Incorrect"}</td></tr>)}</tbody></table></div>
-      </section>}
-      {catalogue && <section className="panel recorded-evidence">
-        <span className="eyebrow">04 / EVIDENCE AND LIMITS</span><h2>What the recorded benchmark establishes</h2>
-        <p><strong>{audit?.accepted_and_correct} accepted-and-correct · {audit?.accepted_but_wrong} accepted-but-wrong</strong> in the corrected held-out aggregate.</p>
-        <p>{audit?.affected_rescored} affected records were rescored; {audit?.unaffected_carried_forward} unaffected labels were carried forward, including three independently checked controls. This was not a full independent rescore.</p>
-        <p>{catalogue.evidence.scope}</p><p>{catalogue.evidence.pilot}</p><p>{catalogue.evidence.experimental}</p>
-        <details><summary>Method, configuration and provenance</summary>
-          <p>Versioned evidence copy: <code>{variant?.publication_copy}</code></p><p>Original evidence: <code>{variant?.evidence_source}</code></p><p>Source SHA-256: <code>{variant?.source_sha256}</code></p><p>Execution adapter SHA-256: <code>{variant?.execution_source_identity}</code></p><p>Frozen configuration SHA-256: <code>{catalogue.config_sha256}</code></p><p>{catalogue.evidence.historical_provenance}</p>
-          <p>{catalogue.evidence.AI} The separate synthetic proposal path receives GT-derived pose errors and classifications; it is an offline benchmark adversary, not a GT-free detector.</p>
-          <pre>{JSON.stringify(catalogue.publication, null, 2)}</pre>
-        </details>
-      </section>}
-      <InvestigationPanel caseId={selected?.case_id} onSelect={(viewerId, methodId) => { setCaseId(viewerId); setVariantId(methodId); setShowTruth(false); }} />
     </main>
-    <footer className="app-footer">Benchmark stress-testing and replay tool · not a validated industrial pose estimator · not a proven adaptive AI agent</footer>
+    <footer className="inspection-footer"><span>Recorded registration · GT instance masks · no live evaluation</span><span>Benchmark inspection, not a validated industrial pose estimator or proven adaptive AI agent</span></footer>
   </div>;
 }

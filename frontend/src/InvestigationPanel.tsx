@@ -63,10 +63,12 @@ export default function InvestigationPanel({ caseId, onSelect }: {
     <span className="eyebrow">05 / EXPERIMENTAL LIVE COPILOT</span>
     <h2>Ask about recorded evidence</h2>
     <p>{availability}. NVIDIA Nemotron inference through Nebius Token Factory; underlying registration results remain recorded. No registration runs from this panel.</p>
-    <div className="investigation-examples">{examples.map(q => <button key={q} className="button button-secondary" disabled={loading} onClick={() => setQuestion(q)}>{q}</button>)}</div>
     <label className="field-label" htmlFor="investigation-question">Evidence question · selected case {caseId ?? "none"}</label>
     <textarea id="investigation-question" maxLength={1500} rows={3} value={question} disabled={loading} onChange={e => setQuestion(e.target.value)} />
     <button className="button button-export" disabled={!available || loading || !question.trim()} onClick={() => void ask()}>{loading ? "Investigating recorded evidence…" : "Ask Nemotron · live inference"}</button>
+    <details className="question-examples"><summary>Example questions</summary>
+    <div className="investigation-examples">{examples.map(q => <button key={q} className="button button-secondary" disabled={loading} onClick={() => setQuestion(q)}>{q}</button>)}</div>
+    </details>
     <p>Explicit inference request: at most three model turns and six read-only tool executions, with a 60-second deadline. Numerical verdicts are deterministic. GT instance masks and benchmark GT were used.</p>
     {error && <p role="alert">{error}</p>}
     {answer && <div role="status">

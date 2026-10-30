@@ -316,6 +316,52 @@ def _rigid_fit(source: FloatArray, target: FloatArray) -> FloatArray:
     return make_transform(rotation, target_center - rotation @ source_center)
 
 
+def _refine_icp(
+    scan: FloatArray, model_fit: FloatArray, model: FloatArray, estimate: FloatArray,
+    *, correspondence_distance_m: float, max_iterations: int,
+    icp_correspondence_policy: str = "model_to_scan", deadline: float | None = None,
+    scan_tree: cKDTree | None = None, model_tree: cKDTree | None = None,
+    model_fit_tree: cKDTree | None = None, iteration_trace: list[dict[str, Any]] | None = None,
+) -> FloatArray:
+    """Refine a supplied geometry-only pose; no annotations or GT are read."""
+    scan_tree = scan_tree if scan_tree is not None else cKDTree(scan)
+    model_tree = model_tree if model_tree is not None else cKDTree(model)
+    if icp_correspondence_policy == "reciprocal":
+        model_fit_tree = model_fit_tree if model_fit_tree is not None else cKDTree(model_fit)
+    estimate = estimate.copy()
+    for _ in range(max_iterations):
+        if deadline is not None and time.monotonic() > deadline:
+            raise TimeoutError("Per-instance registration deadline exceeded")
+        if icp_correspondence_policy == "scan_to_model":
+            distances, nearest = model_tree.query(
+                transform_points(scan, invert_transform(estimate)), k=1, workers=1,
+            )
+            moved = transform_points(model[nearest], estimate)
+        else:
+            moved = transform_points(model_fit, estimate)
+            distances, nearest = scan_tree.query(moved, k=1, workers=1)
+        inliers = distances <= correspondence_distance_m
+        if icp_correspondence_policy == "reciprocal":
+            # Reject unseen/many-to-one model matches unless the observation's
+            # nearest fitted model point is the same point. No overlap fraction
+            # or visibility label is supplied; this assumes a nearby start and
+            # sufficiently dense, mutually supported observed geometry.
+            _, reverse = model_fit_tree.query(
+                transform_points(scan, invert_transform(estimate)), k=1, workers=1,
+            )
+            inliers &= reverse[nearest] == np.arange(len(model_fit))
+        if inliers.sum() < 20:
+            break
+        target = scan[inliers] if icp_correspondence_policy == "scan_to_model" else scan[nearest[inliers]]
+        update = _rigid_fit(moved[inliers], target)
+        estimate = update @ estimate
+        if iteration_trace is not None:
+            iteration_trace.append({"camera_from_object": estimate.copy(), "correspondence_count": int(inliers.sum())})
+        if np.linalg.norm(update[:3, 3]) < 1e-5:
+            break
+    return estimate
+
+
 def register_masked_scan(
     inputs: RegistrationInputs,
     *,
@@ -324,8 +370,12 @@ def register_masked_scan(
     registration_evaluations: int = 6,
     registration_points_max: int = 3000,
     deadline: float | None = None,
+    candidate_trace: list[dict[str, Any]] | None = None,
+    icp_correspondence_policy: str = "model_to_scan",
 ) -> dict[str, Any]:
     """Run PCA multi-start ICP on the masked depth cloud. No GT is read or accepted."""
+    if icp_correspondence_policy not in {"model_to_scan", "scan_to_model", "reciprocal"}:
+        raise ValueError("Unknown ICP correspondence policy")
     scan = inputs.scan_points_camera_m
     model = inputs.evaluation_points_object_m
     if len(scan) < 20 or len(model) < 20:
@@ -337,23 +387,27 @@ def register_masked_scan(
         raise ValueError("registration_evaluations must be between 1 and 24")
     scan_tree = cKDTree(scan)
     model_tree = cKDTree(model)
+    model_fit_tree = cKDTree(model_fit) if icp_correspondence_policy == "reciprocal" else None
     best: dict[str, Any] | None = None
     for init_index, rotation in enumerate(rotations[:registration_evaluations]):
         if deadline is not None and time.monotonic() > deadline:
             raise TimeoutError("Per-instance registration deadline exceeded")
         estimate = make_transform(rotation, scan.mean(0) - rotation @ model_fit.mean(0))
-        for _ in range(max_iterations):
-            if deadline is not None and time.monotonic() > deadline:
-                raise TimeoutError("Per-instance registration deadline exceeded")
-            moved = transform_points(model_fit, estimate)
-            distances, nearest = scan_tree.query(moved, k=1, workers=1)
+        initial_trace = None
+        if candidate_trace is not None:
+            distances, _ = model_tree.query(transform_points(scan, invert_transform(estimate)), k=1, workers=1)
             inliers = distances <= correspondence_distance_m
-            if inliers.sum() < 20:
-                break
-            update = _rigid_fit(moved[inliers], scan[nearest[inliers]])
-            estimate = update @ estimate
-            if np.linalg.norm(update[:3, 3]) < 1e-5:
-                break
+            initial_trace = {
+                "initial_camera_from_object": estimate.copy(),
+                "initial_fitness": float(inliers.mean()),
+                "initial_rmse_m": float(np.sqrt(np.mean(distances[inliers] ** 2))) if inliers.any() else math.inf,
+            }
+        estimate = _refine_icp(
+            scan, model_fit, model, estimate,
+            correspondence_distance_m=correspondence_distance_m, max_iterations=max_iterations,
+            icp_correspondence_policy=icp_correspondence_policy, deadline=deadline,
+            scan_tree=scan_tree, model_tree=model_tree, model_fit_tree=model_fit_tree,
+        )
         scan_in_object = transform_points(scan, invert_transform(estimate))
         scan_distances, _ = model_tree.query(scan_in_object, k=1, workers=1)
         scan_inliers = scan_distances <= correspondence_distance_m
@@ -373,5 +427,7 @@ def register_masked_scan(
         }
         if best is None or (fitness, -rmse) > (best["fitness"], -best["inlier_rmse_m"]):
             best = candidate
+        if candidate_trace is not None:
+            candidate_trace.append({**initial_trace, **candidate})
     assert best is not None
     return best
