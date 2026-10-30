@@ -146,8 +146,10 @@ def worker(plan, index):
     started = time.monotonic()
     # Guard annotation access throughout input loading and refinement. Symmetry
     # metadata loaded by the adapter is not passed to the array-only ICP function.
-    phase = {"refinement": True}
+    phase = {"active": True, "refinement": True}
     def audit(event, args):
+        if not phase["active"]:
+            return
         if event == "socket.connect":
             raise RuntimeError("Network forbidden")
         if event == "open" and phase["refinement"] and str(args[0]).endswith("scene_gt.json"):
@@ -156,49 +158,55 @@ def worker(plan, index):
     def forbidden(*args, **kwargs):
         raise RuntimeError("GT initializer/PCA search forbidden")
     original_gt = adapter.load_ground_truth
-    adapter.load_ground_truth = forbidden
-    adapter.pca_initial_rotations = forbidden
-    inputs = adapter.load_registration_inputs(item["case"])
-    initial = np.asarray(item["initial_camera_from_object"], dtype=np.float64)
-    model, scan = inputs.evaluation_points_object_m, inputs.scan_points_camera_m
-    ids = np.linspace(0, len(model)-1, min(3000, len(model)), dtype=np.int64)
-    trace = []
-    fit_started = time.monotonic()
-    refined = adapter._refine_icp(scan, model[ids], model, initial,
-        correspondence_distance_m=.015, max_iterations=8, icp_correspondence_policy="reciprocal",
-        deadline=started+plan["per_case_hard_timeout_seconds"], iteration_trace=trace)
-    fit_seconds = time.monotonic()-fit_started
-    last = initial if len(trace) == 1 else trace[-2]["camera_from_object"] if trace else initial
-    delta = refined @ invert_transform(last)
-    converged = bool(trace) and np.linalg.norm(delta[:3, 3]) < 1e-5
-    termination = "translation_convergence" if converged else "iteration_limit" if len(trace) == 8 else "insufficient_correspondences"
-    phase["refinement"] = False
-    truth = original_gt(item["case"])
-    assert truth.object_id == inputs.object_id
-    syms = bop_symmetry_transforms(inputs.model_info, max_symmetry_step=.01)
-    tree = cKDTree(model)
-    def metrics(pose):
-        distances, _ = tree.query(transform_points(scan, invert_transform(pose)), k=1, workers=1)
-        inliers = distances <= .015
-        rmse = float(np.sqrt(np.mean(distances[inliers]**2))) if inliers.any() else None
-        pose_metrics = mssd_normalized(pose, truth.camera_from_object, model, syms, float(inputs.model_info["diameter"])*.001)
-        accepted, correct, category = classify_result(float(inliers.mean()), rmse if rmse is not None else float("inf"), pose_metrics["mssd_over_diameter"])
-        return {"fitness": float(inliers.mean()), "inlier_rmse_m": rmse, "inlier_rmse_mm": None if rmse is None else rmse*1000,
-                **pose_metrics, "accepted": accepted, "correct": correct, "category": category}
-    baseline, after = metrics(initial), metrics(refined)
-    saved = item["saved_baseline"]
-    assert all(abs(baseline[k]-saved["alignment_quality_metrics"][k]) <= 1e-9 for k in ("fitness", "inlier_rmse_m"))
-    assert all(abs(baseline[k]-saved["pose_metrics"][k]) <= 1e-9 for k in ("mssd_m", "mssd_over_diameter"))
-    status = "completed" if termination != "insufficient_correspondences" else "insufficient_correspondences"
-    outcome = (("remained_correct" if after["correct"] else "regression") if baseline["correct"] else
-               ("recovery" if after["correct"] else "remained_wrong")) if status == "completed" else "incomplete"
-    return {"case_id": item["case"]["case_id"], "status": status, "outcome": outcome,
-            "initial_camera_from_object": initial.tolist(), "refined_camera_from_object": refined.tolist(),
-            "baseline": baseline, "refined": after, "baseline_metrics_verified": True,
-            "gt_access_guard": "Passed: no annotation access/PCA permitted until refinement returned",
-            "termination": termination, "iterations": len(trace),
-            "correspondence_counts": [x["correspondence_count"] for x in trace],
-            "refinement_seconds": fit_seconds, "worker_seconds": time.monotonic()-started}
+    original_pca = adapter.pca_initial_rotations
+    try:
+        adapter.load_ground_truth = forbidden
+        adapter.pca_initial_rotations = forbidden
+        inputs = adapter.load_registration_inputs(item["case"])
+        initial = np.asarray(item["initial_camera_from_object"], dtype=np.float64)
+        model, scan = inputs.evaluation_points_object_m, inputs.scan_points_camera_m
+        ids = np.linspace(0, len(model)-1, min(3000, len(model)), dtype=np.int64)
+        trace = []
+        fit_started = time.monotonic()
+        refined = adapter._refine_icp(scan, model[ids], model, initial,
+            correspondence_distance_m=.015, max_iterations=8, icp_correspondence_policy="reciprocal",
+            deadline=started+plan["per_case_hard_timeout_seconds"], iteration_trace=trace)
+        fit_seconds = time.monotonic()-fit_started
+        last = initial if len(trace) == 1 else trace[-2]["camera_from_object"] if trace else initial
+        delta = refined @ invert_transform(last)
+        converged = bool(trace) and np.linalg.norm(delta[:3, 3]) < 1e-5
+        termination = "translation_convergence" if converged else "iteration_limit" if len(trace) == 8 else "insufficient_correspondences"
+        phase["refinement"] = False
+        truth = original_gt(item["case"])
+        assert truth.object_id == inputs.object_id
+        syms = bop_symmetry_transforms(inputs.model_info, max_symmetry_step=.01)
+        tree = cKDTree(model)
+        def metrics(pose):
+            distances, _ = tree.query(transform_points(scan, invert_transform(pose)), k=1, workers=1)
+            inliers = distances <= .015
+            rmse = float(np.sqrt(np.mean(distances[inliers]**2))) if inliers.any() else None
+            pose_metrics = mssd_normalized(pose, truth.camera_from_object, model, syms, float(inputs.model_info["diameter"])*.001)
+            accepted, correct, category = classify_result(float(inliers.mean()), rmse if rmse is not None else float("inf"), pose_metrics["mssd_over_diameter"])
+            return {"fitness": float(inliers.mean()), "inlier_rmse_m": rmse, "inlier_rmse_mm": None if rmse is None else rmse*1000,
+                    **pose_metrics, "accepted": accepted, "correct": correct, "category": category}
+        baseline, after = metrics(initial), metrics(refined)
+        saved = item["saved_baseline"]
+        assert all(abs(baseline[k]-saved["alignment_quality_metrics"][k]) <= 1e-9 for k in ("fitness", "inlier_rmse_m"))
+        assert all(abs(baseline[k]-saved["pose_metrics"][k]) <= 1e-9 for k in ("mssd_m", "mssd_over_diameter"))
+        status = "completed" if termination != "insufficient_correspondences" else "insufficient_correspondences"
+        outcome = (("remained_correct" if after["correct"] else "regression") if baseline["correct"] else
+                   ("recovery" if after["correct"] else "remained_wrong")) if status == "completed" else "incomplete"
+        return {"case_id": item["case"]["case_id"], "status": status, "outcome": outcome,
+                "initial_camera_from_object": initial.tolist(), "refined_camera_from_object": refined.tolist(),
+                "baseline": baseline, "refined": after, "baseline_metrics_verified": True,
+                "gt_access_guard": "Passed: no annotation access/PCA permitted until refinement returned",
+                "termination": termination, "iterations": len(trace),
+                "correspondence_counts": [x["correspondence_count"] for x in trace],
+                "refinement_seconds": fit_seconds, "worker_seconds": time.monotonic()-started}
+    finally:
+        phase["active"] = False
+        adapter.load_ground_truth = original_gt
+        adapter.pca_initial_rotations = original_pca
 
 
 def run(output):
